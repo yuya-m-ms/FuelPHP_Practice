@@ -13,19 +13,15 @@
         <header>
             <h1>TODO app</h1>
             <section class="new_task">
-                <button id="new_task">Add</button>
-                &nbsp;
-                <span>New Task: </span>
-                <input class="new_task_name" type="text">
-                &nbsp;
-                <span>Due on: </span>
-                <input class="new_task_deadline" type="date">
-                <span>at: </span>
-                <input class="new_task_deadline" type="time">
-                &nbsp;
-                <span class="search" hidden>
-                    <input type="search"> <button id="search_it">search</button>
-                </span>
+                <?= Form::open('TODO') ?>
+                <?= Form::submit('submit', "Add") ?>
+                <?= Form::label("a New Task: ", 'a_new_task') ?>
+                <?= Form::input('name',     Input::post('name')) ?>
+                <?= Form::label("&nbsp;Due on: ", 'due_day') ?>
+                <?= Form::input('due_day',  Input::post('due_day'), ['type' => 'date']) ?>
+                <?= Form::label("at: ", 'time') ?>
+                <?= Form::input('time',     Input::post('due_day'), ['type' => 'time']) ?>
+                <?= Form::close() ?>
             </section>
         </header>
         <br>
@@ -54,10 +50,12 @@
         </section>
         <br>
         <footer>
-            <section class="control">
-                <span>Selected:&nbsp;</span>
-                <button id="change">Change</button>
-                <button id="delete">Delete</button>
+            <section class="alter">
+                <?= Form::open('TODO') ?>
+                <?= Form::label("Selected: ", 'selected') ?>
+                <?= Form::submit('change', "Change") ?>
+                <?= Form::submit('delete', "Delete") ?>
+                <?= Form::close() ?>
             </section>
             <br>
             <span hidden>May show some info</span>
