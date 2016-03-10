@@ -6,6 +6,7 @@
     <style type="text/css">
         section.app { margin: 2em; width: 80%; max-width: 800px; }
         div.task { margin: 2px; border: 1px solid #000; }
+        input[type="submit"] { font: 1.2em Arial,sans-serif; }
     </style>
 </head>
 <body>
@@ -14,13 +15,12 @@
             <h1>TODO app</h1>
             <section class="new_task">
                 <?= Form::open('TODO') ?>
-                <?= Form::submit('submit', "Add") ?>
-                <?= Form::label("a New Task: ", 'a_new_task') ?>
-                <?= Form::input('name',     Input::post('name')) ?>
-                <?= Form::label("&nbsp;Due on: ", 'due_day') ?>
+                <?= Form::submit('submit', "Add") ?> a New Task:
+                <?= Form::input('name',     Input::post('name')) ?>&nbsp;
+                <?= Form::label("Due on: ", 'due_day') ?>
                 <?= Form::input('due_day',  Input::post('due_day'), ['type' => 'date']) ?>
-                <?= Form::label("at: ", 'time') ?>
-                <?= Form::input('time',     Input::post('due_day'), ['type' => 'time']) ?>
+                <?= Form::label("at: ", 'due_time') ?>
+                <?= Form::input('due_time', Input::post('due_time'), ['type' => 'time']) ?>
                 <?= Form::close() ?>
             </section>
         </header>
@@ -52,9 +52,14 @@
         <footer>
             <section class="alter">
                 <?= Form::open('TODO') ?>
-                <?= Form::label("Selected: ", 'selected') ?>
-                <?= Form::submit('change', "Change") ?>
-                <?= Form::submit('delete', "Delete") ?>
+                <?= Form::submit('change', "Change") ?> the selected to:
+                <?= Form::input('name',             Input::post('name')) ?>&nbsp;
+                <?= Form::label("Due on: ", 'changed_due_day') ?>
+                <?= Form::input('changed_due_day',  Input::post('due_day'), ['type' => 'date']) ?>
+                <?= Form::label("at: ", 'changed_due_time') ?>
+                <?= Form::input('changed_due_time', Input::post('due_time'), ['type' => 'time']) ?>
+                <br>
+                <?= Form::submit('delete', "Delete") ?> the selected
                 <?= Form::close() ?>
             </section>
             <br>
