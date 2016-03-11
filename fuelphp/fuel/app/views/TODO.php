@@ -8,9 +8,11 @@
         div.task { margin: 2px; border: 1px solid #000; }
         input[type="submit"] { font: 1.2em Arial,sans-serif; }
         table.todo_table, thead, th, tr, td { border: 1px solid #000; }
+        td.checkbox { text-align: center; }
     </style>
 </head>
 <body>
+<?= 2 ? 'true' : 'false' ?>
     <?= isset($html_error) ? $html_error : null ?>
     <section class="app">
         <header>
@@ -31,47 +33,23 @@
         <table class="todo_table">
             <thead>
                 <tr>
-                    <th>id</th>
-                    <th>name</th>
-                    <th>due</th>
-                    <th>status</th>
-                    <th>deleted</th>
+                    <th></th>
+                    <th>Name</th>
+                    <th>Due</th>
+                    <th>To select</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($TODOs as $todo): ?>
-                    <tr class="task">
-                        <td><?= $todo->id; ?></td>
+                    <tr class="task" <?= $todo->deleted ? 'hidden' : '' ?> >
+                        <td class="checkbox"><?= Form::checkbox('is_done', "Done", $todo->status_id); ?></td>
                         <td><?= $todo->name; ?></td>
                         <td><?= $todo->due; ?></td>
-                        <td><?= $todo->status; ?></td>
-                        <td><?= $todo->deleted ? "yes" : "no" ; ?></td>
+                        <td class="checkbox"><?= Form::checkbox('is_selected', "Selection"); ?></td>
                     </tr>
                 <?php endforeach ?>
             </tbody>
         </table>
-        <section class="list">
-            <div class="task" id="1">
-                <span><input class="is_done" type="checkbox"></span>
-                <span class="name">Task 1</span>
-                <span class="separator">|</span>
-                <span class="deadline">3日後</span>
-                <span class="separator">|</span>
-                <!-- <span class="note">Something you have to remember.</span> -->
-                <span class="separator">|</span>
-                <span class="selected">to select: <input class="select" type="checkbox"></span>
-            </div>
-            <div class="task" id="2">
-                <span><input class="is_done" type="checkbox"></span>
-                <span class="name">Task 2</span>
-                <span class="separator">|</span>
-                <span class="deadline">7日後</span>
-                <span class="separator">|</span>
-                <!-- <span class="note">Something you wanna remember.</span> -->
-                <span class="separator">|</span>
-                <span class="selected">to select: <input class="select" type="checkbox"></span>
-            </div>
-        </section>
         <br>
         <footer>
             <section class="alter">
