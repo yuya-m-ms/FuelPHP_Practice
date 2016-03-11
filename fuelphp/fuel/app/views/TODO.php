@@ -7,6 +7,7 @@
         section.app { margin: 2em; width: 80%; max-width: 800px; }
         div.task { margin: 2px; border: 1px solid #000; }
         input[type="submit"] { font: 1.2em Arial,sans-serif; }
+        table.todo_table, thead, th, tr, td { border: 1px solid #000; }
     </style>
 </head>
 <body>
@@ -27,6 +28,28 @@
         </header>
         <br>
         <div class="tips">Check; get done!</div>
+        <table class="todo_table">
+            <thead>
+                <tr>
+                    <th>id</th>
+                    <th>name</th>
+                    <th>due</th>
+                    <th>status</th>
+                    <th>deleted</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($TODOs as $todo): ?>
+                    <tr class="task">
+                        <td><?= $todo->id; ?></td>
+                        <td><?= $todo->name; ?></td>
+                        <td><?= $todo->due; ?></td>
+                        <td><?= $todo->status; ?></td>
+                        <td><?= $todo->deleted ? "yes" : "no" ; ?></td>
+                    </tr>
+                <?php endforeach ?>
+            </tbody>
+        </table>
         <section class="list">
             <div class="task" id="1">
                 <span><input class="is_done" type="checkbox"></span>
@@ -66,30 +89,6 @@
             <br>
             <span hidden>May show some info</span>
         </footer>
-    </section>
-    <section>
-        <table>
-            <thead>
-                <tr>
-                    <th>id</th>
-                    <th>name</th>
-                    <th>due</th>
-                    <th>status</th>
-                    <th>deleted</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($TODOs as $todo): ?>
-                    <tr class="task">
-                        <td><?= $todo->id; ?></td>
-                        <td><?= $todo->name; ?></td>
-                        <td><?= $todo->due; ?></td>
-                        <td><?= $todo->status; ?></td>
-                        <td><?= $todo->deleted ? "yes" : "no" ; ?></td>
-                    </tr>
-                <?php endforeach ?>
-            </tbody>
-        </table>
     </section>
     <?= Debug::dump(isset($input) ? $input : null) ?>
 </body>
