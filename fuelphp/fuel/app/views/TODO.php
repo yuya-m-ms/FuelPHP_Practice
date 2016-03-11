@@ -12,7 +12,6 @@
     </style>
 </head>
 <body>
-<?= 2 ? 'true' : 'false' ?>
     <?= isset($html_error) ? $html_error : null ?>
     <section class="app">
         <header>
