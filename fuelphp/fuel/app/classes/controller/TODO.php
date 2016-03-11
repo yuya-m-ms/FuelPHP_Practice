@@ -8,7 +8,9 @@ class Controller_TODO extends Controller
 
     function action_index()
     {
-        $view = View::forge('TODO');
+        $TODOs = Model_TODO::find('all');
+        $data['TODOs'] = $TODOs;
+        $view = View::forge('TODO', $data);
         return $view;
     }
 }
