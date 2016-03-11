@@ -10,6 +10,7 @@
     </style>
 </head>
 <body>
+    <?= isset($html_error) ? $html_error : null ?>
     <section class="app">
         <header>
             <h1>TODO app</h1>
@@ -66,5 +67,6 @@
             <span hidden>May show some info</span>
         </footer>
     </section>
+    <?= Debug::dump(isset($input) ? $input : null) ?>
 </body>
 </html>
