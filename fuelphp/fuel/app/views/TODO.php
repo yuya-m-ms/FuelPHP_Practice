@@ -67,6 +67,30 @@
             <span hidden>May show some info</span>
         </footer>
     </section>
+    <section>
+        <table>
+            <thead>
+                <tr>
+                    <th>id</th>
+                    <th>name</th>
+                    <th>due</th>
+                    <th>status</th>
+                    <th>deleted</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($TODOs as $todo): ?>
+                    <tr class="task">
+                        <td><?= $todo->id; ?></td>
+                        <td><?= $todo->name; ?></td>
+                        <td><?= $todo->due; ?></td>
+                        <td><?= $todo->status; ?></td>
+                        <td><?= $todo->deleted ? "yes" : "no" ; ?></td>
+                    </tr>
+                <?php endforeach ?>
+            </tbody>
+        </table>
+    </section>
     <?= Debug::dump(isset($input) ? $input : null) ?>
 </body>
 </html>
