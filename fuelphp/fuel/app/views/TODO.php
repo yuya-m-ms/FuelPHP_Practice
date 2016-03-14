@@ -30,7 +30,7 @@
             </section>
         </header>
         <br>
-        <div class="tips">Check; get done!</div>
+        <div class="tips">Checked = done!</div>
         <table class="todo_table">
             <thead>
                 <tr>
@@ -86,8 +86,6 @@
                 <?= Form::input('changed_due_day',  Input::post('due_day'), ['type' => 'date']) ?>
                 <?= Form::label("at: ", 'changed_due_time') ?>
                 <?= Form::input('changed_due_time', Input::post('due_time'), ['type' => 'time']) ?>
-                <br>
-                <?= Form::submit('delete', "Delete") ?> the selected
                 <?= Form::close() ?>
             </section>
             <br>
