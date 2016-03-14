@@ -30,7 +30,7 @@
             </section>
         </header>
         <br>
-        <div class="tips">Check; get done!</div>
+        <div class="tips">Checked = done!</div>
         <table class="todo_table">
             <thead>
                 <tr>
