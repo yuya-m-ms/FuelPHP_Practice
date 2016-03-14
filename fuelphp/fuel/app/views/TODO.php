@@ -10,6 +10,7 @@
         table.todo_table, thead, th, tr, td { border: 1px solid #000; }
         td.checkbox { text-align: center; }
         .no_click { pointer-events: none; }
+        span.task_edited { font-weight: bold; }
     </style>
 </head>
 <body>
@@ -38,8 +39,8 @@
                     <th><!-- get (un)done --></th>
                     <th>Name</th>
                     <th>Due</th>
-                    <th>To select</th>
                     <th><!-- delete --></th>
+                    <th><!-- change --></th>
                 </tr>
             </thead>
             <tbody>
@@ -66,10 +67,14 @@
                         </td>
                         <td><?= $todo->name; ?></td>
                         <td><?= $todo->due; ?></td>
-                        <td class="checkbox"><?= Form::checkbox('is_selected', "Selection"); ?></td>
                         <td>
                             <?= Form::open('todo/delete/' . $todo->id) ?>
                             <?= Form::submit('delete', "Delete") ?>
+                            <?= Form::close() ?>
+                        </td>
+                        <td>
+                            <?= Form::open('todo/to_change/' . $todo->id) ?>
+                            <?= Form::submit('to_change', "To change") ?>
                             <?= Form::close() ?>
                         </td>
                     </tr>
@@ -79,14 +84,28 @@
         <br>
         <footer>
             <section class="alter">
-                <?= Form::open('TODO') ?>
-                <?= Form::submit('change', "Change") ?> the selected to:
-                <?= Form::input('name',             Input::post('name')) ?>&nbsp;
-                <?= Form::label("Due on: ", 'changed_due_day') ?>
-                <?= Form::input('changed_due_day',  Input::post('due_day'), ['type' => 'date']) ?>
-                <?= Form::label("at: ", 'changed_due_time') ?>
-                <?= Form::input('changed_due_time', Input::post('due_time'), ['type' => 'time']) ?>
-                <?= Form::close() ?>
+                <?php if (isset($task_to_be_changed)): ?>
+                    <!-- <pre><?= var_dump($task_to_be_changed); ?></pre> -->
+                    <?= Form::open('todo/change/' . $task_to_be_changed['id']) ?>
+                    <?= Form::submit('change', "Change") ?>
+                    <span class="task_edited">
+                        <?= $task_to_be_changed['name'] ?>
+                    </span>
+                    &nbsp;Due by:
+                    <span class="task_edited">
+                        <?= !empty($task_to_be_changed['due']) ? $task_to_be_changed['due'] : "Indefinite" ?>
+                    </span>
+                    <br> to:
+                    <?= Form::input('name', $task_to_be_changed['name']) ?>&nbsp;
+                    <?= Form::label("Due on: ", 'due_day') ?>
+                    <?= Form::input('due_day',  $task_to_be_changed['due_day']
+                        , ['type' => 'date'
+                            , 'max' => '9999-12-31'
+                        ]) ?>
+                    <?= Form::label("at: ", 'due_time') ?>
+                    <?= Form::input('due_time', $task_to_be_changed['due_time'], ['type' => 'time']) ?>
+                    <?= Form::close() ?>
+                <?php endif ?>
             </section>
             <br>
             <span hidden>May show some info</span>
