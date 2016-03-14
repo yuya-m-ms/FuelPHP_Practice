@@ -108,7 +108,7 @@ class Controller_TODO extends Controller
         $data['task_to_be_changed']['name'] = $todo->name;
         $data['task_to_be_changed']['due']  = $todo->due;
         if (! empty($todo->due)) {
-            // $re_datetime = '/(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2})*/';
+            // $re_datetime = '/(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2})/';
             // list($_, $due_day, $due_time) = preg_match($re_datetime, $todo->due);
             list($due_day, $due_time) = explode(' ', $todo->due);
             $data['task_to_be_changed']['due_day']  = $due_day;
