@@ -9,6 +9,7 @@
         input[type="submit"] { font: 1.2em Arial,sans-serif; }
         table.todo_table, thead, th, tr, td { border: 1px solid #000; }
         td.checkbox { text-align: center; }
+        .no_click { pointer-events: none; }
     </style>
 </head>
 <body>
@@ -17,14 +18,15 @@
         <header>
             <h1>TODO app</h1>
             <section class="new_task">
-                <?= Form::open('TODO') ?>
+            <?= Form::open('todo/add') ?>
                 <?= Form::submit('submit', "Add") ?> a New Task:
                 <?= Form::input('name',     Input::post('name')) ?>&nbsp;
                 <?= Form::label("Due on: ", 'due_day') ?>
-                <?= Form::input('due_day',  Input::post('due_day'), ['type' => 'date']) ?>
+                <?= Form::input('due_day',  Input::post('due_day'), ['type' => 'date', 'max' => "9999-12-31"]) ?>
                 <?= Form::label("at: ", 'due_time') ?>
                 <?= Form::input('due_time', Input::post('due_time'), ['type' => 'time']) ?>
                 <?= Form::close() ?>
+                <?= $addTodoLink = Html::anchor(Uri::create('todo/add'), "Add a TODO") ?>
             </section>
         </header>
         <br>
@@ -41,7 +43,9 @@
             <tbody>
                 <?php foreach ($TODOs as $todo): ?>
                     <tr class="task" <?= $todo->deleted ? 'hidden' : '' ?> >
-                        <td class="checkbox"><?= Form::checkbox('is_done', "Done", boolval($todo->status_id)); ?></td>
+                        <td class="checkbox no_click">
+                            <?= Form::checkbox('is_done', "Done", boolval($todo->status_id)); ?>
+                        </td>
                         <td><?= $todo->name; ?></td>
                         <td><?= $todo->due; ?></td>
                         <td class="checkbox"><?= Form::checkbox('is_selected', "Selection"); ?></td>
@@ -67,6 +71,5 @@
             <span hidden>May show some info</span>
         </footer>
     </section>
-    <?= Debug::dump(isset($input) ? $input : null) ?>
 </body>
 </html>
