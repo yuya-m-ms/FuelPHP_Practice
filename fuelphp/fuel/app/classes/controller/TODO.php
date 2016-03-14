@@ -41,6 +41,18 @@ class Controller_TODO extends Controller
         return Response::redirect('TODO');
     }
 
+    public function action_delete($id)
+    {
+        if (Input::method() === 'POST') {
+            // suppose no missing id
+            $todo = Model_TODO::find($id);
+            $todo->deleted = true;
+            $todo->save();
+        }
+
+        return Response::redirect('TODO');
+    }
+
     /**
      * @return Vadidation for a new task
      */
