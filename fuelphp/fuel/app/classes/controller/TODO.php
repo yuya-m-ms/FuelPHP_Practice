@@ -53,6 +53,30 @@ class Controller_TODO extends Controller
         return Response::redirect('TODO');
     }
 
+    public function action_done($id)
+    {
+        if (Input::method() === 'POST') {
+            // suppose no missing id
+            $todo = Model_TODO::find($id);
+            $todo->status_id = 1; // done
+            $todo->save();
+        }
+
+        return Response::redirect('TODO');
+    }
+
+    public function action_undone($id)
+    {
+        if (Input::method() === 'POST') {
+            // suppose no missing id
+            $todo = Model_TODO::find($id);
+            $todo->status_id = 0; // open
+            $todo->save();
+        }
+
+        return Response::redirect('TODO');
+    }
+
     /**
      * @return Vadidation for a new task
      */

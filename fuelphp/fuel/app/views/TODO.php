@@ -34,11 +34,12 @@
         <table class="todo_table">
             <thead>
                 <tr>
-                    <th></th>
+                    <th><!-- is_done? --></th>
+                    <th><!-- get (un)done --></th>
                     <th>Name</th>
                     <th>Due</th>
                     <th>To select</th>
-                    <th></th>
+                    <th><!-- delete --></th>
                 </tr>
             </thead>
             <tbody>
@@ -46,6 +47,22 @@
                     <tr class="task" <?= $todo->deleted ? 'hidden' : '' ?> >
                         <td class="checkbox no_click">
                             <?= Form::checkbox('is_done', "Done", boolval($todo->status_id)); ?>
+                        </td>
+                        <td>
+                            <center>
+                                <!-- toggle open/finished -->
+                                <?php if (boolval($todo->status_id)): ?>
+                                    <!-- task is done -->
+                                    <?= Form::open('todo/undone/' . $todo->id) ?>
+                                    <?= Form::submit('undone', "Undone") ?>
+                                    <?= Form::close() ?>
+                                <?php else: ?>
+                                    <!-- task is open -->
+                                    <?= Form::open('todo/done/' . $todo->id) ?>
+                                    <?= Form::submit('done', "Done") ?>
+                                    <?= Form::close() ?>
+                                <?php endif ?>
+                            </center>
                         </td>
                         <td><?= $todo->name; ?></td>
                         <td><?= $todo->due; ?></td>
