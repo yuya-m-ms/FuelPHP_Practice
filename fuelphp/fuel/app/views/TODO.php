@@ -27,7 +27,6 @@
                 <?= Form::label("at: ", 'due_time') ?>
                 <?= Form::input('due_time', Input::post('due_time'), ['type' => 'time']) ?>
                 <?= Form::close() ?>
-                <?= $addTodoLink = Html::anchor(Uri::create('todo/add'), "Add a TODO") ?>
             </section>
         </header>
         <br>
@@ -85,7 +84,6 @@
         <footer>
             <section class="alter">
                 <?php if (isset($task_to_be_changed)): ?>
-                    <!-- <pre><?= var_dump($task_to_be_changed); ?></pre> -->
                     <?= Form::open('todo/change/' . $task_to_be_changed['id']) ?>
                     <?= Form::submit('change', "Change") ?>
                     <span class="task_edited">
@@ -99,9 +97,8 @@
                     <?= Form::input('name', $task_to_be_changed['name']) ?>&nbsp;
                     <?= Form::label("Due on: ", 'due_day') ?>
                     <?= Form::input('due_day',  $task_to_be_changed['due_day']
-                        , ['type' => 'date'
-                            , 'max' => '9999-12-31'
-                        ]) ?>
+                        , ['type' => 'date', 'max' => '9999-12-31']
+                        ) ?>
                     <?= Form::label("at: ", 'due_time') ?>
                     <?= Form::input('due_time', $task_to_be_changed['due_time'], ['type' => 'time']) ?>
                     <?= Form::close() ?>

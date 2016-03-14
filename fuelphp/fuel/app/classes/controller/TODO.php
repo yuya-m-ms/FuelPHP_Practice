@@ -16,10 +16,6 @@ class Controller_TODO extends Controller
 
     public function action_add()
     {
-        if (Input::method() === 'GET') {
-            return Response::forge(View::forge('todo/add'));
-        }
-
         if (Input::method() === 'POST') {
             $val = $this->forge_validation();
             if ($val->run()) {
@@ -33,8 +29,8 @@ class Controller_TODO extends Controller
                 $todo->deleted = false;
                 $todo->save();
             } else {
-                $data['error'] = $val->error();
-                return View::forge('todo/add', $data);
+                $data['html_error'] = $val->error();
+                return View::forge('todo', $data);
             }
         }
 
@@ -108,14 +104,14 @@ class Controller_TODO extends Controller
         $data['task_to_be_changed']['name'] = $todo->name;
         $data['task_to_be_changed']['due']  = $todo->due;
         if (! empty($todo->due)) {
-            // $re_datetime = '/(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2})*/';
+            // $re_datetime = '/(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2})/';
             // list($_, $due_day, $due_time) = preg_match($re_datetime, $todo->due);
             list($due_day, $due_time) = explode(' ', $todo->due);
             $data['task_to_be_changed']['due_day']  = $due_day;
             $data['task_to_be_changed']['due_time'] = $due_time;
         }
         $data['TODOs'] = Model_TODO::find('all');
-        return Response::forge(View::forge('TODO', $data));
+        return View::forge('TODO', $data);
     }
 
     /**
