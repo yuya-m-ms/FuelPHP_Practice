@@ -38,6 +38,7 @@
                     <th>Name</th>
                     <th>Due</th>
                     <th>To select</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -49,6 +50,11 @@
                         <td><?= $todo->name; ?></td>
                         <td><?= $todo->due; ?></td>
                         <td class="checkbox"><?= Form::checkbox('is_selected', "Selection"); ?></td>
+                        <td>
+                            <?= Form::open('todo/delete/' . $todo->id) ?>
+                            <?= Form::submit('delete', "Delete") ?>
+                            <?= Form::close() ?>
+                        </td>
                     </tr>
                 <?php endforeach ?>
             </tbody>
