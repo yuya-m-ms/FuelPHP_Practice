@@ -41,7 +41,7 @@
             <tbody>
                 <?php foreach ($TODOs as $todo): ?>
                     <tr class="task" <?= $todo->deleted ? 'hidden' : '' ?> >
-                        <td class="checkbox"><?= Form::checkbox('is_done', "Done", $todo->status_id); ?></td>
+                        <td class="checkbox"><?= Form::checkbox('is_done', "Done", boolval($todo->status_id)); ?></td>
                         <td><?= $todo->name; ?></td>
                         <td><?= $todo->due; ?></td>
                         <td class="checkbox"><?= Form::checkbox('is_selected', "Selection"); ?></td>
