@@ -20,16 +20,11 @@ class Controller_TODO extends Controller
             return Response::forge(View::forge('todo/add'));
         }
 
-        $data = [];
-
         if (Input::method() === 'POST') {
             $val = $this->forge_validation();
             if ($val->run()) {
                 $input = $val->validated();
                 $input['due_daytime'] = $input['due_day'] . ' ' . $input['due_time'];
-                // echo '<pre>', var_dump($input), '</pre>';
-                $data['input'] = $input;
-                // return View::forge('todo/add', $data);
 
                 $todo = Model_TODO::forge();
                 $todo->name = $input['name'];

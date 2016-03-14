@@ -18,7 +18,7 @@
         <header>
             <h1>TODO app</h1>
             <section class="new_task">
-            <?= Form::open('todo/add') ?>
+                <?= Form::open('todo/add') ?>
                 <?= Form::submit('submit', "Add") ?> a New Task:
                 <?= Form::input('name',     Input::post('name')) ?>&nbsp;
                 <?= Form::label("Due on: ", 'due_day') ?>
