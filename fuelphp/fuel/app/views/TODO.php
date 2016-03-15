@@ -21,11 +21,7 @@
             <section class="new_task">
                 <?= Form::open('todo/add') ?>
                 <?= Form::submit('submit', "Add") ?> a New Task:
-                <?= Form::input('name',     Input::post('name')) ?>&nbsp;
-                <?= Form::label("Due on: ", 'due_day') ?>
-                <?= Form::input('due_day',  Input::post('due_day'), ['type' => 'date', 'max' => "9999-12-31"]) ?>
-                <?= Form::label("at: ", 'due_time') ?>
-                <?= Form::input('due_time', Input::post('due_time'), ['type' => 'time']) ?>
+                <?= Form::input('name', Input::post('name')) ?>
                 <?= Form::close() ?>
             </section>
         </header>
@@ -37,7 +33,6 @@
                     <th><!-- is_done? --></th>
                     <th><!-- get (un)done --></th>
                     <th>Name</th>
-                    <th>Due</th>
                     <th><!-- delete --></th>
                     <th><!-- change --></th>
                 </tr>
@@ -65,7 +60,6 @@
                             </center>
                         </td>
                         <td><?= $todo->name; ?></td>
-                        <td><?= $todo->due; ?></td>
                         <td>
                             <?= Form::open('todo/delete/' . $todo->id) ?>
                             <?= Form::submit('delete', "Delete") ?>
@@ -88,24 +82,11 @@
                     <?= Form::submit('change', "Change") ?>
                     <span class="task_edited">
                         <?= $task_to_be_changed['name'] ?>
-                    </span>
-                    &nbsp;Due by:
-                    <span class="task_edited">
-                        <?= !empty($task_to_be_changed['due']) ? $task_to_be_changed['due'] : "Indefinite" ?>
-                    </span>
-                    <br> to:
-                    <?= Form::input('name', $task_to_be_changed['name']) ?>&nbsp;
-                    <?= Form::label("Due on: ", 'due_day') ?>
-                    <?= Form::input('due_day',  $task_to_be_changed['due_day']
-                        , ['type' => 'date', 'max' => '9999-12-31']
-                        ) ?>
-                    <?= Form::label("at: ", 'due_time') ?>
-                    <?= Form::input('due_time', $task_to_be_changed['due_time'], ['type' => 'time']) ?>
+                    </span> to:
+                    <?= Form::input('name', $task_to_be_changed['name']) ?>
                     <?= Form::close() ?>
                 <?php endif ?>
             </section>
-            <br>
-            <span hidden>May show some info</span>
         </footer>
     </section>
 </body>
