@@ -15,11 +15,18 @@ function null_if_blank($str)
 */
 class Controller_Todo extends Controller
 {
+    /**
+     * Fetch TODOs from DB
+     * @return iterator of TODOs
+     */
+    public function fetch_todo()
+    {
+        return Model_Todo::query()->where('deleted', '=', false)->get();
+    }
 
     public function action_index()
     {
-        $todos = Model_Todo::find('all');
-        $data['todos'] = $todos;
+        $data['todos'] = $this->fetch_todo();
         $view = View::forge('todo', $data);
         return $view;
     }
@@ -110,7 +117,7 @@ class Controller_Todo extends Controller
         list($due_day, $due_time) = $this->chop_datetime($todo->due);
         $data['task_to_be_changed']['due_day']  = $due_day;
         $data['task_to_be_changed']['due_time'] = $due_time;
-        $data['todos'] = Model_Todo::find('all');
+        $data['todos'] = $this->fetch_todo();
         return View::forge('todo', $data);
     }
 

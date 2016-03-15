@@ -44,7 +44,7 @@
             </thead>
             <tbody>
                 <?php foreach ($todos as $todo): ?>
-                    <tr class="task" <?= $todo->deleted ? 'hidden' : '' ?> >
+                    <tr class="task">
                         <td class="checkbox no_click">
                             <?= Form::checkbox('is_done', "Done", boolval($todo->status_id)); ?>
                         </td>
