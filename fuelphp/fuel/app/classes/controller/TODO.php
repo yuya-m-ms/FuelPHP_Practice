@@ -16,10 +16,6 @@ class Controller_TODO extends Controller
 
     public function action_add()
     {
-        if (Input::method() === 'GET') {
-            return Response::forge(View::forge('todo/add'));
-        }
-
         if (Input::method() === 'POST') {
             $val = $this->forge_validation();
             if ($val->run()) {
@@ -31,8 +27,8 @@ class Controller_TODO extends Controller
                 $todo->deleted = false;
                 $todo->save();
             } else {
-                $data['error'] = $val->error();
-                return View::forge('todo/add', $data);
+                $data['html_error'] = $val->error();
+                return View::forge('todo', $data);
             }
         }
 
@@ -99,7 +95,7 @@ class Controller_TODO extends Controller
         $data['task_to_be_changed']['name'] = $todo->name;
 
         $data['TODOs'] = Model_TODO::find('all');
-        return Response::forge(View::forge('TODO', $data));
+        return View::forge('TODO', $data);
     }
 
     /**

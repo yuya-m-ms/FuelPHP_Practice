@@ -21,7 +21,7 @@
             <section class="new_task">
                 <?= Form::open('todo/add') ?>
                 <?= Form::submit('submit', "Add") ?> a New Task:
-                <?= Form::input('name', Input::post('name')) ?>
+                <?= Form::input('name') ?>
                 <?= Form::close() ?>
             </section>
         </header>
