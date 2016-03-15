@@ -107,7 +107,7 @@ class Controller_Todo extends Controller
             $input['due_daytime'] = $input['due_day'] . ' ' . $input['due_time'];
             $this->alter($id, [
                 'name' => $input['name'],
-                'due' => null_if_blank($input['due_daytime']),
+                'due'  => null_if_blank($input['due_daytime']),
             ]);
         }
 
