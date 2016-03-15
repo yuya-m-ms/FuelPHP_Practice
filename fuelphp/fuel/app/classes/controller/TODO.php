@@ -1,5 +1,15 @@
 <?php
 
+function is_blank($str)
+{
+    return empty(trim($str));
+}
+
+function null_if_blank($str)
+{
+    return !is_blank($str) ? $str : null;
+}
+
 /**
 * TODO app controller for single-page app
 */
@@ -32,7 +42,7 @@ class Controller_Todo extends Controller
 
             $todo = Model_Todo::forge();
             $todo->name = $input['name'];
-            $todo->due = $input['due_daytime'];
+            $todo->due = null_if_blank($input['due_daytime']);
             $todo->status_id = 0; // = open
             $todo->deleted = false;
             $todo->save();
@@ -84,7 +94,7 @@ class Controller_Todo extends Controller
             // suppose no missing id
             $todo = Model_Todo::find($id);
             $todo->name = $input['name'];
-            $todo->due = !empty($input['due_daytime']) ? $input['due_daytime'] : null;
+            $todo->due = null_if_blank($input['due_daytime']);
             $todo->save();
         }
 
