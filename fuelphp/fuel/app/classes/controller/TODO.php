@@ -94,11 +94,9 @@ class Controller_Todo extends Controller
         $data['task_to_be_changed']['id']   = $todo->id;
         $data['task_to_be_changed']['name'] = $todo->name;
         $data['task_to_be_changed']['due']  = $todo->due;
-        if (! empty($todo->due)) {
-            list($due_day, $due_time) = explode(' ', $todo->due);
-            $data['task_to_be_changed']['due_day']  = $due_day;
-            $data['task_to_be_changed']['due_time'] = $due_time;
-        }
+        list($due_day, $due_time) = $this->chopDatetime($todo->due);
+        $data['task_to_be_changed']['due_day']  = $due_day;
+        $data['task_to_be_changed']['due_time'] = $due_time;
         $data['todos'] = Model_Todo::find('all');
         return View::forge('todo', $data);
     }
@@ -106,8 +104,8 @@ class Controller_Todo extends Controller
     public function chopDatetime($datetime)
     {
         $re_datetime = '/(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2})/';
-        preg_match($re_datetime, $todo->due, $matches); // why C-like
-        list(, $date, $time) = $matches;
+        preg_match($re_datetime, $datetime, $matches); // why C-like
+        list(, $date, $time) = array_pad($matches, 3, null);
         return [$date, $time];
     }
 
