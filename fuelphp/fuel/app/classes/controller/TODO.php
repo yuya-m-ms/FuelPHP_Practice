@@ -14,24 +14,31 @@ class Controller_Todo extends Controller
         return $view;
     }
 
+    public function redirectWhenNoPost()
+    {
+        if (Input::method() != 'POST') {
+            return Response::redirect('todo', '405');
+        }
+    }
+
     public function action_add()
     {
-        if (Input::method() === 'POST') {
-            $val = $this->forge_validation();
-            if ($val->run()) {
-                $input = $val->validated();
-                $input['due_daytime'] = $input['due_day'] . ' ' . $input['due_time'];
+        $this->redirectWhenNoPost();
 
-                $todo = Model_Todo::forge();
-                $todo->name = $input['name'];
-                $todo->due = $input['due_daytime'];
-                $todo->status_id = 0; // = open
-                $todo->deleted = false;
-                $todo->save();
-            } else {
-                $data['html_error'] = $val->error();
-                return View::forge('todo', $data);
-            }
+        $val = $this->forge_validation();
+        if ($val->run()) {
+            $input = $val->validated();
+            $input['due_daytime'] = $input['due_day'] . ' ' . $input['due_time'];
+
+            $todo = Model_Todo::forge();
+            $todo->name = $input['name'];
+            $todo->due = $input['due_daytime'];
+            $todo->status_id = 0; // = open
+            $todo->deleted = false;
+            $todo->save();
+        } else {
+            $data['html_error'] = $val->error();
+            return View::forge('todo', $data);
         }
 
         return Response::redirect('todo');
@@ -47,47 +54,43 @@ class Controller_Todo extends Controller
 
     public function action_delete($id)
     {
-        if (Input::method() === 'POST') {
-            $this->alter($id, 'deleted', true);
-        }
+        $this->redirectWhenNoPost();
+        $this->alter($id, 'deleted', true);
         return Response::redirect('todo');
     }
 
     public function action_done($id)
     {
-        if (Input::method() === 'POST') {
-            $this->alter($id, 'status_id', 1);
-        }
+        $this->redirectWhenNoPost();
+        $this->alter($id, 'status_id', 1);
         return Response::redirect('todo');
     }
 
     public function action_undone($id)
     {
-        if (Input::method() === 'POST') {
-            $this->alter($id, 'status_id', 0);
-        }
+        $this->redirectWhenNoPost();
+        $this->alter($id, 'status_id', 0);
         return Response::redirect('todo');
     }
 
     public function action_change($id)
     {
-        if (Input::method() === 'POST') {
-            $val = $this->forge_validation();
-            if ($val->run()) {
-                $input = $val->validated();
-                $input['due_daytime'] = $input['due_day'] . ' ' . $input['due_time'];
-                // suppose no missing id
-                $todo = Model_Todo::find($id);
-                $todo->name = $input['name'];
-                $todo->due = !empty($input['due_daytime']) ? $input['due_daytime'] : null;
-                $todo->save();
-            }
+        $this->redirectWhenNoPost();
+
+        $val = $this->forge_validation();
+        if ($val->run()) {
+            $input = $val->validated();
+            $input['due_daytime'] = $input['due_day'] . ' ' . $input['due_time'];
+            // suppose no missing id
+            $todo = Model_Todo::find($id);
+            $todo->name = $input['name'];
+            $todo->due = !empty($input['due_daytime']) ? $input['due_daytime'] : null;
+            $todo->save();
         }
 
         return Response::redirect('todo');
     }
 
-    // TODO: use POST?
     public function action_to_change($id)
     {
         $todo = Model_Todo::find($id);
