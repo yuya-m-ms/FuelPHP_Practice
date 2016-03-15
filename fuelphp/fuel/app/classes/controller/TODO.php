@@ -3,14 +3,14 @@
 /**
 * TODO app controller for single-page app
 */
-class Controller_TODO extends Controller
+class Controller_Todo extends Controller
 {
 
     public function action_index()
     {
-        $TODOs = Model_TODO::find('all');
-        $data['TODOs'] = $TODOs;
-        $view = View::forge('TODO', $data);
+        $todos = Model_Todo::find('all');
+        $data['todos'] = $todos;
+        $view = View::forge('todo', $data);
         return $view;
     }
 
@@ -22,7 +22,7 @@ class Controller_TODO extends Controller
                 $input = $val->validated();
                 $input['due_daytime'] = $input['due_day'] . ' ' . $input['due_time'];
 
-                $todo = Model_TODO::forge();
+                $todo = Model_Todo::forge();
                 $todo->name = $input['name'];
                 $todo->due = $input['due_daytime'];
                 $todo->status_id = 0; // = open
@@ -34,13 +34,13 @@ class Controller_TODO extends Controller
             }
         }
 
-        return Response::redirect('TODO');
+        return Response::redirect('todo');
     }
 
     private function alter($id, $attr, $value)
     {
         // suppose no missing id
-        $todo = Model_TODO::find($id);
+        $todo = Model_Todo::find($id);
         $todo->$attr = $value;
         $todo->save();
     }
@@ -50,7 +50,7 @@ class Controller_TODO extends Controller
         if (Input::method() === 'POST') {
             $this->alter($id, 'deleted', true);
         }
-        return Response::redirect('TODO');
+        return Response::redirect('todo');
     }
 
     public function action_done($id)
@@ -58,7 +58,7 @@ class Controller_TODO extends Controller
         if (Input::method() === 'POST') {
             $this->alter($id, 'status_id', 1);
         }
-        return Response::redirect('TODO');
+        return Response::redirect('todo');
     }
 
     public function action_undone($id)
@@ -66,7 +66,7 @@ class Controller_TODO extends Controller
         if (Input::method() === 'POST') {
             $this->alter($id, 'status_id', 0);
         }
-        return Response::redirect('TODO');
+        return Response::redirect('todo');
     }
 
     public function action_change($id)
@@ -77,20 +77,20 @@ class Controller_TODO extends Controller
                 $input = $val->validated();
                 $input['due_daytime'] = $input['due_day'] . ' ' . $input['due_time'];
                 // suppose no missing id
-                $todo = Model_TODO::find($id);
+                $todo = Model_Todo::find($id);
                 $todo->name = $input['name'];
                 $todo->due = !empty($input['due_daytime']) ? $input['due_daytime'] : null;
                 $todo->save();
             }
         }
 
-        return Response::redirect('TODO');
+        return Response::redirect('todo');
     }
 
     // TODO: use POST?
     public function action_to_change($id)
     {
-        $todo = Model_TODO::find($id);
+        $todo = Model_Todo::find($id);
         $data['task_to_be_changed']['id']   = $todo->id;
         $data['task_to_be_changed']['name'] = $todo->name;
         $data['task_to_be_changed']['due']  = $todo->due;
@@ -99,8 +99,8 @@ class Controller_TODO extends Controller
             $data['task_to_be_changed']['due_day']  = $due_day;
             $data['task_to_be_changed']['due_time'] = $due_time;
         }
-        $data['TODOs'] = Model_TODO::find('all');
-        return View::forge('TODO', $data);
+        $data['todos'] = Model_Todo::find('all');
+        return View::forge('todo', $data);
     }
 
     public function chopDatetime($datetime)
