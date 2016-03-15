@@ -37,39 +37,35 @@ class Controller_TODO extends Controller
         return Response::redirect('TODO');
     }
 
+    private function alter($id, $attr, $value)
+    {
+        // suppose no missing id
+        $todo = Model_TODO::find($id);
+        $todo->$attr = $value;
+        $todo->save();
+    }
+
     public function action_delete($id)
     {
         if (Input::method() === 'POST') {
-            // suppose no missing id
-            $todo = Model_TODO::find($id);
-            $todo->deleted = true;
-            $todo->save();
+            $this->alter($id, 'deleted', true);
         }
-
         return Response::redirect('TODO');
     }
 
     public function action_done($id)
     {
         if (Input::method() === 'POST') {
-            // suppose no missing id
-            $todo = Model_TODO::find($id);
-            $todo->status_id = 1; // done
-            $todo->save();
+            $this->alter($id, 'status_id', 1);
         }
-
         return Response::redirect('TODO');
     }
 
     public function action_undone($id)
     {
         if (Input::method() === 'POST') {
-            // suppose no missing id
-            $todo = Model_TODO::find($id);
-            $todo->status_id = 0; // open
-            $todo->save();
+            $this->alter($id, 'status_id', 0);
         }
-
         return Response::redirect('TODO');
     }
 
