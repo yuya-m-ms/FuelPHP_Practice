@@ -48,10 +48,10 @@ class Controller_Todo extends Controller
             $input['due_daytime'] = $input['due_day'] . ' ' . $input['due_time'];
 
             $todo = Model_Todo::forge();
-            $todo->name = $input['name'];
-            $todo->due = null_if_blank($input['due_daytime']);
+            $todo->name      = $input['name'];
+            $todo->due       = null_if_blank($input['due_daytime']);
             $todo->status_id = 0; // = open
-            $todo->deleted = false;
+            $todo->deleted   = false;
             $todo->save();
         } else {
             $data['html_error'] = $val->error();
@@ -61,32 +61,39 @@ class Controller_Todo extends Controller
         return Response::redirect('todo');
     }
 
-    private function alter($id, $attr, $value)
+    /**
+     * update todo by id
+     * @param  int $id      of Todo
+     * @param  [attrivute => value, ...] $updates attributes to be updated
+     */
+    private function alter($id, $updates)
     {
         // suppose no missing id
         $todo = Model_Todo::find($id);
-        $todo->$attr = $value;
+        foreach ($updates as $attr => $value) {
+            $todo->$attr = $value;
+        }
         $todo->save();
     }
 
     public function action_delete($id)
     {
         $this->redirect_when_no_post();
-        $this->alter($id, 'deleted', true);
+        $this->alter($id, ['deleted' => true]);
         return Response::redirect('todo');
     }
 
     public function action_done($id)
     {
         $this->redirect_when_no_post();
-        $this->alter($id, 'status_id', 1);
+        $this->alter($id, ['status_id' => 1]);
         return Response::redirect('todo');
     }
 
     public function action_undone($id)
     {
         $this->redirect_when_no_post();
-        $this->alter($id, 'status_id', 0);
+        $this->alter($id, ['status_id' => 0]);
         return Response::redirect('todo');
     }
 
@@ -98,11 +105,10 @@ class Controller_Todo extends Controller
         if ($val->run()) {
             $input = $val->validated();
             $input['due_daytime'] = $input['due_day'] . ' ' . $input['due_time'];
-            // suppose no missing id
-            $todo = Model_Todo::find($id);
-            $todo->name = $input['name'];
-            $todo->due = null_if_blank($input['due_daytime']);
-            $todo->save();
+            $this->alter($id, [
+                'name' => $input['name'],
+                'due' => null_if_blank($input['due_daytime']),
+            ]);
         }
 
         return Response::redirect('todo');
