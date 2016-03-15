@@ -79,12 +79,7 @@ class Controller_TODO extends Controller
                 // suppose no missing id
                 $todo = Model_TODO::find($id);
                 $todo->name = $input['name'];
-                // var_dump($input['due_daytime']);
-                if (! empty($input['due_daytime'])) {
-                    $todo->due = $input['due_daytime'];
-                } else {
-                    $todo->due = null;
-                }
+                $todo->due = !empty($input['due_daytime']) ? $input['due_daytime'] : null;
                 $todo->save();
             }
         }
@@ -100,14 +95,20 @@ class Controller_TODO extends Controller
         $data['task_to_be_changed']['name'] = $todo->name;
         $data['task_to_be_changed']['due']  = $todo->due;
         if (! empty($todo->due)) {
-            // $re_datetime = '/(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2})/';
-            // list($_, $due_day, $due_time) = preg_match($re_datetime, $todo->due);
             list($due_day, $due_time) = explode(' ', $todo->due);
             $data['task_to_be_changed']['due_day']  = $due_day;
             $data['task_to_be_changed']['due_time'] = $due_time;
         }
         $data['TODOs'] = Model_TODO::find('all');
         return View::forge('TODO', $data);
+    }
+
+    public function chopDatetime($datetime)
+    {
+        $re_datetime = '/(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2})/';
+        preg_match($re_datetime, $todo->due, $matches); // why C-like
+        list(, $date, $time) = $matches;
+        return [$date, $time];
     }
 
     /**
