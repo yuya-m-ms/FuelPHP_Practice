@@ -24,7 +24,7 @@ class Controller_Todo extends Controller
         return $view;
     }
 
-    public function redirectWhenNoPost()
+    public function redirect_when_no_post()
     {
         if (Input::method() != 'POST') {
             return Response::redirect('todo', '405');
@@ -33,7 +33,7 @@ class Controller_Todo extends Controller
 
     public function action_add()
     {
-        $this->redirectWhenNoPost();
+        $this->redirect_when_no_post();
 
         $val = $this->forge_validation();
         if ($val->run()) {
@@ -64,28 +64,28 @@ class Controller_Todo extends Controller
 
     public function action_delete($id)
     {
-        $this->redirectWhenNoPost();
+        $this->redirect_when_no_post();
         $this->alter($id, 'deleted', true);
         return Response::redirect('todo');
     }
 
     public function action_done($id)
     {
-        $this->redirectWhenNoPost();
+        $this->redirect_when_no_post();
         $this->alter($id, 'status_id', 1);
         return Response::redirect('todo');
     }
 
     public function action_undone($id)
     {
-        $this->redirectWhenNoPost();
+        $this->redirect_when_no_post();
         $this->alter($id, 'status_id', 0);
         return Response::redirect('todo');
     }
 
     public function action_change($id)
     {
-        $this->redirectWhenNoPost();
+        $this->redirect_when_no_post();
 
         $val = $this->forge_validation();
         if ($val->run()) {
@@ -107,14 +107,14 @@ class Controller_Todo extends Controller
         $data['task_to_be_changed']['id']   = $todo->id;
         $data['task_to_be_changed']['name'] = $todo->name;
         $data['task_to_be_changed']['due']  = $todo->due;
-        list($due_day, $due_time) = $this->chopDatetime($todo->due);
+        list($due_day, $due_time) = $this->chop_datetime($todo->due);
         $data['task_to_be_changed']['due_day']  = $due_day;
         $data['task_to_be_changed']['due_time'] = $due_time;
         $data['todos'] = Model_Todo::find('all');
         return View::forge('todo', $data);
     }
 
-    public function chopDatetime($datetime)
+    public function chop_datetime($datetime)
     {
         $re_datetime = '/(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2})/';
         preg_match($re_datetime, $datetime, $matches); // why C-like
