@@ -11,6 +11,6 @@ class Util_StrTool {
 
     public static function null_if_blank($str)
     {
-        return Util_StrTool::is_blank($str) ? null : $str;
+        return self::is_blank($str) ? null : $str;
     }
 }
