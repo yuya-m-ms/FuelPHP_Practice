@@ -51,12 +51,12 @@
                 <?php foreach ($todos as $todo): ?>
                     <tr class="task">
                         <td class="checkbox no_click">
-                            <?= Form::checkbox('is_done', "Done", boolval($todo->status_id)); ?>
+                            <?= Form::checkbox('is_done', "Done", $todo->status_id == 1); ?>
                         </td>
                         <td>
                             <center>
                                 <!-- toggle open/finished -->
-                                <?php if (boolval($todo->status_id)): ?>
+                                <?php if ($todo->status_id == 1): ?>
                                     <!-- task is done -->
                                     <?= Form::open('todo/undone/' . $todo->id) ?>
                                     <?= Form::submit('undone', "Undone") ?>
@@ -102,19 +102,21 @@
                     to:
                     <?= Form::input('name', $task_to_be_changed['name']) ?>
                     <?= Form::label("Due on: ", 'due_day') ?>
-                    <?= Form::input('due_day',  $task_to_be_changed['due_day']
+                    <?= Form::input('due_day', $task_to_be_changed['due_day']
                         , ['type' => 'date', 'max' => '9999-12-31']
                         ) ?>
                     <?= Form::label("at: ", 'due_time') ?>
                     <?= Form::input('due_time', $task_to_be_changed['due_time'], ['type' => 'time']) ?>
                     as status:
-                    <select name="status" id="new_status">
-                        <option value="open">Open</option>
-                        <option value="done">Done</option>
-                        <option value="pending">Pending</option>
-                        <option value="working">Working</option>
-                        <option value="confirming">Confirming</option>
-                    </select>
+                    <?= Form::select('new_status', $task_to_be_changed['new_status'],
+                        array_map('ucwords', [
+                            'open',
+                            'done',
+                            'pending',
+                            'working',
+                            'confirming',
+                        ])
+                    ) ?>
                 </span>
                 <?= Form::close() ?>
             <?php endif ?>
