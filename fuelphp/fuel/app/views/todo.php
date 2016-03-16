@@ -11,6 +11,10 @@
         td.checkbox { text-align: center; }
         .no_click { pointer-events: none; }
         span.task_edited { font-weight: bold; }
+        /*lazy Emmet shorthands*/
+        .w4e { width: 4em; }
+        .pl3e { padding-left: 3em; }
+        .mt1e { margin-top: 1em; }
     </style>
 </head>
 <body>
@@ -38,6 +42,7 @@
                     <th><!-- get (un)done --></th>
                     <th>Name</th>
                     <th>Due</th>
+                    <th>Status</th>
                     <th><!-- delete --></th>
                     <th><!-- change --></th>
                 </tr>
@@ -66,6 +71,7 @@
                         </td>
                         <td><?= $todo->name; ?></td>
                         <td><?= $todo->due; ?></td>
+                        <td><?= "dummy" ?></td>
                         <td>
                             <?= Form::open('todo/delete/' . $todo->id) ?>
                             <?= Form::submit('delete', "Delete") ?>
@@ -80,32 +86,67 @@
                 <?php endforeach ?>
             </tbody>
         </table>
-        <br>
-        <footer>
-            <section class="alter">
-                <?php if (isset($task_to_be_changed)): ?>
-                    <?= Form::open('todo/change/' . $task_to_be_changed['id']) ?>
-                    <?= Form::submit('change', "Change") ?>
-                    <span class="task_edited">
-                        <?= $task_to_be_changed['name'] ?>
-                    </span>
-                    &nbsp;Due by:
-                    <span class="task_edited">
-                        <?= !empty($task_to_be_changed['due']) ? $task_to_be_changed['due'] : "Indefinite" ?>
-                    </span>
-                    <br> to:
-                    <?= Form::input('name', $task_to_be_changed['name']) ?>&nbsp;
+        <section class="alter mt1e">
+            <?php if (isset($task_to_be_changed)): ?>
+                <?= Form::open('todo/change/' . $task_to_be_changed['id']) ?>
+                <?= Form::submit('change', "Change") ?>
+                <span class="task_edited">
+                    <?= $task_to_be_changed['name'] ?>
+                </span>
+                <span>Due by:</span>
+                <span class="task_edited">
+                    <?= !empty($task_to_be_changed['due']) ? $task_to_be_changed['due'] : "Indefinite" ?>
+                </span>
+                <br>
+                <span class="pl3e">
+                    to:
+                    <?= Form::input('name', $task_to_be_changed['name']) ?>
                     <?= Form::label("Due on: ", 'due_day') ?>
                     <?= Form::input('due_day',  $task_to_be_changed['due_day']
                         , ['type' => 'date', 'max' => '9999-12-31']
                         ) ?>
                     <?= Form::label("at: ", 'due_time') ?>
                     <?= Form::input('due_time', $task_to_be_changed['due_time'], ['type' => 'time']) ?>
-                    <?= Form::close() ?>
-                <?php endif ?>
+                    as status:
+                    <select name="status" id="new_status">
+                        <option value="open">Open</option>
+                        <option value="done">Done</option>
+                        <option value="pending">Pending</option>
+                        <option value="working">Working</option>
+                        <option value="confirming">Confirming</option>
+                    </select>
+                </span>
+                <?= Form::close() ?>
+            <?php endif ?>
+        </section>
+        <footer class="mt1e">
+            <section class="filter">
+                <button class="w4e">Filter</button>
+                <span>by</span>
+                <select name="filter" id="filter">
+                    <option value="all">All</option>
+                    <option value="open">Open</option>
+                    <option value="done">Done</option>
+                    <option value="pending">Pending</option>
+                    <option value="working">Working</option>
+                    <option value="Confirming">Confirming</option>
+                </select>
             </section>
-            <br>
-            <span hidden>May show some info</span>
+            <section class="sort">
+                <button class="w4e">Sort</button>
+                <span>by</span>
+                <select name="sort" id="sort">
+                    <option value="name">Name</option>
+                    <option value="due">Due</option>
+                    <option value="Status">Status</option>
+                </select>
+                <span>in</span>
+                <select name="order" id="order">
+                    <option value="asc">Ascending (A→Z)</option>
+                    <option value="desc">Descending (Z→A)</option>
+                </select>
+                <span>order</span>
+            </section>
         </footer>
     </section>
 </body>
