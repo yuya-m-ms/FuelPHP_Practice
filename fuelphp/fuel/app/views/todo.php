@@ -71,7 +71,7 @@
                         </td>
                         <td><?= $todo->name; ?></td>
                         <td><?= $todo->due; ?></td>
-                        <td><?= "dummy" ?></td>
+                        <td><?= Model_Todo::$status[$todo->status_id] ?></td>
                         <td>
                             <?= Form::open('todo/delete/' . $todo->id) ?>
                             <?= Form::submit('delete', "Delete") ?>
@@ -149,5 +149,6 @@
             </section>
         </footer>
     </section>
+    <?= "<pre>", var_dump(Model_Todo::$status), "</pre>" ?>
 </body>
 </html>
