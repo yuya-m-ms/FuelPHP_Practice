@@ -43,7 +43,10 @@ class Controller_Todo extends Controller
         $this->redirect_when_no_post();
 
         $val = $this->forge_validation();
-        if ($val->run()) {
+        if (!$val->run()) {
+            $data['html_error'] = $val->error();
+            return View::forge('todo', $data);
+        } else {
             $input = $val->validated();
             $input['due_daytime'] = $input['due_day'] . ' ' . $input['due_time'];
 
@@ -53,9 +56,6 @@ class Controller_Todo extends Controller
             $todo->status_id = 0; // = open
             $todo->deleted   = false;
             $todo->save();
-        } else {
-            $data['html_error'] = $val->error();
-            return View::forge('todo', $data);
         }
 
         return Response::redirect('todo');
