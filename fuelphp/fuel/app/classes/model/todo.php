@@ -21,6 +21,6 @@ $__init_status = function () {
         3 => 'working',
         4 => 'confirming',
     ];
-    return array_merge($s, array_flip($s));
+    return Util_Array::bimap($s);
 };
 Model_Todo::$status = $__init_status();
