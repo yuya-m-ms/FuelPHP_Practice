@@ -6,12 +6,21 @@
 class Controller_Todo extends Controller
 {
     /**
+     * Fetch all alive ToDos from DB
+     * @return ORM object
+     */
+    private function fetch_alive()
+    {
+        return Model_Todo::query()->where('deleted', '=', false);
+    }
+
+    /**
      * Fetch TODOs from DB
      * @return iterator of TODOs
      */
     public function fetch_todo()
     {
-        return Model_Todo::query()->where('deleted', '=', false)->get();
+        return $this->fetch_alive()->get();
     }
 
     public function action_index()
@@ -149,7 +158,7 @@ class Controller_Todo extends Controller
 
     private function fetch_filtered($status_id)
     {
-        return Model_Todo::query()->where('deleted', '=', false)->where('status_id', '=', $status_id)->get();
+        return $this->fetch_alive()->where('status_id', '=', $status_id)->get();
     }
 
     public function action_filter()
