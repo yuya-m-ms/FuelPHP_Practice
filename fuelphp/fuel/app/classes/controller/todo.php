@@ -146,4 +146,24 @@ class Controller_Todo extends Controller
 
         return $val;
     }
+
+    private function fetch_filtered($status_id)
+    {
+        return Model_Todo::query()->where('deleted', '=', false)->where('status_id', '=', $status_id)->get();
+    }
+
+    public function action_filter()
+    {
+        $this->redirect_when_no_post();
+
+        $i = Input::post('status'); // from <select>
+        if ($i == 0) { // 'all' is selected
+            return Response::redirect('todo');
+        }
+        $data['post']      = Input::post();
+        $data['status_id'] = $i - 1;
+        $data['todos']     = $this->fetch_filtered($i - 1);
+
+        return View::forge('todo', $data);
+    }
 }

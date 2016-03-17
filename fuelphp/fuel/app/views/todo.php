@@ -15,6 +15,7 @@
         .w4e { width: 4em; }
         .pl3e { padding-left: 3em; }
         .mt1e { margin-top: 1em; }
+        section.no_entry { font-size: larger; font-weight: bold; padding-left: 2em; }
     </style>
 </head>
 <body>
@@ -86,6 +87,9 @@
                 <?php endforeach ?>
             </tbody>
         </table>
+        <?php if (!isset($todos) or empty($todos)): ?>
+            <section class="no_entry">NO ENTRY!</section>
+        <?php endif ?>
         <section class="alter mt1e">
             <?php if (isset($task_to_be_changed)): ?>
                 <?= Form::open('todo/change/' . $task_to_be_changed['id']) ?>
@@ -123,16 +127,20 @@
         </section>
         <footer class="mt1e">
             <section class="filter">
-                <button class="w4e">Filter</button>
+                <?= Form::open('todo/filter/') ?>
+                <?= Form::submit('filter', "Filter") ?>
                 <span>by</span>
-                <select name="filter" id="filter">
-                    <option value="all">All</option>
-                    <option value="open">Open</option>
-                    <option value="done">Done</option>
-                    <option value="pending">Pending</option>
-                    <option value="working">Working</option>
-                    <option value="Confirming">Confirming</option>
-                </select>
+                <?= Form::select('status', isset($status_id) ? $status_id + 1 : 0,
+                    array_map('ucwords', [
+                        'all',
+                        'open',
+                        'done',
+                        'pending',
+                        'working',
+                        'confirming',
+                    ])
+                ) ?>
+                <?= Form::close() ?>
             </section>
             <section class="sort">
                 <button class="w4e">Sort</button>
@@ -151,6 +159,13 @@
             </section>
         </footer>
     </section>
-    <?= "<pre>", var_dump(Model_Todo::$status), "</pre>" ?>
+    <?= "<pre>", var_dump([
+        'status_bimap' => Model_Todo::$status,
+        'post'         => isset($post) ? $post : null,
+        'status_id'    => isset($status_id) ? [
+            $status_id,
+            Model_Todo::$status[$status_id],
+        ] : null,
+    ]), "</pre>" ?>
 </body>
 </html>
