@@ -12,7 +12,7 @@
         .no_click { pointer-events: none; }
         span.task_edited { font-weight: bold; }
         /*lazy Emmet shorthands*/
-        .w4e { width: 4em; }
+        .w3e { width: 3em; }
         .pl3e { padding-left: 3em; }
         .mt1e { margin-top: 1em; }
         section.no_entry { font-size: larger; font-weight: bold; padding-left: 2em; }
@@ -128,7 +128,7 @@
         <footer class="mt1e">
             <section class="filter">
                 <?= Form::open('todo/filter/') ?>
-                <?= Form::submit('filter', "Filter") ?>
+                <?= Form::submit('filter', "Filter", ['class' => 'w3e']) ?>
                 <span>by</span>
                 <?= Form::select('status', isset($status_id) ? $status_id + 1 : 0,
                     array_map('ucwords', [
@@ -143,19 +143,21 @@
                 <?= Form::close() ?>
             </section>
             <section class="sort">
-                <button class="w4e">Sort</button>
+                <?= Form::open('todo/sort/') ?>
+                <?= Form::submit('sort', "Sort", ['class' => 'w3e']) ?>
                 <span>by</span>
-                <select name="sort" id="sort">
-                    <option value="name">Name</option>
-                    <option value="due">Due</option>
-                    <option value="Status">Status</option>
-                </select>
+                <?= Form::select('attr', 0, [
+                        'Name',
+                        'Due',
+                        'Status',
+                    ]) ?>
                 <span>in</span>
-                <select name="order" id="order">
-                    <option value="asc">Ascending (A→Z)</option>
-                    <option value="desc">Descending (Z→A)</option>
-                </select>
+                <?= Form::select('dir', 0, [
+                    'asc'  =>'(A→Z) Ascending',
+                    'desc' =>'(Z→A) Descending',
+                ]) ?>
                 <span>order</span>
+                <?= Form::close() ?>
             </section>
         </footer>
     </section>

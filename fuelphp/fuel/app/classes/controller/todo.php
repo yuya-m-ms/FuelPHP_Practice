@@ -175,4 +175,16 @@ class Controller_Todo extends Controller
 
         return View::forge('todo', $data);
     }
+
+    public function action_sort()
+    {
+        $this->redirect_when_no_post();
+
+        $attr = ['name', 'due', 'status_id'][Input::post('attr')]; // from <select>
+        $dir  = Input::post('dir'); // from <select>
+        $data['post']  = Input::post();
+        $data['todos'] = $this->fetch_alive()->order_by($attr, $dir)->get();
+
+        return View::forge('todo', $data);
+    }
 }
