@@ -103,8 +103,8 @@ class Controller_Todo extends Controller
         $val = $this->forge_validation();
         if ($val->run()) {
             $input = $val->validated();
-            $due_daytime = $input['due_day'] . ' ' . $input['due_time'];
-            $new_status_id = $input['new_status']; // :: int -- somehow
+            $due_daytime   = $input['due_day'] . ' ' . $input['due_time'];
+            $new_status_id = $input['new_status_id'];
             $this->alter($id, [
                 'name'      => $input['name'],
                 'due'       => Util_StrTool::null_if_blank($due_daytime),
@@ -124,8 +124,7 @@ class Controller_Todo extends Controller
         list($due_day, $due_time) = $this->chop_datetime($todo->due);
         $data['task_to_be_changed']['due_day']  = $due_day;
         $data['task_to_be_changed']['due_time'] = $due_time;
-        $status = Model_Todo::$status[$todo->status_id];
-        $data['task_to_be_changed']['new_status'] = $status;
+        $data['task_to_be_changed']['new_status_id'] = $todo->status_id;
         $data['todos'] = $this->fetch_todo();
         return View::forge('todo', $data);
     }
@@ -151,7 +150,7 @@ class Controller_Todo extends Controller
             ->add_rule('max_length', 100);
         $val->add('due_day', "Due day");
         $val->add('due_time', "Due time");
-        $val->add('new_status', "New status");
+        $val->add('new_status_id', "New status ID");
 
         return $val;
     }
@@ -165,13 +164,14 @@ class Controller_Todo extends Controller
     {
         $this->redirect_when_no_post();
 
-        $i = Input::post('status'); // from <select>
-        if ($i == 0) { // 'all' is selected
+        $status = Input::post('status');
+        if ($status == 'all') {
             return Response::redirect('todo');
         }
         $data['post']      = Input::post();
-        $data['status_id'] = $i - 1;
-        $data['todos']     = $this->fetch_filtered($i - 1);
+        $status_id         = Model_Todo::$status[$status];
+        $data['status_id'] = $status_id;
+        $data['todos']     = $this->fetch_filtered($status_id);
 
         return View::forge('todo', $data);
     }
@@ -180,8 +180,8 @@ class Controller_Todo extends Controller
     {
         $this->redirect_when_no_post();
 
-        $attr = ['name', 'due', 'status_id'][Input::post('attr')]; // from <select>
-        $dir  = Input::post('dir'); // from <select>
+        $attr = Input::post('attr');
+        $dir  = Input::post('dir');
         $data['post']  = Input::post();
         $data['todos'] = $this->fetch_alive()->order_by($attr, $dir)->get();
 

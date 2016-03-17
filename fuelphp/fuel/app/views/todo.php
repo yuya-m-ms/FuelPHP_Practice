@@ -112,15 +112,13 @@
                     <?= Form::label("at: ", 'due_time') ?>
                     <?= Form::input('due_time', $task_to_be_changed['due_time'], ['type' => 'time']) ?>
                     as status:
-                    <?= Form::select('new_status', $task_to_be_changed['new_status'],
-                        array_map('ucwords', [
-                            'open',
-                            'done',
-                            'pending',
-                            'working',
-                            'confirming',
-                        ])
-                    ) ?>
+                    <?= Form::select('new_status_id', $task_to_be_changed['new_status_id'], [
+                        'Open',
+                        'Done',
+                        'Pending',
+                        'Working',
+                        'Confirming',
+                    ]) ?>
                 </span>
                 <?= Form::close() ?>
             <?php endif ?>
@@ -131,25 +129,24 @@
                 <?= Form::submit('filter', "Filter", ['class' => 'w3e']) ?>
                 <span>by</span>
                 <?= Form::select('status', isset($status_id) ? $status_id + 1 : 0,
-                    array_map('ucwords', [
+                    Util_Array::to_map('ucwords', [
                         'all',
                         'open',
                         'done',
                         'pending',
                         'working',
                         'confirming',
-                    ])
-                ) ?>
-                <?= Form::close() ?>
+                    ])) ?>
+            <?= Form::close() ?>
             </section>
             <section class="sort">
                 <?= Form::open('todo/sort/') ?>
                 <?= Form::submit('sort', "Sort", ['class' => 'w3e']) ?>
                 <span>by</span>
                 <?= Form::select('attr', 0, [
-                        'Name',
-                        'Due',
-                        'Status',
+                        'name'      => 'Name',
+                        'due'       => 'Due',
+                        'status_id' => 'Status',
                     ]) ?>
                 <span>in</span>
                 <?= Form::select('dir', 0, [
