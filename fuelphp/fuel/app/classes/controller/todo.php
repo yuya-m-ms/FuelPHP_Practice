@@ -160,7 +160,6 @@ class Controller_Todo extends Controller
         if ($status == 'all') {
             return Response::redirect('todo');
         }
-        $data['post']      = Input::post();
         $status_id         = Model_Todo::$status[$status];
         $data['status_id'] = $status_id;
         $data['todos']     = $this->fetch_filtered($status_id);
@@ -174,7 +173,6 @@ class Controller_Todo extends Controller
 
         $attr = Input::post('attr');
         $dir  = Input::post('dir');
-        $data['post']  = Input::post();
         $data['todos'] = $this->fetch_alive()->order_by($attr, $dir)->get();
 
         return View::forge('todo', $data);

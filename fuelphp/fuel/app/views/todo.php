@@ -158,13 +158,5 @@
             </section>
         </footer>
     </section>
-    <?= "<pre>", var_dump([
-        'status_bimap' => Model_Todo::$status,
-        'post'         => isset($post) ? $post : null,
-        'status_id'    => isset($status_id) ? [
-            $status_id,
-            Model_Todo::$status[$status_id],
-        ] : null,
-    ]), "</pre>" ?>
 </body>
 </html>
