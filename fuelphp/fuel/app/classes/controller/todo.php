@@ -51,7 +51,7 @@ class Controller_Todo extends Controller
 
             $todo = Model_Todo::forge();
             $todo->name      = $input['name'];
-            $todo->due       = Util_StrTool::null_if_blank($input['due_daytime']);
+            $todo->due       = Util_String::null_if_blank($input['due_daytime']);
             $todo->status_id = 0; // = open
             $todo->deleted   = false;
             $todo->save();
@@ -107,7 +107,7 @@ class Controller_Todo extends Controller
             $new_status_id = $input['new_status_id'];
             $this->alter($id, [
                 'name'      => $input['name'],
-                'due'       => Util_StrTool::null_if_blank($due_daytime),
+                'due'       => Util_String::null_if_blank($due_daytime),
                 'status_id' => $new_status_id,
             ]);
         }
@@ -121,20 +121,12 @@ class Controller_Todo extends Controller
         $data['task_to_be_changed']['id']   = $todo->id;
         $data['task_to_be_changed']['name'] = $todo->name;
         $data['task_to_be_changed']['due']  = $todo->due;
-        list($due_day, $due_time) = $this->chop_datetime($todo->due);
+        list($due_day, $due_time) = Util_String::chop_datetime($todo->due);
         $data['task_to_be_changed']['due_day']  = $due_day;
         $data['task_to_be_changed']['due_time'] = $due_time;
         $data['task_to_be_changed']['new_status_id'] = $todo->status_id;
         $data['todos'] = $this->fetch_todo();
         return View::forge('todo', $data);
-    }
-
-    public function chop_datetime($datetime)
-    {
-        $re_datetime = '/(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2})/';
-        preg_match($re_datetime, $datetime, $matches); // why C-like
-        list(, $date, $time) = array_pad($matches, 3, null);
-        return [$date, $time];
     }
 
     /**
