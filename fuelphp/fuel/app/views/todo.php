@@ -16,6 +16,7 @@
         .pl3e { padding-left: 3em; }
         .mt1e { margin-top: 1em; }
         section.no_entry { font-size: larger; font-weight: bold; padding-left: 2em; }
+        section.reset { opacity: .5; }
     </style>
 </head>
 <body>
@@ -154,6 +155,11 @@
                     'desc' =>'(Z→A) Descending',
                 ]) ?>
                 <span>order</span>
+                <?= Form::close() ?>
+            </section>
+            <section class="reset mt1e">
+                <?= Form::open('todo/reset') ?>
+                <?= Form::submit('reset', "Reset the View") ?>
                 <?= Form::close() ?>
             </section>
         </footer>

@@ -177,4 +177,9 @@ class Controller_Todo extends Controller
 
         return View::forge('todo', $data);
     }
+
+    public function action_reset()
+    {
+        Response::redirect('todo');
+    }
 }
