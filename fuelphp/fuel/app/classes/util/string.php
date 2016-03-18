@@ -13,12 +13,4 @@ class Util_String {
     {
         return self::is_blank($str) ? null : $str;
     }
-
-    public static function chop_datetime($datetime)
-    {
-        $re_datetime = '/(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2})/';
-        preg_match($re_datetime, $datetime, $matches);
-        list(, $date, $time) = array_pad($matches, 3, null);
-        return [$date, $time];
-    }
 }

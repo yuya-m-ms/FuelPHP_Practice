@@ -51,6 +51,15 @@ class Model_Todo_Logic
     {
         return self::fetch_alive()->order_by($attr, $dir)->get();
     }
+
+    public static function chop_datetime($datetime)
+    {
+        if (is_null($datetime)) {
+            return [null, null];
+        }
+        $date = new DateTime($datetime);
+        return [$date->format('Y-m-d'), $date->format('H:i')];
+    }
 }
 
 // initiaize static member

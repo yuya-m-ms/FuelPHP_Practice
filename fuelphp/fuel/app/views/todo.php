@@ -77,7 +77,12 @@
                                 </center>
                             </td>
                             <td><?= $todo->name; ?></td>
-                            <td><?= $todo->due; ?></td>
+                            <td>
+                                <?php if (!is_null($todo->due)) {
+                                    $date = new DateTime($todo->due);
+                                    echo $date->format('Y-m-d H:i');
+                                } ?>
+                            </td>
                             <td>
                                 <center>
                                     <?= ucwords(Model_Todo_Logic::$status_bimap[$todo->status_id]) ?>

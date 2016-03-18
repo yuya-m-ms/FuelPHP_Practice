@@ -102,7 +102,7 @@ class Controller_Todo extends Controller
         $data['task_to_be_changed']['id']   = $todo->id;
         $data['task_to_be_changed']['name'] = $todo->name;
         $data['task_to_be_changed']['due']  = $todo->due;
-        list($due_day, $due_time) = Util_String::chop_datetime($todo->due);
+        list($due_day, $due_time) = Model_Todo_Logic::chop_datetime($todo->due);
         $data['task_to_be_changed']['due_day']   = $due_day;
         $data['task_to_be_changed']['due_time']  = $due_time;
         $data['task_to_be_changed']['status_id'] = $todo->status_id;
