@@ -64,7 +64,7 @@ class Model_Todo_Logic
     /**
      * update todo by id
      * @param  int $id      of Todo
-     * @param  [attrivute => value, ...] $updates attributes to be updated
+     * @param  [attribute => value, ...] $updates attributes to be updated
      */
     static function alter($id, $updates)
     {
@@ -77,7 +77,7 @@ class Model_Todo_Logic
     }
 
     /**
-     * @return Vadidation for a new task
+     * @return Validation for a new task
      */
     static function forge_validation()
     {
@@ -104,5 +104,5 @@ class Model_Todo_Logic
     }
 }
 
-// initiaize static member
+// initialize static member
 Model_Todo_Logic::initialize();
