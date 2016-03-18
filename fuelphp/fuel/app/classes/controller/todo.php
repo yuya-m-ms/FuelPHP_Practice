@@ -5,29 +5,10 @@
 */
 class Controller_Todo extends Controller
 {
-    /**
-     * Fetch all alive ToDos from DB
-     * @return ORM object
-     */
-    private function fetch_alive()
-    {
-        return Model_Todo::query()->where('deleted', '=', false);
-    }
-
-    /**
-     * Fetch TODOs from DB
-     * @return iterator of TODOs
-     */
-    public function fetch_todo()
-    {
-        return $this->fetch_alive()->get();
-    }
-
     public function action_index()
     {
-        $data['todos'] = $this->fetch_todo();
-        $view = View::forge('todo', $data);
-        return $view;
+        $data['todos'] = Model_Todo_Logic::fetch_todo();
+        return View::forge('todo', $data);
     }
 
     public function redirect_when_no_post()
@@ -125,7 +106,7 @@ class Controller_Todo extends Controller
         $data['task_to_be_changed']['due_day']   = $due_day;
         $data['task_to_be_changed']['due_time']  = $due_time;
         $data['task_to_be_changed']['status_id'] = $todo->status_id;
-        $data['todos'] = $this->fetch_todo();
+        $data['todos'] = Model_Todo_Logic::fetch_todo();
         return View::forge('todo', $data);
     }
 
@@ -147,11 +128,6 @@ class Controller_Todo extends Controller
         return $val;
     }
 
-    private function fetch_filtered($status_id)
-    {
-        return $this->fetch_alive()->where('status_id', '=', $status_id)->get();
-    }
-
     public function action_filter()
     {
         $this->redirect_when_no_post();
@@ -162,7 +138,7 @@ class Controller_Todo extends Controller
         }
         $status_id         = Model_Todo_Logic::$status_bimap[$status];
         $data['status_id'] = $status_id;
-        $data['todos']     = $this->fetch_filtered($status_id);
+        $data['todos']     = Model_Todo_Logic::fetch_filtered_by($status_id);
 
         return View::forge('todo', $data);
     }
@@ -173,7 +149,7 @@ class Controller_Todo extends Controller
 
         $attr = Input::post('attr');
         $dir  = Input::post('dir');
-        $data['todos'] = $this->fetch_alive()->order_by($attr, $dir)->get();
+        $data['todos'] = Model_Todo_Logic::fetch_ordered_by($attr, $dir);
 
         return View::forge('todo', $data);
     }

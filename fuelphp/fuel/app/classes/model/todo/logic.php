@@ -23,6 +23,34 @@ class Model_Todo_Logic
         self::$status_map   = Util_Array::to_map('ucwords', self::$status_cache);
         self::$status_bimap = Util_Array::bimap(self::$status_cache);
     }
+
+    /**
+     * Fetch all alive ToDos from DB
+     * @return ORM object
+     */
+    private static function fetch_alive()
+    {
+        return Model_Todo::query()->where('deleted', '=', false);
+    }
+
+    /**
+     * Fetch TODOs from DB
+     * @return iterator of TODOs
+     */
+    static function fetch_todo()
+    {
+        return self::fetch_alive()->get();
+    }
+
+    static function fetch_filtered_by($status_id)
+    {
+        return self::fetch_alive()->where('status_id', '=', $status_id)->get();
+    }
+
+    static function fetch_ordered_by($attr, $dir)
+    {
+        return self::fetch_alive()->order_by($attr, $dir)->get();
+    }
 }
 
 // initiaize static member
