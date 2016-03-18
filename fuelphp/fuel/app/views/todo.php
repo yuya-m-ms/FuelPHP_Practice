@@ -24,7 +24,7 @@
     </style>
 </head>
 <body>
-    <?= isset($html_error) ? $html_error : null ?>
+    <?= isset($html_error) ? Html::ul($html_error) : null ?>
     <section class="app">
         <header>
             <h1>TODO app</h1>
@@ -54,46 +54,48 @@
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($todos as $todo): ?>
-                    <tr class="task">
-                        <td class="checkbox no_click">
-                            <?= Form::checkbox('is_done', "Done", $todo->status_id == 1); ?>
-                        </td>
-                        <td>
-                            <center>
-                                <!-- toggle open/finished -->
-                                <?php if ($todo->status_id == 1): ?>
-                                    <!-- task is done -->
-                                    <?= Form::open('todo/undone/' . $todo->id) ?>
-                                    <?= Form::submit('undone', "Undone") ?>
-                                    <?= Form::close() ?>
-                                <?php else: ?>
-                                    <!-- task is open -->
-                                    <?= Form::open('todo/done/' . $todo->id) ?>
-                                    <?= Form::submit('done', "Done") ?>
-                                    <?= Form::close() ?>
-                                <?php endif ?>
-                            </center>
-                        </td>
-                        <td><?= $todo->name; ?></td>
-                        <td><?= $todo->due; ?></td>
-                        <td>
-                            <center>
-                                <?= ucwords(Model_Todo_Logic::$status_bimap[$todo->status_id]) ?>
-                            </center>
-                        </td>
-                        <td>
-                            <?= Form::open('todo/delete/' . $todo->id) ?>
-                            <?= Form::submit('delete', "Delete") ?>
-                            <?= Form::close() ?>
-                        </td>
-                        <td>
-                            <?= Form::open('todo/to_change/' . $todo->id) ?>
-                            <?= Form::submit('to_change', "To change") ?>
-                            <?= Form::close() ?>
-                        </td>
-                    </tr>
-                <?php endforeach ?>
+                <?php if (isset($todos)): ?>
+                    <?php foreach ($todos as $todo): ?>
+                        <tr class="task">
+                            <td class="checkbox no_click">
+                                <?= Form::checkbox('is_done', "Done", $todo->status_id == 1); ?>
+                            </td>
+                            <td>
+                                <center>
+                                    <!-- toggle open/finished -->
+                                    <?php if ($todo->status_id == 1): ?>
+                                        <!-- task is done -->
+                                        <?= Form::open('todo/undone/' . $todo->id) ?>
+                                        <?= Form::submit('undone', "Undone") ?>
+                                        <?= Form::close() ?>
+                                    <?php else: ?>
+                                        <!-- task is open -->
+                                        <?= Form::open('todo/done/' . $todo->id) ?>
+                                        <?= Form::submit('done', "Done") ?>
+                                        <?= Form::close() ?>
+                                    <?php endif ?>
+                                </center>
+                            </td>
+                            <td><?= $todo->name; ?></td>
+                            <td><?= $todo->due; ?></td>
+                            <td>
+                                <center>
+                                    <?= ucwords(Model_Todo_Logic::$status_bimap[$todo->status_id]) ?>
+                                </center>
+                            </td>
+                            <td>
+                                <?= Form::open('todo/delete/' . $todo->id) ?>
+                                <?= Form::submit('delete', "Delete") ?>
+                                <?= Form::close() ?>
+                            </td>
+                            <td>
+                                <?= Form::open('todo/to_change/' . $todo->id) ?>
+                                <?= Form::submit('to_change', "To change") ?>
+                                <?= Form::close() ?>
+                            </td>
+                        </tr>
+                    <?php endforeach ?>
+                <?php endif ?>
             </tbody>
         </table>
         <?php if (!isset($todos) or empty($todos)): ?>

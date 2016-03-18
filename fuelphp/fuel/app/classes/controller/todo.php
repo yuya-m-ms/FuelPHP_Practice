@@ -11,16 +11,16 @@ class Controller_Todo extends Controller
         return View::forge('todo', $data);
     }
 
-    public function redirect_when_no_post()
+    static function redirect_when_no_post()
     {
         if (Input::method() != 'POST') {
-            return Response::redirect('todo', '405');
+            Response::redirect('todo', '405');
         }
     }
 
     public function action_add()
     {
-        $this->redirect_when_no_post();
+        self::redirect_when_no_post();
 
         $val = $this->forge_validation();
         if (!$val->run()) {
@@ -38,7 +38,7 @@ class Controller_Todo extends Controller
             $todo->save();
         }
 
-        return Response::redirect('todo');
+        Response::redirect('todo');
     }
 
     /**
@@ -58,28 +58,28 @@ class Controller_Todo extends Controller
 
     public function action_delete($id)
     {
-        $this->redirect_when_no_post();
+        self::redirect_when_no_post();
         $this->alter($id, ['deleted' => true]);
-        return Response::redirect('todo');
+        Response::redirect('todo');
     }
 
     public function action_done($id)
     {
-        $this->redirect_when_no_post();
+        self::redirect_when_no_post();
         $this->alter($id, ['status_id' => 1]);
-        return Response::redirect('todo');
+        Response::redirect('todo');
     }
 
     public function action_undone($id)
     {
-        $this->redirect_when_no_post();
+        self::redirect_when_no_post();
         $this->alter($id, ['status_id' => 0]);
-        return Response::redirect('todo');
+        Response::redirect('todo');
     }
 
     public function action_change($id)
     {
-        $this->redirect_when_no_post();
+        self::redirect_when_no_post();
 
         $val = $this->forge_validation();
         if ($val->run()) {
@@ -93,7 +93,7 @@ class Controller_Todo extends Controller
             ]);
         }
 
-        return Response::redirect('todo');
+        Response::redirect('todo');
     }
 
     public function action_to_change($id)
@@ -130,11 +130,11 @@ class Controller_Todo extends Controller
 
     public function action_filter()
     {
-        $this->redirect_when_no_post();
+        self::redirect_when_no_post();
 
         $status = Input::post('status');
         if ($status == 'all') {
-            return Response::redirect('todo');
+            Response::redirect('todo');
         }
         $status_id         = Model_Todo_Logic::$status_bimap[$status];
         $data['status_id'] = $status_id;
@@ -145,7 +145,7 @@ class Controller_Todo extends Controller
 
     public function action_sort()
     {
-        $this->redirect_when_no_post();
+        self::redirect_when_no_post();
 
         $attr = Input::post('attr');
         $dir  = Input::post('dir');
