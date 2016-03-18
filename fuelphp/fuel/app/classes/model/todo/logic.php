@@ -52,6 +52,21 @@ class Model_Todo_Logic
         return self::fetch_alive()->order_by($attr, $dir)->get();
     }
 
+    /**
+     * update todo by id
+     * @param  int $id      of Todo
+     * @param  [attrivute => value, ...] $updates attributes to be updated
+     */
+    static function alter($id, $updates)
+    {
+        // suppose no missing id
+        $todo = Model_Todo::find($id);
+        foreach ($updates as $attr => $value) {
+            $todo->$attr = $value;
+        }
+        $todo->save();
+    }
+
     public static function chop_datetime($datetime)
     {
         if (is_null($datetime)) {

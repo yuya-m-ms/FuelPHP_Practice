@@ -41,39 +41,24 @@ class Controller_Todo extends Controller
         Response::redirect('todo');
     }
 
-    /**
-     * update todo by id
-     * @param  int $id      of Todo
-     * @param  [attrivute => value, ...] $updates attributes to be updated
-     */
-    private function alter($id, $updates)
-    {
-        // suppose no missing id
-        $todo = Model_Todo::find($id);
-        foreach ($updates as $attr => $value) {
-            $todo->$attr = $value;
-        }
-        $todo->save();
-    }
-
     public function action_delete($id)
     {
         self::redirect_when_no_post();
-        $this->alter($id, ['deleted' => true]);
+        Model_Todo_Logic::alter($id, ['deleted' => true]);
         Response::redirect('todo');
     }
 
     public function action_done($id)
     {
         self::redirect_when_no_post();
-        $this->alter($id, ['status_id' => 1]);
+        Model_Todo_Logic::alter($id, ['status_id' => 1]);
         Response::redirect('todo');
     }
 
     public function action_undone($id)
     {
         self::redirect_when_no_post();
-        $this->alter($id, ['status_id' => 0]);
+        Model_Todo_Logic::alter($id, ['status_id' => 0]);
         Response::redirect('todo');
     }
 
@@ -86,7 +71,7 @@ class Controller_Todo extends Controller
             $input = $val->validated();
             $due_daytime   = $input['due_day'] . ' ' . $input['due_time'];
             $status_id = $input['status_id'];
-            $this->alter($id, [
+            Model_Todo_Logic::alter($id, [
                 'name'      => $input['name'],
                 'due'       => Util_String::null_if_blank($due_daytime),
                 'status_id' => $status_id,
