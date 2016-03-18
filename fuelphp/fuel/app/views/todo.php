@@ -77,7 +77,11 @@
                         </td>
                         <td><?= $todo->name; ?></td>
                         <td><?= $todo->due; ?></td>
-                        <td><?= ucwords(Model_Todo_Logic::$status_bimap[$todo->status_id]) ?></td>
+                        <td>
+                            <center>
+                                <?= ucwords(Model_Todo_Logic::$status_bimap[$todo->status_id]) ?>
+                            </center>
+                        </td>
                         <td>
                             <?= Form::open('todo/delete/' . $todo->id) ?>
                             <?= Form::submit('delete', "Delete") ?>
