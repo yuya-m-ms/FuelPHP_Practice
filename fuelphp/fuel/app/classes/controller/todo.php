@@ -22,7 +22,7 @@ class Controller_Todo extends Controller
     {
         self::redirect_when_no_post();
 
-        $val = $this->forge_validation();
+        $val = Model_Todo_Logic::$validator;
         if (!$val->run()) {
             $data['html_error'] = $val->error();
             return View::forge('todo', $data);
@@ -66,7 +66,7 @@ class Controller_Todo extends Controller
     {
         self::redirect_when_no_post();
 
-        $val = $this->forge_validation();
+        $val = Model_Todo_Logic::$validator;
         if ($val->run()) {
             $input = $val->validated();
             $due_daytime   = $input['due_day'] . ' ' . $input['due_time'];
@@ -93,24 +93,6 @@ class Controller_Todo extends Controller
         $data['task_to_be_changed']['status_id'] = $todo->status_id;
         $data['todos'] = Model_Todo_Logic::fetch_todo();
         return View::forge('todo', $data);
-    }
-
-    /**
-     * @return Vadidation for a new task
-     */
-    public function forge_validation()
-    {
-        $val = Validation::forge();
-
-        $val->add('name', "Task name")
-            ->add_rule('trim')
-            ->add_rule('required')
-            ->add_rule('max_length', 100);
-        $val->add('due_day', "Due day");
-        $val->add('due_time', "Due time");
-        $val->add('status_id', "Status ID");
-
-        return $val;
     }
 
     public function action_filter()

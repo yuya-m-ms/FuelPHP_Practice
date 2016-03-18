@@ -8,6 +8,7 @@ class Model_Todo_Logic
     static $status_cache;
     static $status_map;
     static $status_bimap;
+    static $validator;
 
     private function __construct() {
         // static member only
@@ -22,6 +23,7 @@ class Model_Todo_Logic
         );
         self::$status_map   = Util_Array::to_map('ucwords', self::$status_cache);
         self::$status_bimap = Util_Array::bimap(self::$status_cache);
+        self::$validator    = self::forge_validation();
     }
 
     /**
@@ -65,6 +67,24 @@ class Model_Todo_Logic
             $todo->$attr = $value;
         }
         $todo->save();
+    }
+
+    /**
+     * @return Vadidation for a new task
+     */
+    static function forge_validation()
+    {
+        $val = Validation::forge();
+
+        $val->add('name', "Task name")
+            ->add_rule('trim')
+            ->add_rule('required')
+            ->add_rule('max_length', 100);
+        $val->add('due_day', "Due day");
+        $val->add('due_time', "Due time");
+        $val->add('status_id', "Status ID");
+
+        return $val;
     }
 
     public static function chop_datetime($datetime)
