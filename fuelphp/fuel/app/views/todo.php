@@ -164,8 +164,5 @@
             </section>
         </footer>
     </section>
-    <pre><?= var_dump(Model_Todo_Status::$status
-        , Model_Todo::$status_map
-    ); ?></pre>
 </body>
 </html>
