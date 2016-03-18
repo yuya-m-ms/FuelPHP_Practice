@@ -140,8 +140,8 @@
                 <?= Form::open('todo/filter/') ?>
                 <?= Form::submit('filter', "Filter", ['class' => 'w3e']) ?>
                 <span>by</span>
-                <?= Form::select('status', isset($status_id) ? $status_id + 1 : 0
-                    , Model_Todo_Logic::$status_map
+                <?= Form::select('status', isset($status) ? $status : 'all'
+                    , Model_Todo_Logic::$status_list
                 ) ?>
             <?= Form::close() ?>
             </section>

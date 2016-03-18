@@ -8,6 +8,7 @@ class Model_Todo_Logic
     static $status_cache;
     static $status_map;
     static $status_bimap;
+    static $status_list;
     static $validator;
 
     private function __construct() {
@@ -23,6 +24,7 @@ class Model_Todo_Logic
         );
         self::$status_map   = Util_Array::to_map('ucwords', self::$status_cache);
         self::$status_bimap = Util_Array::bimap(self::$status_cache);
+        self::$status_list  = array_merge(['all' => "All"], self::$status_map);
         self::$validator    = self::forge_validation();
     }
 

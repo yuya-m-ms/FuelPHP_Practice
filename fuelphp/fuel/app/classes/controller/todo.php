@@ -103,9 +103,9 @@ class Controller_Todo extends Controller
         if ($status == 'all') {
             Response::redirect('todo');
         }
-        $status_id         = Model_Todo_Logic::$status_bimap[$status];
-        $data['status_id'] = $status_id;
-        $data['todos']     = Model_Todo_Logic::fetch_filtered_by($status_id);
+        $status_id      = Model_Todo_Logic::$status_bimap[$status];
+        $data['status'] = $status;
+        $data['todos']  = Model_Todo_Logic::fetch_filtered_by($status_id);
 
         return View::forge('todo', $data);
     }
