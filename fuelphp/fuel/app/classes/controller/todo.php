@@ -160,7 +160,7 @@ class Controller_Todo extends Controller
         if ($status == 'all') {
             return Response::redirect('todo');
         }
-        $status_id         = Model_Todo::$status_map[$status];
+        $status_id         = Model_Todo_Logic::$status_bimap[$status];
         $data['status_id'] = $status_id;
         $data['todos']     = $this->fetch_filtered($status_id);
 
