@@ -113,7 +113,7 @@
                     <?= Form::label("at: ", 'due_time') ?>
                     <?= Form::input('due_time', $task_to_be_changed['due_time'], ['type' => 'time']) ?>
                     as status:
-                    <?= Form::select('new_status_id', $task_to_be_changed['new_status_id'], [
+                    <?= Form::select('status_id', $task_to_be_changed['status_id'], [
                         'Open',
                         'Done',
                         'Pending',
