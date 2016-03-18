@@ -3,7 +3,7 @@
 /**
 * String tools
 */
-class Util_StrTool {
+class Util_String {
     public static function is_blank($str)
     {
         return empty(trim($str));
