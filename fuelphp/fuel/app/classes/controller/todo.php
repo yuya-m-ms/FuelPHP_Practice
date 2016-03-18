@@ -97,29 +97,25 @@ class Controller_Todo extends Controller
         return View::forge('todo', $data);
     }
 
-    public function action_filter()
+    public function action_to_search()
     {
         self::redirect_when_no_post();
 
         $status = Input::post('status');
-        if ($status == 'all') {
-            Response::redirect('todo');
-        }
-        $status_id      = Model_Todo_Logic::$status_bimap[$status];
-        $data['status'] = $status;
-        $data['todos']  = Model_Todo_Logic::fetch_filtered_by($status_id);
-
-        return View::forge('todo', $data);
+        $attr   = Input::post('attr');
+        $dir    = Input::post('dir');
+        $url    = sprintf('todo/search/%s/%s/%s', $status, $attr, $dir);
+        Response::redirect($url);
     }
 
-    public function action_sort()
+    public function action_search($filter_status = 'all', $sort_key = 'name', $sort_dir = 'asc')
     {
-        self::redirect_when_no_post();
-
-        $attr = Input::post('attr');
-        $dir  = Input::post('dir');
-        $data['todos'] = Model_Todo_Logic::fetch_ordered_by($attr, $dir);
-
+        $data = [
+            'status' => $filter_status,
+            'attr'   => $sort_key,
+            'dir'    => $sort_dir,
+        ];
+        $data['todos'] = Model_Todo_Logic::search($filter_status, $sort_key, $sort_dir);
         return View::forge('todo', $data);
     }
 }

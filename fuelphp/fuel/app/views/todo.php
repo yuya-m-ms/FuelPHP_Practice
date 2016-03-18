@@ -136,26 +136,23 @@
             <?php endif ?>
         </section>
         <footer class="mt1e">
-            <section class="filter">
-                <?= Form::open('todo/filter/') ?>
+            <section class="search">
+                <?= Form::open('todo/to_search') ?>
                 <?= Form::submit('filter', "Filter", ['class' => 'w3e']) ?>
                 <span>by</span>
                 <?= Form::select('status', isset($status) ? $status : 'all'
                     , Model_Todo_Logic::$status_list
                 ) ?>
-            <?= Form::close() ?>
-            </section>
-            <section class="sort">
-                <?= Form::open('todo/sort/') ?>
+                <br>
                 <?= Form::submit('sort', "Sort", ['class' => 'w3e']) ?>
                 <span>by</span>
-                <?= Form::select('attr', 0, [
-                        'name'      => 'Name',
-                        'due'       => 'Due',
-                        'status_id' => 'Status',
-                    ]) ?>
+                <?= Form::select('attr', isset($attr) ? $attr : 'name', [
+                    'name'      => 'Name',
+                    'due'       => 'Due',
+                    'status_id' => 'Status',
+                ]) ?>
                 <span>in</span>
-                <?= Form::select('dir', 0, [
+                <?= Form::select('dir', isset($dir) ? $dir : 'asc', [
                     'asc'  =>'(A→Z) Ascending',
                     'desc' =>'(Z→A) Descending',
                 ]) ?>

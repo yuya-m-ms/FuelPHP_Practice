@@ -51,9 +51,14 @@ class Model_Todo_Logic
         return self::fetch_alive()->where('status_id', '=', $status_id)->get();
     }
 
-    static function fetch_ordered_by($attr, $dir)
+    // find all when $status_id is null
+    static function search($status = 'all', $attr = 'name', $dir = 'asc')
     {
-        return self::fetch_alive()->order_by($attr, $dir)->get();
+        if (strcasecmp($status, 'all') == 0) {
+            return self::fetch_alive()->order_by($attr, $dir)->get();
+        }
+        $status_id = self::$status_bimap[$status];
+        return self::fetch_alive()->where('status_id', '=', $status_id)->order_by($attr, $dir)->get();
     }
 
     /**
