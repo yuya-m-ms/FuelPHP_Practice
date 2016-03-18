@@ -84,13 +84,15 @@ class Controller_Todo extends Controller
     public function action_to_change($id)
     {
         $todo = Model_Todo::find($id);
-        $data['task_to_be_changed']['id']   = $todo->id;
-        $data['task_to_be_changed']['name'] = $todo->name;
-        $data['task_to_be_changed']['due']  = $todo->due;
         list($due_day, $due_time) = Model_Todo_Logic::chop_datetime($todo->due);
-        $data['task_to_be_changed']['due_day']   = $due_day;
-        $data['task_to_be_changed']['due_time']  = $due_time;
-        $data['task_to_be_changed']['status_id'] = $todo->status_id;
+        $data['task_to_be_changed'] = [
+            'id'        => $todo->id,
+            'name'      => $todo->name,
+            'due'       => $todo->due,
+            'due_day'   => $due_day,
+            'due_time'  => $due_time,
+            'status_id' => $todo->status_id,
+        ];
         $data['todos'] = Model_Todo_Logic::fetch_todo();
         return View::forge('todo', $data);
     }
