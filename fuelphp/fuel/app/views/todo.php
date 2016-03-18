@@ -73,7 +73,7 @@
                         </td>
                         <td><?= $todo->name; ?></td>
                         <td><?= $todo->due; ?></td>
-                        <td><?= Model_Todo::$status[$todo->status_id] ?></td>
+                        <td><?= Model_Todo::$status_map[$todo->status_id] ?></td>
                         <td>
                             <?= Form::open('todo/delete/' . $todo->id) ?>
                             <?= Form::submit('delete', "Delete") ?>
@@ -164,5 +164,8 @@
             </section>
         </footer>
     </section>
+    <pre><?= var_dump(Model_Todo_Status::$status
+        , Model_Todo::$status_map
+    ); ?></pre>
 </body>
 </html>
