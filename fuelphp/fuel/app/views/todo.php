@@ -73,7 +73,7 @@
                         </td>
                         <td><?= $todo->name; ?></td>
                         <td><?= $todo->due; ?></td>
-                        <td><?= Model_Todo::$status[$todo->status_id] ?></td>
+                        <td><?= ucwords(Model_Todo::$status_map[$todo->status_id]) ?></td>
                         <td>
                             <?= Form::open('todo/delete/' . $todo->id) ?>
                             <?= Form::submit('delete', "Delete") ?>
@@ -113,13 +113,9 @@
                     <?= Form::label("at: ", 'due_time') ?>
                     <?= Form::input('due_time', $task_to_be_changed['due_time'], ['type' => 'time']) ?>
                     as status:
-                    <?= Form::select('new_status_id', $task_to_be_changed['new_status_id'], [
-                        'Open',
-                        'Done',
-                        'Pending',
-                        'Working',
-                        'Confirming',
-                    ]) ?>
+                    <?= Form::select('status_id', $task_to_be_changed['status_id']
+                        , array_map('ucwords', Model_Todo_Status::$status)
+                    ) ?>
                 </span>
                 <?= Form::close() ?>
             <?php endif ?>
@@ -129,15 +125,9 @@
                 <?= Form::open('todo/filter/') ?>
                 <?= Form::submit('filter', "Filter", ['class' => 'w3e']) ?>
                 <span>by</span>
-                <?= Form::select('status', isset($status_id) ? $status_id + 1 : 0,
-                    Util_Array::to_map('ucwords', [
-                        'all',
-                        'open',
-                        'done',
-                        'pending',
-                        'working',
-                        'confirming',
-                    ])) ?>
+                <?= Form::select('status', isset($status_id) ? $status_id + 1 : 0
+                    , Util_Array::to_map('ucwords', Model_Todo_Status::$status)
+                ) ?>
             <?= Form::close() ?>
             </section>
             <section class="sort">
