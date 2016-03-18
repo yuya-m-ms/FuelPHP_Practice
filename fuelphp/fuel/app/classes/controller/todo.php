@@ -6,12 +6,21 @@
 class Controller_Todo extends Controller
 {
     /**
+     * Fetch all alive ToDos from DB
+     * @return ORM object
+     */
+    private function fetch_alive()
+    {
+        return Model_Todo::query()->where('deleted', '=', false);
+    }
+
+    /**
      * Fetch TODOs from DB
      * @return iterator of TODOs
      */
     public function fetch_todo()
     {
-        return Model_Todo::query()->where('deleted', '=', false)->get();
+        return $this->fetch_alive()->get();
     }
 
     public function action_index()
@@ -42,7 +51,7 @@ class Controller_Todo extends Controller
 
             $todo = Model_Todo::forge();
             $todo->name      = $input['name'];
-            $todo->due       = Util_StrTool::null_if_blank($input['due_daytime']);
+            $todo->due       = Util_String::null_if_blank($input['due_daytime']);
             $todo->status_id = 0; // = open
             $todo->deleted   = false;
             $todo->save();
@@ -94,10 +103,12 @@ class Controller_Todo extends Controller
         $val = $this->forge_validation();
         if ($val->run()) {
             $input = $val->validated();
-            $input['due_daytime'] = $input['due_day'] . ' ' . $input['due_time'];
+            $due_daytime   = $input['due_day'] . ' ' . $input['due_time'];
+            $status_id = $input['status_id'];
             $this->alter($id, [
-                'name' => $input['name'],
-                'due'  => Util_StrTool::null_if_blank($input['due_daytime']),
+                'name'      => $input['name'],
+                'due'       => Util_String::null_if_blank($due_daytime),
+                'status_id' => $status_id,
             ]);
         }
 
@@ -110,19 +121,12 @@ class Controller_Todo extends Controller
         $data['task_to_be_changed']['id']   = $todo->id;
         $data['task_to_be_changed']['name'] = $todo->name;
         $data['task_to_be_changed']['due']  = $todo->due;
-        list($due_day, $due_time) = $this->chop_datetime($todo->due);
-        $data['task_to_be_changed']['due_day']  = $due_day;
-        $data['task_to_be_changed']['due_time'] = $due_time;
+        list($due_day, $due_time) = Util_String::chop_datetime($todo->due);
+        $data['task_to_be_changed']['due_day']   = $due_day;
+        $data['task_to_be_changed']['due_time']  = $due_time;
+        $data['task_to_be_changed']['status_id'] = $todo->status_id;
         $data['todos'] = $this->fetch_todo();
         return View::forge('todo', $data);
-    }
-
-    public function chop_datetime($datetime)
-    {
-        $re_datetime = '/(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2})/';
-        preg_match($re_datetime, $datetime, $matches); // why C-like
-        list(, $date, $time) = array_pad($matches, 3, null);
-        return [$date, $time];
     }
 
     /**
@@ -138,7 +142,44 @@ class Controller_Todo extends Controller
             ->add_rule('max_length', 100);
         $val->add('due_day', "Due day");
         $val->add('due_time', "Due time");
+        $val->add('status_id', "Status ID");
 
         return $val;
+    }
+
+    private function fetch_filtered($status_id)
+    {
+        return $this->fetch_alive()->where('status_id', '=', $status_id)->get();
+    }
+
+    public function action_filter()
+    {
+        $this->redirect_when_no_post();
+
+        $status = Input::post('status');
+        if ($status == 'all') {
+            return Response::redirect('todo');
+        }
+        $status_id         = Model_Todo::$status_map[$status];
+        $data['status_id'] = $status_id;
+        $data['todos']     = $this->fetch_filtered($status_id);
+
+        return View::forge('todo', $data);
+    }
+
+    public function action_sort()
+    {
+        $this->redirect_when_no_post();
+
+        $attr = Input::post('attr');
+        $dir  = Input::post('dir');
+        $data['todos'] = $this->fetch_alive()->order_by($attr, $dir)->get();
+
+        return View::forge('todo', $data);
+    }
+
+    public function action_reset()
+    {
+        Response::redirect('todo');
     }
 }

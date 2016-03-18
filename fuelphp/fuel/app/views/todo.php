@@ -11,6 +11,12 @@
         td.checkbox { text-align: center; }
         .no_click { pointer-events: none; }
         span.task_edited { font-weight: bold; }
+        /*lazy Emmet shorthands*/
+        .w3e { width: 3em; }
+        .pl3e { padding-left: 3em; }
+        .mt1e { margin-top: 1em; }
+        section.no_entry { font-size: larger; font-weight: bold; padding-left: 2em; }
+        section.reset { opacity: .5; }
     </style>
 </head>
 <body>
@@ -38,6 +44,7 @@
                     <th><!-- get (un)done --></th>
                     <th>Name</th>
                     <th>Due</th>
+                    <th>Status</th>
                     <th><!-- delete --></th>
                     <th><!-- change --></th>
                 </tr>
@@ -46,12 +53,12 @@
                 <?php foreach ($todos as $todo): ?>
                     <tr class="task">
                         <td class="checkbox no_click">
-                            <?= Form::checkbox('is_done', "Done", boolval($todo->status_id)); ?>
+                            <?= Form::checkbox('is_done', "Done", $todo->status_id == 1); ?>
                         </td>
                         <td>
                             <center>
                                 <!-- toggle open/finished -->
-                                <?php if (boolval($todo->status_id)): ?>
+                                <?php if ($todo->status_id == 1): ?>
                                     <!-- task is done -->
                                     <?= Form::open('todo/undone/' . $todo->id) ?>
                                     <?= Form::submit('undone', "Undone") ?>
@@ -66,6 +73,7 @@
                         </td>
                         <td><?= $todo->name; ?></td>
                         <td><?= $todo->due; ?></td>
+                        <td><?= ucwords(Model_Todo::$status_map[$todo->status_id]) ?></td>
                         <td>
                             <?= Form::open('todo/delete/' . $todo->id) ?>
                             <?= Form::submit('delete', "Delete") ?>
@@ -80,32 +88,70 @@
                 <?php endforeach ?>
             </tbody>
         </table>
-        <br>
-        <footer>
-            <section class="alter">
-                <?php if (isset($task_to_be_changed)): ?>
-                    <?= Form::open('todo/change/' . $task_to_be_changed['id']) ?>
-                    <?= Form::submit('change', "Change") ?>
-                    <span class="task_edited">
-                        <?= $task_to_be_changed['name'] ?>
-                    </span>
-                    &nbsp;Due by:
-                    <span class="task_edited">
-                        <?= !empty($task_to_be_changed['due']) ? $task_to_be_changed['due'] : "Indefinite" ?>
-                    </span>
-                    <br> to:
-                    <?= Form::input('name', $task_to_be_changed['name']) ?>&nbsp;
+        <?php if (!isset($todos) or empty($todos)): ?>
+            <section class="no_entry">NO ENTRY!</section>
+        <?php endif ?>
+        <section class="alter mt1e">
+            <?php if (isset($task_to_be_changed)): ?>
+                <?= Form::open('todo/change/' . $task_to_be_changed['id']) ?>
+                <?= Form::submit('change', "Change") ?>
+                <span class="task_edited">
+                    <?= $task_to_be_changed['name'] ?>
+                </span>
+                <span>Due by:</span>
+                <span class="task_edited">
+                    <?= !empty($task_to_be_changed['due']) ? $task_to_be_changed['due'] : "Indefinite" ?>
+                </span>
+                <br>
+                <span class="pl3e">
+                    to:
+                    <?= Form::input('name', $task_to_be_changed['name']) ?>
                     <?= Form::label("Due on: ", 'due_day') ?>
-                    <?= Form::input('due_day',  $task_to_be_changed['due_day']
+                    <?= Form::input('due_day', $task_to_be_changed['due_day']
                         , ['type' => 'date', 'max' => '9999-12-31']
                         ) ?>
                     <?= Form::label("at: ", 'due_time') ?>
                     <?= Form::input('due_time', $task_to_be_changed['due_time'], ['type' => 'time']) ?>
-                    <?= Form::close() ?>
-                <?php endif ?>
+                    as status:
+                    <?= Form::select('status_id', $task_to_be_changed['status_id']
+                        , array_map('ucwords', Model_Todo_Status::$status)
+                    ) ?>
+                </span>
+                <?= Form::close() ?>
+            <?php endif ?>
+        </section>
+        <footer class="mt1e">
+            <section class="filter">
+                <?= Form::open('todo/filter/') ?>
+                <?= Form::submit('filter', "Filter", ['class' => 'w3e']) ?>
+                <span>by</span>
+                <?= Form::select('status', isset($status_id) ? $status_id + 1 : 0
+                    , Util_Array::to_map('ucwords', Model_Todo_Status::$status)
+                ) ?>
+            <?= Form::close() ?>
             </section>
-            <br>
-            <span hidden>May show some info</span>
+            <section class="sort">
+                <?= Form::open('todo/sort/') ?>
+                <?= Form::submit('sort', "Sort", ['class' => 'w3e']) ?>
+                <span>by</span>
+                <?= Form::select('attr', 0, [
+                        'name'      => 'Name',
+                        'due'       => 'Due',
+                        'status_id' => 'Status',
+                    ]) ?>
+                <span>in</span>
+                <?= Form::select('dir', 0, [
+                    'asc'  =>'(A→Z) Ascending',
+                    'desc' =>'(Z→A) Descending',
+                ]) ?>
+                <span>order</span>
+                <?= Form::close() ?>
+            </section>
+            <section class="reset mt1e">
+                <?= Form::open('todo/reset') ?>
+                <?= Form::submit('reset', "Reset the View") ?>
+                <?= Form::close() ?>
+            </section>
         </footer>
     </section>
 </body>
