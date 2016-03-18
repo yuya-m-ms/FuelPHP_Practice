@@ -104,11 +104,11 @@ class Controller_Todo extends Controller
         if ($val->run()) {
             $input = $val->validated();
             $due_daytime   = $input['due_day'] . ' ' . $input['due_time'];
-            $new_status_id = $input['new_status_id'];
+            $status_id = $input['status_id'];
             $this->alter($id, [
                 'name'      => $input['name'],
                 'due'       => Util_String::null_if_blank($due_daytime),
-                'status_id' => $new_status_id,
+                'status_id' => $status_id,
             ]);
         }
 
@@ -122,9 +122,9 @@ class Controller_Todo extends Controller
         $data['task_to_be_changed']['name'] = $todo->name;
         $data['task_to_be_changed']['due']  = $todo->due;
         list($due_day, $due_time) = Util_String::chop_datetime($todo->due);
-        $data['task_to_be_changed']['due_day']  = $due_day;
-        $data['task_to_be_changed']['due_time'] = $due_time;
-        $data['task_to_be_changed']['new_status_id'] = $todo->status_id;
+        $data['task_to_be_changed']['due_day']   = $due_day;
+        $data['task_to_be_changed']['due_time']  = $due_time;
+        $data['task_to_be_changed']['status_id'] = $todo->status_id;
         $data['todos'] = $this->fetch_todo();
         return View::forge('todo', $data);
     }
@@ -142,7 +142,7 @@ class Controller_Todo extends Controller
             ->add_rule('max_length', 100);
         $val->add('due_day', "Due day");
         $val->add('due_time', "Due time");
-        $val->add('new_status_id', "New status ID");
+        $val->add('status_id', "Status ID");
 
         return $val;
     }
