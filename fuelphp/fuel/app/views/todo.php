@@ -9,6 +9,8 @@
         input[type="submit"] { font: 1.2em Arial,sans-serif; }
         table.todo_table, thead, th, tr, td { border: 1px solid #000; }
         td.checkbox { text-align: center; }
+        td.button { text-align: center; }
+        td.status { text-align: center; }
         .no_click { pointer-events: none; }
         span.task_edited { font-weight: bold; }
         /*lazy Emmet shorthands*/
@@ -60,21 +62,19 @@
                             <td class="checkbox no_click">
                                 <?= Form::checkbox('is_done', "Done", $todo->status_id == 1); ?>
                             </td>
-                            <td>
-                                <center>
-                                    <!-- toggle open/finished -->
-                                    <?php if ($todo->status_id == 1): ?>
-                                        <!-- task is done -->
-                                        <?= Form::open('todo/undone/' . $todo->id) ?>
-                                        <?= Form::submit('undone', "Undone") ?>
-                                        <?= Form::close() ?>
-                                    <?php else: ?>
-                                        <!-- task is open -->
-                                        <?= Form::open('todo/done/' . $todo->id) ?>
-                                        <?= Form::submit('done', "Done") ?>
-                                        <?= Form::close() ?>
-                                    <?php endif ?>
-                                </center>
+                            <td class="button">
+                                <!-- toggle open/finished -->
+                                <?php if ($todo->status_id == 1): ?>
+                                    <!-- task is done -->
+                                    <?= Form::open('todo/undone/' . $todo->id) ?>
+                                    <?= Form::submit('undone', "Undone") ?>
+                                    <?= Form::close() ?>
+                                <?php else: ?>
+                                    <!-- task is open -->
+                                    <?= Form::open('todo/done/' . $todo->id) ?>
+                                    <?= Form::submit('done', "Done") ?>
+                                    <?= Form::close() ?>
+                                <?php endif ?>
                             </td>
                             <td><?= $todo->name; ?></td>
                             <td>
@@ -83,17 +83,15 @@
                                     echo $date->format('Y-m-d H:i');
                                 } ?>
                             </td>
-                            <td>
-                                <center>
-                                    <?= ucwords(Model_Todo_Logic::$status_bimap[$todo->status_id]) ?>
-                                </center>
+                            <td class="status">
+                                <?= ucwords(Model_Todo_Logic::$status_bimap[$todo->status_id]) ?>
                             </td>
-                            <td>
+                            <td class="button">
                                 <?= Form::open('todo/delete/' . $todo->id) ?>
                                 <?= Form::submit('delete', "Delete") ?>
                                 <?= Form::close() ?>
                             </td>
-                            <td>
+                            <td class="button">
                                 <?= Form::open('todo/to_change/' . $todo->id) ?>
                                 <?= Form::submit('to_change', "To change") ?>
                                 <?= Form::close() ?>
