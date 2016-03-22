@@ -16,7 +16,7 @@ class Controller_Todo extends Controller
         return View::forge('todo', $data);
     }
 
-    static function redirect_when_no_post()
+    protected function redirect_when_no_post()
     {
         if (Input::method() != 'POST') {
             Response::redirect('todo', '405');
@@ -25,7 +25,7 @@ class Controller_Todo extends Controller
 
     public function action_add()
     {
-        self::redirect_when_no_post();
+        $this->redirect_when_no_post();
 
         $val = Model_Todo_Logic::$validator;
         if (!$val->run()) {
@@ -48,28 +48,28 @@ class Controller_Todo extends Controller
 
     public function action_delete($id)
     {
-        self::redirect_when_no_post();
+        $this->redirect_when_no_post();
         Model_Todo_Logic::alter($id, ['deleted' => true]);
         Response::redirect('todo');
     }
 
     public function action_done($id)
     {
-        self::redirect_when_no_post();
+        $this->redirect_when_no_post();
         Model_Todo_Logic::alter($id, ['status_id' => 1]);
         Response::redirect('todo');
     }
 
     public function action_undone($id)
     {
-        self::redirect_when_no_post();
+        $this->redirect_when_no_post();
         Model_Todo_Logic::alter($id, ['status_id' => 0]);
         Response::redirect('todo');
     }
 
     public function action_change($id)
     {
-        self::redirect_when_no_post();
+        $this->redirect_when_no_post();
 
         $val = Model_Todo_Logic::$validator;
         if ($val->run()) {
@@ -104,7 +104,7 @@ class Controller_Todo extends Controller
 
     public function action_to_search()
     {
-        self::redirect_when_no_post();
+        $this->redirect_when_no_post();
 
         $status = Input::post('status');
         $attr   = Input::post('attr');
