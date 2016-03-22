@@ -1,4 +1,3 @@
-<?php session_start() ?>
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -33,7 +32,7 @@
             <h1>TODO app</h1>
             <section class="user">
                 <span>Current User ID:</span>
-                <span class="user_id"><?= $_SESSION['user'] ?></span>
+                <span class="user_id"><?= Session::get('user_id') ?></span>
             </section>
             <section class="new_task mt1e">
                 <?= Form::open('todo/add') ?>

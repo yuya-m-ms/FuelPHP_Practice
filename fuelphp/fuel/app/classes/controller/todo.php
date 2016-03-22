@@ -1,7 +1,5 @@
 <?php
 
-session_start();
-
 /**
 * TODO app controller for single-page app
 */
@@ -42,7 +40,7 @@ class Controller_Todo extends Controller
             $todo->due       = Util_String::null_if_blank($input['due_daytime']);
             $todo->status_id = 0; // = open
             $todo->deleted   = false;
-            $todo->user_id   = $_SESSION['user'];
+            $todo->user_id   = Session::get('user_id');
             $todo->save();
         }
 
