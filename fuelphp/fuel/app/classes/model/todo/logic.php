@@ -11,11 +11,11 @@ class Model_Todo_Logic
     static $status_list;
     static $validator;
 
-    private function __construct() {
-        // static member only
+    public function __construct() {
+        self::initialize();
     }
 
-    public static function initialize()
+    private static function initialize()
     {
         self::$status_cache = array_map(
             function ($row) {
@@ -103,6 +103,3 @@ class Model_Todo_Logic
         return [$date->format('Y-m-d'), $date->format('H:i')];
     }
 }
-
-// initialize static member
-Model_Todo_Logic::initialize();

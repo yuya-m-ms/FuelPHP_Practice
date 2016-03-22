@@ -5,6 +5,11 @@
 */
 class Controller_Todo extends Controller
 {
+    function before()
+    {
+        $this->logic = new Model_Todo_Logic();
+    }
+
     public function action_index()
     {
         $data['todos'] = Model_Todo_Logic::fetch_todo();
