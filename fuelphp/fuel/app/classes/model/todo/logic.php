@@ -89,7 +89,6 @@ class Model_Todo_Logic
             ->add_rule('max_length', 100);
         $val->add('due_day', "Due day");
         $val->add('due_time', "Due time");
-        $val->add('status_id', "Status ID");
 
         return $val;
     }
