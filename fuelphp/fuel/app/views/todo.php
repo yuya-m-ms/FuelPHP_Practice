@@ -1,3 +1,4 @@
+<?php session_start() ?>
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -30,7 +31,11 @@
     <section class="app">
         <header>
             <h1>TODO app</h1>
-            <section class="new_task">
+            <section class="user">
+                <span>Current User ID:</span>
+                <span class="user_id"><?= $_SESSION['user'] ?></span>
+            </section>
+            <section class="new_task mt1e">
                 <?= Form::open('todo/add') ?>
                 <?= Form::submit('submit', "Add") ?> a New Task:
                 <?= Form::input('name',     Input::post('name')) ?>&nbsp;
