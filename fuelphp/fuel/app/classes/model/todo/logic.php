@@ -37,13 +37,18 @@ class Model_Todo_Logic
         return Model_Todo::query()->where('deleted', '=', false);
     }
 
+    private static function fetch_user_todo()
+    {
+        return self::fetch_alive()->where('user_id', '=', Session::get('user_id'));
+    }
+
     /**
      * Fetch TODOs from DB
      * @return iterator of TODOs
      */
     static function fetch_todo()
     {
-        return self::fetch_alive()->get();
+        return self::fetch_user_todo()->get();
     }
 
     static function fetch_filtered_by($status_id)
