@@ -5,26 +5,21 @@
 */
 class Controller_Todo extends Controller
 {
-    /**
-     * Fetch TODOs from DB
-     * @return iterator of TODOs
-     */
-    public function fetch_todo()
+    function before()
     {
-        return Model_Todo::query()->where('deleted', '=', false)->get();
+        $this->logic = new Model_Todo_Logic();
     }
 
     public function action_index()
     {
-        $data['todos'] = $this->fetch_todo();
-        $view = View::forge('todo', $data);
-        return $view;
+        $data['todos'] = Model_Todo_Logic::fetch_todo();
+        return View::forge('todo', $data);
     }
 
-    public function redirect_when_no_post()
+    protected function redirect_when_no_post()
     {
         if (Input::method() != 'POST') {
-            return Response::redirect('todo', '405');
+            Response::redirect('todo', '405');
         }
     }
 
@@ -32,7 +27,7 @@ class Controller_Todo extends Controller
     {
         $this->redirect_when_no_post();
 
-        $val = $this->forge_validation();
+        $val = Model_Todo_Logic::$validator;
         if (!$val->run()) {
             $data['html_error'] = $val->error();
             return View::forge('todo', $data);
@@ -42,103 +37,90 @@ class Controller_Todo extends Controller
 
             $todo = Model_Todo::forge();
             $todo->name      = $input['name'];
-            $todo->due       = Util_StrTool::null_if_blank($input['due_daytime']);
+            $todo->due       = Util_String::null_if_blank($input['due_daytime']);
             $todo->status_id = 0; // = open
             $todo->deleted   = false;
             $todo->save();
         }
 
-        return Response::redirect('todo');
-    }
-
-    /**
-     * update todo by id
-     * @param  int $id      of Todo
-     * @param  [attrivute => value, ...] $updates attributes to be updated
-     */
-    private function alter($id, $updates)
-    {
-        // suppose no missing id
-        $todo = Model_Todo::find($id);
-        foreach ($updates as $attr => $value) {
-            $todo->$attr = $value;
-        }
-        $todo->save();
+        Response::redirect('todo');
     }
 
     public function action_delete($id)
     {
         $this->redirect_when_no_post();
-        $this->alter($id, ['deleted' => true]);
-        return Response::redirect('todo');
+        Model_Todo_Logic::alter($id, ['deleted' => true]);
+        Response::redirect('todo');
     }
 
     public function action_done($id)
     {
         $this->redirect_when_no_post();
-        $this->alter($id, ['status_id' => 1]);
-        return Response::redirect('todo');
+        Model_Todo_Logic::alter($id, ['status_id' => 1]);
+        Response::redirect('todo');
     }
 
     public function action_undone($id)
     {
         $this->redirect_when_no_post();
-        $this->alter($id, ['status_id' => 0]);
-        return Response::redirect('todo');
+        Model_Todo_Logic::alter($id, ['status_id' => 0]);
+        Response::redirect('todo');
     }
 
     public function action_change($id)
     {
         $this->redirect_when_no_post();
 
-        $val = $this->forge_validation();
+        $val = Model_Todo_Logic::$validator;
         if ($val->run()) {
             $input = $val->validated();
-            $input['due_daytime'] = $input['due_day'] . ' ' . $input['due_time'];
-            $this->alter($id, [
-                'name' => $input['name'],
-                'due'  => Util_StrTool::null_if_blank($input['due_daytime']),
+            $due_daytime   = $input['due_day'] . ' ' . $input['due_time'];
+            $status_id = $input['status_id'];
+            Model_Todo_Logic::alter($id, [
+                'name'      => $input['name'],
+                'due'       => Util_String::null_if_blank($due_daytime),
+                'status_id' => $status_id,
             ]);
         }
 
-        return Response::redirect('todo');
+        Response::redirect('todo');
     }
 
     public function action_to_change($id)
     {
         $todo = Model_Todo::find($id);
-        $data['task_to_be_changed']['id']   = $todo->id;
-        $data['task_to_be_changed']['name'] = $todo->name;
-        $data['task_to_be_changed']['due']  = $todo->due;
-        list($due_day, $due_time) = $this->chop_datetime($todo->due);
-        $data['task_to_be_changed']['due_day']  = $due_day;
-        $data['task_to_be_changed']['due_time'] = $due_time;
-        $data['todos'] = $this->fetch_todo();
+        list($due_day, $due_time) = Model_Todo_Logic::chop_datetime($todo->due);
+        $data['task_to_be_changed'] = [
+            'id'        => $todo->id,
+            'name'      => $todo->name,
+            'due'       => $todo->due,
+            'due_day'   => $due_day,
+            'due_time'  => $due_time,
+            'status_id' => $todo->status_id,
+        ];
+        $data['todos'] = Model_Todo_Logic::fetch_todo();
         return View::forge('todo', $data);
     }
 
-    public function chop_datetime($datetime)
+    public function action_to_search()
     {
-        $re_datetime = '/(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2})/';
-        preg_match($re_datetime, $datetime, $matches); // why C-like
-        list(, $date, $time) = array_pad($matches, 3, null);
-        return [$date, $time];
+        $this->redirect_when_no_post();
+
+        $status = Input::post('status');
+        $attr   = Input::post('attr');
+        $dir    = Input::post('dir');
+        $url    = sprintf('todo/search/%s/%s/%s', $status, $attr, $dir);
+        Response::redirect($url);
     }
 
-    /**
-     * @return Vadidation for a new task
-     */
-    public function forge_validation()
+    public function action_search($filter_status = 'all', $sort_key = 'name', $sort_dir = 'asc')
     {
-        $val = Validation::forge();
-
-        $val->add('name', "Task name")
-            ->add_rule('trim')
-            ->add_rule('required')
-            ->add_rule('max_length', 100);
-        $val->add('due_day', "Due day");
-        $val->add('due_time', "Due time");
-
-        return $val;
+        $data = [
+            'status' => $filter_status,
+            'attr'   => $sort_key,
+            'dir'    => $sort_dir,
+        ];
+        $data['todos'] = Model_Todo_Logic::search($filter_status, $sort_key, $sort_dir);
+        return View::forge('todo', $data);
     }
 }

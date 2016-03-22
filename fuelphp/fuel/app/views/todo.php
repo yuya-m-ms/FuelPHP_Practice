@@ -9,12 +9,24 @@
         input[type="submit"] { font: 1.2em Arial,sans-serif; }
         table.todo_table, thead, th, tr, td { border: 1px solid #000; }
         td.checkbox { text-align: center; }
+        td.button { text-align: center; }
+        td.status { text-align: center; }
         .no_click { pointer-events: none; }
         span.task_edited { font-weight: bold; }
+        /*lazy Emmet shorthands*/
+        .w3e { width: 3em; }
+        .pl3e { padding-left: 3em; }
+        .mt1e { margin-top: 1em; }
+        section.no_entry {
+            font-size: larger;
+            font-weight: bold;
+            padding-left: 2em;
+        }
+        section.reset { opacity: .5; }
     </style>
 </head>
 <body>
-    <?= isset($html_error) ? $html_error : null ?>
+    <?= isset($html_error) ? Html::ul($html_error) : null ?>
     <section class="app">
         <header>
             <h1>TODO app</h1>
@@ -38,20 +50,21 @@
                     <th><!-- get (un)done --></th>
                     <th>Name</th>
                     <th>Due</th>
+                    <th>Status</th>
                     <th><!-- delete --></th>
                     <th><!-- change --></th>
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($todos as $todo): ?>
-                    <tr class="task">
-                        <td class="checkbox no_click">
-                            <?= Form::checkbox('is_done', "Done", boolval($todo->status_id)); ?>
-                        </td>
-                        <td>
-                            <center>
+                <?php if (isset($todos)): ?>
+                    <?php foreach ($todos as $todo): ?>
+                        <tr class="task">
+                            <td class="checkbox no_click">
+                                <?= Form::checkbox('is_done', "Done", $todo->status_id == 1); ?>
+                            </td>
+                            <td class="button">
                                 <!-- toggle open/finished -->
-                                <?php if (boolval($todo->status_id)): ?>
+                                <?php if ($todo->status_id == 1): ?>
                                     <!-- task is done -->
                                     <?= Form::open('todo/undone/' . $todo->id) ?>
                                     <?= Form::submit('undone', "Undone") ?>
@@ -62,50 +75,93 @@
                                     <?= Form::submit('done', "Done") ?>
                                     <?= Form::close() ?>
                                 <?php endif ?>
-                            </center>
-                        </td>
-                        <td><?= $todo->name; ?></td>
-                        <td><?= $todo->due; ?></td>
-                        <td>
-                            <?= Form::open('todo/delete/' . $todo->id) ?>
-                            <?= Form::submit('delete', "Delete") ?>
-                            <?= Form::close() ?>
-                        </td>
-                        <td>
-                            <?= Form::open('todo/to_change/' . $todo->id) ?>
-                            <?= Form::submit('to_change', "To change") ?>
-                            <?= Form::close() ?>
-                        </td>
-                    </tr>
-                <?php endforeach ?>
+                            </td>
+                            <td><?= $todo->name; ?></td>
+                            <td>
+                                <?php if (!is_null($todo->due)) {
+                                    $date = new DateTime($todo->due);
+                                    echo $date->format('Y-m-d H:i');
+                                } ?>
+                            </td>
+                            <td class="status">
+                                <?= ucwords(Model_Todo_Logic::$status_bimap[$todo->status_id]) ?>
+                            </td>
+                            <td class="button">
+                                <?= Form::open('todo/delete/' . $todo->id) ?>
+                                <?= Form::submit('delete', "Delete") ?>
+                                <?= Form::close() ?>
+                            </td>
+                            <td class="button">
+                                <?= Form::open('todo/to_change/' . $todo->id) ?>
+                                <?= Form::submit('to_change', "To change") ?>
+                                <?= Form::close() ?>
+                            </td>
+                        </tr>
+                    <?php endforeach ?>
+                <?php endif ?>
             </tbody>
         </table>
-        <br>
-        <footer>
-            <section class="alter">
-                <?php if (isset($task_to_be_changed)): ?>
-                    <?= Form::open('todo/change/' . $task_to_be_changed['id']) ?>
-                    <?= Form::submit('change', "Change") ?>
-                    <span class="task_edited">
-                        <?= $task_to_be_changed['name'] ?>
-                    </span>
-                    &nbsp;Due by:
-                    <span class="task_edited">
-                        <?= !empty($task_to_be_changed['due']) ? $task_to_be_changed['due'] : "Indefinite" ?>
-                    </span>
-                    <br> to:
-                    <?= Form::input('name', $task_to_be_changed['name']) ?>&nbsp;
+        <?php if (!isset($todos) or empty($todos)): ?>
+            <section class="no_entry">NO ENTRY!</section>
+        <?php endif ?>
+        <section class="alter mt1e">
+            <?php if (isset($task_to_be_changed)): ?>
+                <?= Form::open('todo/change/' . $task_to_be_changed['id']) ?>
+                <?= Form::submit('change', "Change") ?>
+                <span class="task_edited">
+                    <?= $task_to_be_changed['name'] ?>
+                </span>
+                <span>Due by:</span>
+                <span class="task_edited">
+                    <?= !empty($task_to_be_changed['due']) ? $task_to_be_changed['due'] : "Indefinite" ?>
+                </span>
+                <br>
+                <span class="pl3e">
+                    to:
+                    <?= Form::input('name', $task_to_be_changed['name']) ?>
                     <?= Form::label("Due on: ", 'due_day') ?>
-                    <?= Form::input('due_day',  $task_to_be_changed['due_day']
+                    <?= Form::input('due_day', $task_to_be_changed['due_day']
                         , ['type' => 'date', 'max' => '9999-12-31']
                         ) ?>
                     <?= Form::label("at: ", 'due_time') ?>
                     <?= Form::input('due_time', $task_to_be_changed['due_time'], ['type' => 'time']) ?>
-                    <?= Form::close() ?>
-                <?php endif ?>
+                    as status:
+                    <?= Form::select('status_id', $task_to_be_changed['status_id']
+                        , array_map('ucwords', Model_Todo_Logic::$status_cache)
+                    ) ?>
+                </span>
+                <?= Form::close() ?>
+            <?php endif ?>
+        </section>
+        <footer class="mt1e">
+            <section class="search">
+                <?= Form::open('todo/to_search') ?>
+                <?= Form::submit('filter', "Filter", ['class' => 'w3e']) ?>
+                <span>by</span>
+                <?= Form::select('status', isset($status) ? $status : 'all'
+                    , Model_Todo_Logic::$status_list
+                ) ?>
+                <br>
+                <?= Form::submit('sort', "Sort", ['class' => 'w3e']) ?>
+                <span>by</span>
+                <?= Form::select('attr', isset($attr) ? $attr : 'name', [
+                    'name'      => 'Name',
+                    'due'       => 'Due',
+                    'status_id' => 'Status',
+                ]) ?>
+                <span>in</span>
+                <?= Form::select('dir', isset($dir) ? $dir : 'asc', [
+                    'asc'  =>'(A→Z) Ascending',
+                    'desc' =>'(Z→A) Descending',
+                ]) ?>
+                <span>order</span>
+                <?= Form::close() ?>
             </section>
-            <br>
-            <span hidden>May show some info</span>
+            <section class="reset mt1e">
+                <?= Form::open('todo') ?>
+                <?= Form::button('reset', "Reset the View") ?>
+                <?= Form::close() ?>
+            </section>
         </footer>
     </section>
 </body>
