@@ -166,6 +166,11 @@
                 <?= Form::button('reset', "Reset the View") ?>
                 <?= Form::close() ?>
             </section>
+            <section class="download mt1e">
+                <?= Form::open('todo/csv') ?>
+                <?= Form::button('download_csv', "Download all ToDos") ?>
+                <?= Form::close() ?>
+            </section>
         </footer>
     </section>
 </body>
