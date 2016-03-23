@@ -107,7 +107,11 @@ class Model_Todo_Logic
         return [$date->format('Y-m-d'), $date->format('H:i')];
     }
 
-    // no support for Japanese Excel
+    /**
+     * No support for Japanese Excel
+     * @param  array $table    array of [attr => value]
+     * @param  String $filename of csv
+     */
     public static function export_csv($table, $filename)
     {
         $csv = Format::forge($table)->to_csv();
@@ -118,6 +122,7 @@ class Model_Todo_Logic
         File::download(DOCROOT . '/' . $temp, $filename);
     }
 
+    // run download csv of user ToDo
     public static function export_all_user_todo_as_csv()
     {
         $todos = [];
