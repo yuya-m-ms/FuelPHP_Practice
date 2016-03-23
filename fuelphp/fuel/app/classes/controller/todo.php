@@ -7,12 +7,12 @@ class Controller_Todo extends Controller
 {
     function before()
     {
-        $this->logic = new Model_Todo_Logic();
+        $this->logic = Model_Todo_Logic::forge();
     }
 
     public function action_index()
     {
-        $data['todos'] = Model_Todo_Logic::fetch_todo();
+        $data['todos'] = $this->logic->fetch_todo();
         return View::forge('todo', $data);
     }
 
@@ -27,7 +27,7 @@ class Controller_Todo extends Controller
     {
         $this->redirect_when_no_post();
 
-        $val = Model_Todo_Logic::$validator;
+        $val = $this->logic->$validator;
         if (!$val->run()) {
             $data['html_error'] = $val->error();
             return View::forge('todo', $data);
@@ -50,21 +50,21 @@ class Controller_Todo extends Controller
     public function action_delete($id)
     {
         $this->redirect_when_no_post();
-        Model_Todo_Logic::alter($id, ['deleted' => true]);
+        $this->logic->alter($id, ['deleted' => true]);
         Response::redirect('todo');
     }
 
     public function action_done($id)
     {
         $this->redirect_when_no_post();
-        Model_Todo_Logic::alter($id, ['status_id' => 1]);
+        $this->logic->alter($id, ['status_id' => 1]);
         Response::redirect('todo');
     }
 
     public function action_undone($id)
     {
         $this->redirect_when_no_post();
-        Model_Todo_Logic::alter($id, ['status_id' => 0]);
+        $this->logic->alter($id, ['status_id' => 0]);
         Response::redirect('todo');
     }
 
@@ -72,7 +72,7 @@ class Controller_Todo extends Controller
     {
         $this->redirect_when_no_post();
 
-        $val = Model_Todo_Logic::$validator;
+        $val = $this->logic->$validator;
         if (!$val->run()) {
             $data['html_error'] = $val->error();
             return View::forge('todo', $data);
@@ -80,7 +80,7 @@ class Controller_Todo extends Controller
             $input = $val->validated();
             $due_daytime = $input['due_day'] . ' ' . $input['due_time'];
             $status_id   = $input['status_id'];
-            Model_Todo_Logic::alter($id, [
+            $this->logic->alter($id, [
                 'name'      => $input['name'],
                 'due'       => Util_String::null_if_blank($due_daytime),
                 'status_id' => $status_id,
@@ -102,7 +102,7 @@ class Controller_Todo extends Controller
             'due_time'  => $due_time,
             'status_id' => $todo->status_id,
         ];
-        $data['todos'] = Model_Todo_Logic::fetch_todo();
+        $data['todos'] = $this->logic->fetch_todo();
         return View::forge('todo', $data);
     }
 
@@ -124,12 +124,12 @@ class Controller_Todo extends Controller
             'attr'   => $sort_key,
             'dir'    => $sort_dir,
         ];
-        $data['todos'] = Model_Todo_Logic::search($filter_status, $sort_key, $sort_dir);
+        $data['todos'] = $this->logic->search($filter_status, $sort_key, $sort_dir);
         return View::forge('todo', $data);
     }
 
     public function action_csv()
     {
-        Model_Todo_Logic::export_all_user_todo_as_csv();
+        $this->logic->export_all_user_todo_as_csv();
     }
 }

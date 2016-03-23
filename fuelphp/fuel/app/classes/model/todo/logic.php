@@ -11,21 +11,26 @@ class Model_Todo_Logic
     static $status_list;
     static $validator;
 
-    public function __construct() {
-        self::initialize();
+    protected function __construct() {
+        static::initialize();
+    }
+
+    public static function forge()
+    {
+        return new static();
     }
 
     private static function initialize()
     {
-        self::$status_cache = array_map(
+        static::$status_cache = array_map(
             function ($row) {
                 return $row->name;
             }, Model_Todo_Status::query()->select('name')->get()
         );
-        self::$status_map   = Util_Array::to_map('ucwords', self::$status_cache);
-        self::$status_bimap = Util_Array::bimap(self::$status_cache);
-        self::$status_list  = array_merge(['all' => "All"], self::$status_map);
-        self::$validator    = self::forge_validation();
+        static::$status_map   = Util_Array::to_map('ucwords', static::$status_cache);
+        static::$status_bimap = Util_Array::bimap(static::$status_cache);
+        static::$status_list  = ['all' => "All"] + static::$status_map;
+        static::$validator    = static::forge_validation();
     }
 
     /**
@@ -39,31 +44,26 @@ class Model_Todo_Logic
 
     private static function fetch_user_todo()
     {
-        return self::fetch_alive()->where('user_id', '=', Session::get('user_id'));
+        return static::fetch_alive()->where('user_id', '=', Session::get('user_id'));
     }
 
     /**
      * Fetch TODOs from DB
      * @return iterator of TODOs
      */
-    static function fetch_todo()
+    public function fetch_todo()
     {
-        return self::fetch_user_todo()->get();
-    }
-
-    static function fetch_filtered_by($status_id)
-    {
-        return self::fetch_alive()->where('status_id', '=', $status_id)->get();
+        return static::fetch_user_todo()->get();
     }
 
     // find all when $status_id is null
-    static function search($status = 'all', $attr = 'name', $dir = 'asc')
+    public function search($status = 'all', $attr = 'name', $dir = 'asc')
     {
         if (strcasecmp($status, 'all') == 0) {
-            return self::fetch_alive()->order_by($attr, $dir)->get();
+            return static::fetch_user_todo()->order_by($attr, $dir)->get();
         }
-        $status_id = self::$status_bimap[$status];
-        return self::fetch_alive()->where('status_id', '=', $status_id)->order_by($attr, $dir)->get();
+        $status_id = static::$status_bimap[$status];
+        return static::fetch_user_todo()->where('status_id', '=', $status_id)->order_by($attr, $dir)->get();
     }
 
     /**
@@ -71,7 +71,7 @@ class Model_Todo_Logic
      * @param  int $id      of Todo
      * @param  [attribute => value, ...] $updates attributes to be updated
      */
-    static function alter($id, $updates)
+    public function alter($id, $updates)
     {
         // suppose no missing id
         $todo = Model_Todo::find($id);
@@ -125,17 +125,17 @@ class Model_Todo_Logic
     }
 
     // run download csv of user ToDo
-    public static function export_all_user_todo_as_csv()
+    public function export_all_user_todo_as_csv()
     {
         $todos = [];
-        foreach (self::fetch_todo() as $todo) {
+        foreach (static::fetch_todo() as $todo) {
             $todos[] = [
                 // attr => val
                 'Name'   => $todo->name,
                 'Due'    => $todo->due,
-                'Status' => self::$status_bimap[$todo->status_id],
+                'Status' => static::$status_bimap[$todo->status_id],
             ];
         }
-        self::export_csv($todos, 'all_todo.csv');
+        static::export_csv($todos, 'all_todo.csv');
     }
 }
