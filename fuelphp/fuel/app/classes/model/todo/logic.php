@@ -108,26 +108,14 @@ class Model_Todo_Logic
     }
 
     // no support for Japanese Excel
-    public static function export_csv($array, $filename)
+    public static function export_csv($table, $filename)
     {
-        $res = Response::forge();
-        $res->set_header('Content-Type', 'text/csv; charset=utf-8');
-        $res->set_header('Content-Disposition', 'attachment; filename="' . $filename . '"');
-        // no cache
-        $res->set_header('Cache-Control', 'no-cache, no-store, max-age=0, must-revalidate');
-        $res->set_header('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT');
-        $res->set_header('Pragma', 'no-cache');
-
-        $csv = Format::forge($array)->to_csv();
-        $res->body($csv);
-
-        // file generation, export
+        $csv = Format::forge($table)->to_csv();
+        // file generating, export
         $temp = 'csvtemp~'; // to be overwritten
         $make = File::exists(DOCROOT . '/' . $temp) ? 'update' : 'create';
         File::$make(DOCROOT, $temp, $csv);
-
         File::download(DOCROOT . '/' . $temp, $filename);
-        return $res;
     }
 
     public static function export_all_user_todo_as_csv()
@@ -135,9 +123,10 @@ class Model_Todo_Logic
         $todos = [];
         foreach (self::fetch_todo() as $todo) {
             $todos[] = [
-                'name'   => $todo->name,
-                'due'    => $todo->due,
-                'status' => self::$status_bimap[$todo->status_id],
+                // attr => val
+                'Name'   => $todo->name,
+                'Due'    => $todo->due,
+                'Status' => self::$status_bimap[$todo->status_id],
             ];
         }
         self::export_csv($todos, 'all_todo.csv');
