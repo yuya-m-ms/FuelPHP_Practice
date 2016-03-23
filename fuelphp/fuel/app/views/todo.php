@@ -30,7 +30,11 @@
     <section class="app">
         <header>
             <h1>TODO app</h1>
-            <section class="new_task">
+            <section class="user">
+                <span>Current User ID:</span>
+                <span class="user_id"><?= Session::get('user_id') ?></span>
+            </section>
+            <section class="new_task mt1e">
                 <?= Form::open('todo/add') ?>
                 <?= Form::submit('submit', "Add") ?> a New Task:
                 <?= Form::input('name',     Input::post('name')) ?>&nbsp;
@@ -160,6 +164,11 @@
             <section class="reset mt1e">
                 <?= Form::open('todo') ?>
                 <?= Form::button('reset', "Reset the View") ?>
+                <?= Form::close() ?>
+            </section>
+            <section class="download mt1e">
+                <?= Form::open('todo/csv') ?>
+                <?= Form::button('download_csv', "Download all ToDos") ?>
                 <?= Form::close() ?>
             </section>
         </footer>

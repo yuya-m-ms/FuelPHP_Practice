@@ -40,6 +40,7 @@ class Controller_Todo extends Controller
             $todo->due       = Util_String::null_if_blank($input['due_daytime']);
             $todo->status_id = 0; // = open
             $todo->deleted   = false;
+            $todo->user_id   = Session::get('user_id');
             $todo->save();
         }
 
@@ -72,7 +73,10 @@ class Controller_Todo extends Controller
         $this->redirect_when_no_post();
 
         $val = Model_Todo_Logic::$validator;
-        if ($val->run()) {
+        if (!$val->run()) {
+            $data['html_error'] = $val->error();
+            return View::forge('todo', $data);
+        } else {
             $input = $val->validated();
             $due_daytime   = $input['due_day'] . ' ' . $input['due_time'];
             $status_id = $input['status_id'];
@@ -122,5 +126,10 @@ class Controller_Todo extends Controller
         ];
         $data['todos'] = Model_Todo_Logic::search($filter_status, $sort_key, $sort_dir);
         return View::forge('todo', $data);
+    }
+
+    public function action_csv()
+    {
+        Model_Todo_Logic::export_all_user_todo_as_csv();
     }
 }

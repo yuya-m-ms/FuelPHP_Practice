@@ -37,13 +37,18 @@ class Model_Todo_Logic
         return Model_Todo::query()->where('deleted', '=', false);
     }
 
+    private static function fetch_user_todo()
+    {
+        return self::fetch_alive()->where('user_id', '=', Session::get('user_id'));
+    }
+
     /**
      * Fetch TODOs from DB
      * @return iterator of TODOs
      */
     static function fetch_todo()
     {
-        return self::fetch_alive()->get();
+        return self::fetch_user_todo()->get();
     }
 
     static function fetch_filtered_by($status_id)
@@ -89,7 +94,6 @@ class Model_Todo_Logic
             ->add_rule('max_length', 100);
         $val->add('due_day', "Due day");
         $val->add('due_time', "Due time");
-        $val->add('status_id', "Status ID");
 
         return $val;
     }
@@ -101,5 +105,41 @@ class Model_Todo_Logic
         }
         $date = new DateTime($datetime);
         return [$date->format('Y-m-d'), $date->format('H:i')];
+    }
+
+    // no support for Japanese Excel
+    public static function export_csv($array, $filename)
+    {
+        $res = Response::forge();
+        $res->set_header('Content-Type', 'text/csv; charset=utf-8');
+        $res->set_header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+        // no cache
+        $res->set_header('Cache-Control', 'no-cache, no-store, max-age=0, must-revalidate');
+        $res->set_header('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT');
+        $res->set_header('Pragma', 'no-cache');
+
+        $csv = Format::forge($array)->to_csv();
+        $res->body($csv);
+
+        // file generation, export
+        $temp = 'csvtemp~'; // to be overwritten
+        $make = File::exists(DOCROOT . '/' . $temp) ? 'update' : 'create';
+        File::$make(DOCROOT, $temp, $csv);
+
+        File::download(DOCROOT . '/' . $temp, $filename);
+        return $res;
+    }
+
+    public static function export_all_user_todo_as_csv()
+    {
+        $todos = [];
+        foreach (self::fetch_todo() as $todo) {
+            $todos[] = [
+                'name'   => $todo->name,
+                'due'    => $todo->due,
+                'status' => self::$status_bimap[$todo->status_id],
+            ];
+        }
+        self::export_csv($todos, 'all_todo.csv');
     }
 }
