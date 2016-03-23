@@ -5,11 +5,26 @@
 */
 class Model_Todo_Logic
 {
-    static $status_cache;
-    static $status_map;
-    static $status_bimap;
-    static $status_list;
-    static $validator;
+    private static $status_cache;
+    private static $status_map;
+    private static $status_bimap;
+    private static $status_list;
+    private static $validator;
+
+    public function __get($property)
+    {
+        if (in_array($property, [
+            $status_cache,
+            $status_map,
+            $status_bimap,
+            $status_list,
+            $validator,
+        ]))
+        {
+            return $this->$property;
+        }
+        throw new Exception('Property '.$property.' is not accessible.');
+    }
 
     protected function __construct() {
         static::initialize();
