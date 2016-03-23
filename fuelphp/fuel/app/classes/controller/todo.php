@@ -78,8 +78,8 @@ class Controller_Todo extends Controller
             return View::forge('todo', $data);
         } else {
             $input = $val->validated();
-            $due_daytime   = $input['due_day'] . ' ' . $input['due_time'];
-            $status_id = $input['status_id'];
+            $due_daytime = $input['due_day'] . ' ' . $input['due_time'];
+            $status_id   = $input['status_id'];
             Model_Todo_Logic::alter($id, [
                 'name'      => $input['name'],
                 'due'       => Util_String::null_if_blank($due_daytime),
