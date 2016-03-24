@@ -79,7 +79,7 @@
                             </td>
                             <td><?= $todo->name; ?></td>
                             <td>
-                                <?php if (!is_null($todo->due)) {
+                                <?php if ( ! is_null($todo->due)) {
                                     $date = new DateTime($todo->due);
                                     echo $date->format('Y-m-d H:i');
                                 } ?>
@@ -102,7 +102,7 @@
                 <?php endif ?>
             </tbody>
         </table>
-        <?php if (!isset($todos) or empty($todos)): ?>
+        <?php if ( ! isset($todos) or empty($todos)): ?>
             <section class="no_entry">NO ENTRY!</section>
         <?php endif ?>
         <section class="alter mt1e">
@@ -114,7 +114,7 @@
                 </span>
                 <span>Due by:</span>
                 <span class="task_edited">
-                    <?= !empty($task_to_be_changed['due']) ? $task_to_be_changed['due'] : "Indefinite" ?>
+                    <?= ! empty($task_to_be_changed['due']) ? $task_to_be_changed['due'] : "Indefinite" ?>
                 </span>
                 <br>
                 <span class="pl3e">

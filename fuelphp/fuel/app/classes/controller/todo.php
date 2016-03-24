@@ -28,7 +28,7 @@ class Controller_Todo extends Controller
         $this->redirect_when_no_post();
 
         $val = Domain_Todo::$validator;
-        if (!$val->run()) {
+        if ( ! $val->run()) {
             $data['html_error'] = $val->error();
             return View::forge('todo', $data);
         } else {
@@ -66,7 +66,7 @@ class Controller_Todo extends Controller
         $this->redirect_when_no_post();
 
         $val = Domain_Todo::$validator;
-        if (!$val->run()) {
+        if ( ! $val->run()) {
             $data['html_error'] = $val->error();
             return View::forge('todo', $data);
         } else {
@@ -118,6 +118,7 @@ class Controller_Todo extends Controller
 
     public function action_csv()
     {
+        $user_id = Session::get('user_id');
         $run_download_as = Domain_Todo::forge_export_all_user_todo_as_csv($user_id);
         $run_download_as('all_todo.csv');
     }
