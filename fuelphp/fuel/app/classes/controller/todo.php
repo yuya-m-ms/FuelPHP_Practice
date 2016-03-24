@@ -33,15 +33,8 @@ class Controller_Todo extends Controller
             return View::forge('todo', $data);
         } else {
             $input = $val->validated();
-            $input['due_daytime'] = $input['due_day'] . ' ' . $input['due_time'];
-
-            $todo = Model_Todo::forge();
-            $todo->name      = $input['name'];
-            $todo->due       = Util_String::null_if_blank($input['due_daytime']);
-            $todo->status_id = 0; // = open
-            $todo->deleted   = false;
-            $todo->user_id   = Session::get('user_id');
-            $todo->save();
+            $input['user_id'] = Session::get('user_id');
+            $this->logic->add_todo($input);
         }
 
         Response::redirect('todo');

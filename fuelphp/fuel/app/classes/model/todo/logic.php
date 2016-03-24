@@ -71,6 +71,19 @@ class Model_Todo_Logic
         return static::fetch_user_todo()->get();
     }
 
+    public function add_todo($input)
+    {
+        $due_daytime = Util_String::null_if_blank($input['due_day'] . ' ' . $input['due_time']);
+
+        $todo = Model_Todo::forge();
+        $todo->name      = $input['name'];
+        $todo->due       = $due_daytime;
+        $todo->status_id = 0; // = open
+        $todo->deleted   = false;
+        $todo->user_id   = $input['user_id'];
+        $todo->save();
+    }
+
     // find all when $status_id is null
     public function search($status = 'all', $attr = 'name', $dir = 'asc')
     {
