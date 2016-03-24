@@ -100,15 +100,13 @@ class Domain_Todo
     /**
      * update todo by id
      * @param  int $id      of Todo
-     * @param  [attribute => value, ...] $updates attributes to be updated
+     * @param  map $updates attributes to be updated: [attribute => value, ...]
      */
     public static function alter($id, $updates)
     {
         // suppose no missing id
         $todo = Model_Todo::find($id);
-        foreach ($updates as $attr => $value) {
-            $todo->$attr = $value;
-        }
+        $todo->set($updates);
         $todo->save();
     }
 
