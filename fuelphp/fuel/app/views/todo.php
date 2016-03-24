@@ -85,7 +85,7 @@
                                 } ?>
                             </td>
                             <td class="status">
-                                <?= ucwords(Model_Todo_Logic::$status_bimap[$todo->status_id]) ?>
+                                <?= ucwords(Domain_Todo::$status_bimap[$todo->status_id]) ?>
                             </td>
                             <td class="button">
                                 <?= Form::open('todo/delete/' . $todo->id) ?>
@@ -128,7 +128,7 @@
                     <?= Form::input('due_time', $task_to_be_changed['due_time'], ['type' => 'time']) ?>
                     as status:
                     <?= Form::select('status_id', $task_to_be_changed['status_id']
-                        , array_map('ucwords', Model_Todo_Logic::$status_cache)
+                        , array_map('ucwords', Domain_Todo::$status_cache)
                     ) ?>
                 </span>
                 <?= Form::close() ?>
@@ -140,7 +140,7 @@
                 <?= Form::button('filter', "Filter", ['class' => 'w4e']) ?>
                 <span>by</span>
                 <?= Form::select('status', isset($status) ? $status : 'all'
-                    , Model_Todo_Logic::$status_list
+                    , Domain_Todo::$status_list
                 ) ?>
                 <br>
                 <?= Form::button('sort', "Sort", ['class' => 'w4e']) ?>

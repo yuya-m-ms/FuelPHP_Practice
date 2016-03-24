@@ -3,7 +3,7 @@
 /**
 * Model dealing with business logics
 */
-class Model_Todo_Logic
+class Domain_Todo
 {
     private static $status_cache;
     private static $status_map;
