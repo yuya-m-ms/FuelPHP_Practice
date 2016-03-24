@@ -5,37 +5,32 @@
 */
 class Domain_Todo
 {
-    private static $status_cache;
-    private static $status_map;
-    private static $status_bimap;
-    private static $status_list;
-    private static $validator;
+    public static $status_cache;
+    public static $status_map;
+    public static $status_bimap;
+    public static $status_list;
+    public static $validator;
 
     public function __get($property)
     {
-        if (in_array($property, [
-            $status_cache,
-            $status_map,
-            $status_bimap,
-            $status_list,
-            $validator,
-        ]))
+        if (property_exists(get_called_class(), $property))
         {
-            return $this->$property;
+            return static::$property;
         }
         throw new Exception('Property '.$property.' is not accessible.');
     }
 
-    protected function __construct() {
+    protected final function __construct()
+    {
+        // static only
+    }
+
+    public static function before()
+    {
         static::initialize();
     }
 
-    public static function forge()
-    {
-        return new static();
-    }
-
-    private static function initialize()
+    protected static function initialize()
     {
         static::$status_cache = array_map(
             function ($row) {
@@ -52,12 +47,12 @@ class Domain_Todo
      * Fetch all alive ToDos from DB
      * @return ORM object
      */
-    private static function fetch_alive()
+    protected static function fetch_alive()
     {
         return Model_Todo::query()->where('deleted', '=', false);
     }
 
-    private static function fetch_user_todo()
+    protected static function fetch_user_todo()
     {
         return static::fetch_alive()->where('user_id', '=', Session::get('user_id'));
     }
@@ -66,12 +61,12 @@ class Domain_Todo
      * Fetch TODOs from DB
      * @return iterator of TODOs
      */
-    public function fetch_todo()
+    public static function fetch_todo()
     {
         return static::fetch_user_todo()->get();
     }
 
-    public function add_todo($input)
+    public static function add_todo($input)
     {
         $due_daytime = Util_String::null_if_blank($input['due_day'] . ' ' . $input['due_time']);
 
@@ -84,7 +79,7 @@ class Domain_Todo
         $todo->save();
     }
 
-    public function change_todo($id, $input)
+    public static function change_todo($id, $input)
     {
         $due_daytime = Util_String::null_if_blank($input['due_day'] . ' ' . $input['due_time']);
 
@@ -96,7 +91,7 @@ class Domain_Todo
     }
 
     // find all when $status_id is null
-    public function search($status = 'all', $attr = 'name', $dir = 'asc')
+    public static function search($status = 'all', $attr = 'name', $dir = 'asc')
     {
         if (strcasecmp($status, 'all') == 0) {
             return static::fetch_user_todo()->order_by($attr, $dir)->get();
@@ -110,7 +105,7 @@ class Domain_Todo
      * @param  int $id      of Todo
      * @param  [attribute => value, ...] $updates attributes to be updated
      */
-    public function alter($id, $updates)
+    public static function alter($id, $updates)
     {
         // suppose no missing id
         $todo = Model_Todo::find($id);
@@ -123,7 +118,7 @@ class Domain_Todo
     /**
      * @return Validation for a new task
      */
-    static function forge_validation()
+    public static function forge_validation()
     {
         $val = Validation::forge();
 
@@ -167,7 +162,7 @@ class Domain_Todo
     }
 
     // run download csv of user ToDo
-    public function forge_export_all_user_todo_as_csv()
+    public static function forge_export_all_user_todo_as_csv()
     {
         $todos = [];
         foreach (static::fetch_todo() as $todo) {

@@ -5,14 +5,14 @@
 */
 class Controller_Todo extends Controller
 {
-    function before()
+    public function before()
     {
-        $this->logic = Model_Todo_Logic::forge();
+        Domain_Todo::before();
     }
 
     public function action_index()
     {
-        $data['todos'] = $this->logic->fetch_todo();
+        $data['todos'] = Domain_Todo::fetch_todo();
         return View::forge('todo', $data);
     }
 
@@ -27,14 +27,14 @@ class Controller_Todo extends Controller
     {
         $this->redirect_when_no_post();
 
-        $val = $this->logic->$validator;
+        $val = Domain_Todo::$validator;
         if (!$val->run()) {
             $data['html_error'] = $val->error();
             return View::forge('todo', $data);
         } else {
             $input = $val->validated();
             $input['user_id'] = Session::get('user_id');
-            $this->logic->add_todo($input);
+            Domain_Todo::add_todo($input);
         }
 
         Response::redirect('todo');
@@ -43,21 +43,21 @@ class Controller_Todo extends Controller
     public function action_delete($id)
     {
         $this->redirect_when_no_post();
-        $this->logic->alter($id, ['deleted' => true]);
+        Domain_Todo::alter($id, ['deleted' => true]);
         Response::redirect('todo');
     }
 
     public function action_done($id)
     {
         $this->redirect_when_no_post();
-        $this->logic->alter($id, ['status_id' => 1]);
+        Domain_Todo::alter($id, ['status_id' => 1]);
         Response::redirect('todo');
     }
 
     public function action_undone($id)
     {
         $this->redirect_when_no_post();
-        $this->logic->alter($id, ['status_id' => 0]);
+        Domain_Todo::alter($id, ['status_id' => 0]);
         Response::redirect('todo');
     }
 
@@ -65,13 +65,13 @@ class Controller_Todo extends Controller
     {
         $this->redirect_when_no_post();
 
-        $val = $this->logic->$validator;
+        $val = Domain_Todo::$validator;
         if (!$val->run()) {
             $data['html_error'] = $val->error();
             return View::forge('todo', $data);
         } else {
             $input = $val->validated();
-            $this->logic->change_todo($id, $input);
+            Domain_Todo::change_todo($id, $input);
         }
 
         Response::redirect('todo');
@@ -80,7 +80,7 @@ class Controller_Todo extends Controller
     public function action_to_change($id)
     {
         $todo = Model_Todo::find($id);
-        list($due_day, $due_time) = Model_Todo_Logic::chop_datetime($todo->due);
+        list($due_day, $due_time) = Domain_Todo::chop_datetime($todo->due);
         $data['task_to_be_changed'] = [
             'id'        => $todo->id,
             'name'      => $todo->name,
@@ -89,7 +89,7 @@ class Controller_Todo extends Controller
             'due_time'  => $due_time,
             'status_id' => $todo->status_id,
         ];
-        $data['todos'] = $this->logic->fetch_todo();
+        $data['todos'] = Domain_Todo::fetch_todo();
         return View::forge('todo', $data);
     }
 
@@ -111,13 +111,13 @@ class Controller_Todo extends Controller
             'attr'   => $sort_key,
             'dir'    => $sort_dir,
         ];
-        $data['todos'] = $this->logic->search($filter_status, $sort_key, $sort_dir);
+        $data['todos'] = Domain_Todo::search($filter_status, $sort_key, $sort_dir);
         return View::forge('todo', $data);
     }
 
     public function action_csv()
     {
-        $run_download_as = $this->logic->forge_export_all_user_todo_as_csv();
+        $run_download_as = Domain_Todo::forge_export_all_user_todo_as_csv();
         $run_download_as('all_todo.csv');
     }
 }
