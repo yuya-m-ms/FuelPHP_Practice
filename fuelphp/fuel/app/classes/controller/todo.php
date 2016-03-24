@@ -12,7 +12,7 @@ class Controller_Todo extends Controller
 
     public function action_index()
     {
-        $data['todos'] = Domain_Todo::fetch_todo();
+        $data['todos'] = Domain_Todo::fetch_todo(Session::get('user_id'));
         return View::forge('todo', $data);
     }
 
@@ -89,7 +89,7 @@ class Controller_Todo extends Controller
             'due_time'  => $due_time,
             'status_id' => $todo->status_id,
         ];
-        $data['todos'] = Domain_Todo::fetch_todo();
+        $data['todos'] = Domain_Todo::fetch_todo(Session::get('user_id'));
         return View::forge('todo', $data);
     }
 
@@ -111,13 +111,14 @@ class Controller_Todo extends Controller
             'attr'   => $sort_key,
             'dir'    => $sort_dir,
         ];
-        $data['todos'] = Domain_Todo::search($filter_status, $sort_key, $sort_dir);
+        $user_id = Session::get('user_id');
+        $data['todos'] = Domain_Todo::search($filter_status, $sort_key, $sort_dir, $user_id);
         return View::forge('todo', $data);
     }
 
     public function action_csv()
     {
-        $run_download_as = Domain_Todo::forge_export_all_user_todo_as_csv();
+        $run_download_as = Domain_Todo::forge_export_all_user_todo_as_csv($user_id);
         $run_download_as('all_todo.csv');
     }
 }

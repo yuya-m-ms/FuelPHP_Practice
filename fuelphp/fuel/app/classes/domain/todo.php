@@ -52,18 +52,18 @@ class Domain_Todo
         return Model_Todo::query()->where('deleted', '=', false);
     }
 
-    protected static function fetch_user_todo()
+    protected static function fetch_user_todo($user_id)
     {
-        return static::fetch_alive()->where('user_id', '=', Session::get('user_id'));
+        return static::fetch_alive()->where('user_id', '=', $user_id);
     }
 
     /**
      * Fetch TODOs from DB
      * @return iterator of TODOs
      */
-    public static function fetch_todo()
+    public static function fetch_todo($user_id = 0)
     {
-        return static::fetch_user_todo()->get();
+        return static::fetch_user_todo($user_id)->get();
     }
 
     public static function add_todo($input)
@@ -91,13 +91,13 @@ class Domain_Todo
     }
 
     // find all when $status_id is null
-    public static function search($status = 'all', $attr = 'name', $dir = 'asc')
+    public static function search($status = 'all', $attr = 'name', $dir = 'asc', $user_id = 0)
     {
         if (strcasecmp($status, 'all') == 0) {
-            return static::fetch_user_todo()->order_by($attr, $dir)->get();
+            return static::fetch_user_todo($user_id)->order_by($attr, $dir)->get();
         }
         $status_id = static::$status_bimap[$status];
-        return static::fetch_user_todo()->where('status_id', '=', $status_id)->order_by($attr, $dir)->get();
+        return static::fetch_user_todo($user_id)->where('status_id', '=', $status_id)->order_by($attr, $dir)->get();
     }
 
     /**
@@ -162,10 +162,10 @@ class Domain_Todo
     }
 
     // run download csv of user ToDo
-    public static function forge_export_all_user_todo_as_csv()
+    public static function forge_export_all_user_todo_as_csv($user_id)
     {
         $todos = [];
-        foreach (static::fetch_todo() as $todo) {
+        foreach (static::fetch_todo($user_id) as $todo) {
             $todos[] = [
                 // attr => val
                 'Name'   => $todo->name,
