@@ -84,6 +84,17 @@ class Model_Todo_Logic
         $todo->save();
     }
 
+    public function change_todo($id, $input)
+    {
+        $due_daytime = Util_String::null_if_blank($input['due_day'] . ' ' . $input['due_time']);
+
+        static::alter($id, [
+            'name'      => $input['name'],
+            'due'       => $due_daytime,
+            'status_id' => $input['status_id'],
+        ]);
+    }
+
     // find all when $status_id is null
     public function search($status = 'all', $attr = 'name', $dir = 'asc')
     {
