@@ -5,23 +5,8 @@
 */
 class Domain_Todo
 {
-    public static $status_cache;
-    public static $status_map;
-    public static $status_list;
-    public static $validator;
-
-    public function __get($property)
-    {
-        if (property_exists(get_called_class(), $property))
-        {
-            return static::$property;
-        }
-        throw new Exception('Property '.$property.' is not accessible.');
-    }
-
-    protected final function __construct()
-    {
-        // static only
+    use Trait_Naughton {
+        set as protected;
     }
 
     public static function before()
@@ -31,14 +16,17 @@ class Domain_Todo
 
     protected static function initialize()
     {
-        static::$status_cache = array_map(
+        $status_cache = array_map(
             function ($row) {
                 return $row->name;
             }, Model_Todo_Status::query()->select('name')->get()
         );
-        static::$status_map   = Util_Array::to_map('ucwords', static::$status_cache);
-        static::$status_list  = ['all' => "All"] + static::$status_map;
-        static::$validator    = static::forge_validation();
+        $status_list = ['all' => "All"] + Util_Array::to_map('ucwords', $status_cache);
+        $validator   = static::forge_validation();
+
+        static::set('status_cache', $status_cache);
+        static::set('status_list',  $status_list);
+        static::set('validator',    $validator);
     }
 
     /**

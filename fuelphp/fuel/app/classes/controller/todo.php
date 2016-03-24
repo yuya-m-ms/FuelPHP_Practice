@@ -20,7 +20,7 @@ class Controller_Todo extends Controller
         if ( ! array_key_exists('todos', $data)) {
             $data['todos'] = Domain_Todo::fetch_todo(Session::get('user_id'));
         }
-        $data['status_list'] = Domain_Todo::$status_list;
+        $data['status_list'] = Domain_Todo::get('status_list');
         $data['user_id'] = Session::get('user_id') ?: 0;
         return View::forge('todo', $data);
     }
@@ -36,7 +36,7 @@ class Controller_Todo extends Controller
     {
         $this->redirect_when_no_post();
 
-        $val = Domain_Todo::$validator;
+        $val = Domain_Todo::get('validator');
         if ( ! $val->run()) {
             $data['html_error'] = $val->error();
             return $this->forge_todo_view($data);
@@ -74,7 +74,7 @@ class Controller_Todo extends Controller
     {
         $this->redirect_when_no_post();
 
-        $val = Domain_Todo::$validator;
+        $val = Domain_Todo::get('validator');
         if ( ! $val->run()) {
             $data['html_error'] = $val->error();
             return $this->forge_todo_view($data);
@@ -98,7 +98,7 @@ class Controller_Todo extends Controller
             'due_time'  => $due_time,
             'status_id' => $todo->status_id,
         ];
-        $data['statuses']    = array_map('ucwords', Domain_Todo::$status_cache);
+        $data['statuses']    = array_map('ucwords', Domain_Todo::get('status_cache'));
         return $this->forge_todo_view($data);
     }
 
