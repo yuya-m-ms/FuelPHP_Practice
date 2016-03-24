@@ -13,6 +13,7 @@ class Controller_Todo extends Controller
     public function action_index()
     {
         $data['todos'] = Domain_Todo::fetch_todo(Session::get('user_id'));
+        $data['status_list'] = Domain_Todo::$status_list;
         return View::forge('todo', $data);
     }
 
@@ -90,6 +91,8 @@ class Controller_Todo extends Controller
             'status_id' => $todo->status_id,
         ];
         $data['todos'] = Domain_Todo::fetch_todo(Session::get('user_id'));
+        $data['status_list'] = Domain_Todo::$status_list;
+        $data['statuses']    = array_map('ucwords', Domain_Todo::$status_cache);
         return View::forge('todo', $data);
     }
 
@@ -113,6 +116,7 @@ class Controller_Todo extends Controller
         ];
         $user_id = Session::get('user_id');
         $data['todos'] = Domain_Todo::search($filter_status, $sort_key, $sort_dir, $user_id);
+        $data['status_list'] = Domain_Todo::$status_list;
         return View::forge('todo', $data);
     }
 

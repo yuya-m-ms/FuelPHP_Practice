@@ -127,9 +127,7 @@
                     <?= Form::label("at: ", 'due_time') ?>
                     <?= Form::input('due_time', $task_to_be_changed['due_time'], ['type' => 'time']) ?>
                     as status:
-                    <?= Form::select('status_id', $task_to_be_changed['status_id']
-                        , array_map('ucwords', Domain_Todo::$status_cache)
-                    ) ?>
+                    <?= Form::select('status_id', $task_to_be_changed['status_id'], $statuses) ?>
                 </span>
                 <?= Form::close() ?>
             <?php endif ?>
@@ -139,9 +137,7 @@
                 <?= Form::open('todo/to_search') ?>
                 <?= Form::button('filter', "Filter", ['class' => 'w4e']) ?>
                 <span>by</span>
-                <?= Form::select('status', isset($status) ? $status : 'all'
-                    , Domain_Todo::$status_list
-                ) ?>
+                <?= Form::select('status', isset($status) ? $status : 'all', $status_list) ?>
                 <br>
                 <?= Form::button('sort', "Sort", ['class' => 'w4e']) ?>
                 <span>by</span>
