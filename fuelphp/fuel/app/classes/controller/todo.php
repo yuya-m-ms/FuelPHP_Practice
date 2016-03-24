@@ -12,7 +12,14 @@ class Controller_Todo extends Controller
 
     public function action_index()
     {
-        $data['todos'] = Domain_Todo::fetch_todo(Session::get('user_id'));
+        return $this->forge_todo_view();
+    }
+
+    protected function forge_todo_view($data = [])
+    {
+        if ( ! array_key_exists('todos', $data)) {
+            $data['todos'] = Domain_Todo::fetch_todo(Session::get('user_id'));
+        }
         $data['status_list'] = Domain_Todo::$status_list;
         return View::forge('todo', $data);
     }
@@ -31,7 +38,7 @@ class Controller_Todo extends Controller
         $val = Domain_Todo::$validator;
         if ( ! $val->run()) {
             $data['html_error'] = $val->error();
-            return View::forge('todo', $data);
+            return $this->forge_todo_view($data);
         } else {
             $input = $val->validated();
             $input['user_id'] = Session::get('user_id');
@@ -69,7 +76,7 @@ class Controller_Todo extends Controller
         $val = Domain_Todo::$validator;
         if ( ! $val->run()) {
             $data['html_error'] = $val->error();
-            return View::forge('todo', $data);
+            return $this->forge_todo_view($data);
         } else {
             $input = $val->validated();
             Domain_Todo::change_todo($id, $input);
@@ -90,10 +97,8 @@ class Controller_Todo extends Controller
             'due_time'  => $due_time,
             'status_id' => $todo->status_id,
         ];
-        $data['todos'] = Domain_Todo::fetch_todo(Session::get('user_id'));
-        $data['status_list'] = Domain_Todo::$status_list;
         $data['statuses']    = array_map('ucwords', Domain_Todo::$status_cache);
-        return View::forge('todo', $data);
+        return $this->forge_todo_view($data);
     }
 
     public function action_to_search()
@@ -116,8 +121,7 @@ class Controller_Todo extends Controller
         ];
         $user_id = Session::get('user_id');
         $data['todos'] = Domain_Todo::search($filter_status, $sort_key, $sort_dir, $user_id);
-        $data['status_list'] = Domain_Todo::$status_list;
-        return View::forge('todo', $data);
+        return $this->forge_todo_view($data);
     }
 
     public function action_csv()
