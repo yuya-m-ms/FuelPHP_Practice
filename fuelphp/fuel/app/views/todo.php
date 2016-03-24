@@ -155,9 +155,7 @@
                 <?= Form::close() ?>
             </section>
             <section class="reset mt1e">
-                <?= Form::open('todo') ?>
-                <?= Form::button('reset', "Reset the View") ?>
-                <?= Form::close() ?>
+                <a href="/todo/">Reset</a>
             </section>
             <section class="download mt1e">
                 <?= Form::open(['action' => 'todo/csv', 'method' => 'get']) ?>
