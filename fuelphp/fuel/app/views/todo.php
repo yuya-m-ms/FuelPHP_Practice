@@ -85,7 +85,7 @@
                                 } ?>
                             </td>
                             <td class="status">
-                                <?= ucwords(Domain_Todo::$status_bimap[$todo->status_id]) ?>
+                                <?= ucwords($todo->status->name) ?>
                             </td>
                             <td class="button">
                                 <?= Form::open('todo/delete/' . $todo->id) ?>

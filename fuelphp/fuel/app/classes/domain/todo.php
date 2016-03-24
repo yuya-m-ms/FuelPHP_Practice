@@ -7,7 +7,6 @@ class Domain_Todo
 {
     public static $status_cache;
     public static $status_map;
-    public static $status_bimap;
     public static $status_list;
     public static $validator;
 
@@ -38,7 +37,6 @@ class Domain_Todo
             }, Model_Todo_Status::query()->select('name')->get()
         );
         static::$status_map   = Util_Array::to_map('ucwords', static::$status_cache);
-        static::$status_bimap = Util_Array::bimap(static::$status_cache);
         static::$status_list  = ['all' => "All"] + static::$status_map;
         static::$validator    = static::forge_validation();
     }
@@ -96,8 +94,7 @@ class Domain_Todo
         if (strcasecmp($status, 'all') == 0) {
             return static::fetch_user_todo($user_id)->order_by($attr, $dir)->get();
         }
-        $status_id = static::$status_bimap[$status];
-        return static::fetch_user_todo($user_id)->where('status_id', '=', $status_id)->order_by($attr, $dir)->get();
+        return static::fetch_user_todo($user_id)->where('status.name', '=', $status)->order_by($attr, $dir)->get();
     }
 
     /**
@@ -170,7 +167,7 @@ class Domain_Todo
                 // attr => val
                 'Name'   => $todo->name,
                 'Due'    => $todo->due,
-                'Status' => static::$status_bimap[$todo->status_id],
+                'Status' => $todo->status->name,
             ];
         }
         return static::export_csv($todos);
