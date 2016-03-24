@@ -123,6 +123,7 @@ class Controller_Todo extends Controller
 
     public function action_csv()
     {
-        $this->logic->export_all_user_todo_as_csv();
+        $run_download_as = $this->logic->forge_export_all_user_todo_as_csv();
+        $run_download_as('all_todo.csv');
     }
 }

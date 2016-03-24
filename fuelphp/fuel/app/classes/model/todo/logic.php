@@ -140,20 +140,23 @@ class Model_Todo_Logic
     /**
      * No support for Japanese Excel
      * @param  array $table    array of [attr => value]
-     * @param  String $filename of csv
+     * @return closure      run download with given filename
      */
-    public static function export_csv($table, $filename)
+    public static function export_csv($table)
     {
         $csv = Format::forge($table)->to_csv();
-        // file generating, export
+
         $temp = 'csvtemp~'; // to be overwritten
         $make = File::exists(DOCROOT . '/' . $temp) ? 'update' : 'create';
         File::$make(DOCROOT, $temp, $csv);
-        File::download(DOCROOT . '/' . $temp, $filename);
+
+        return $download_runnable = function ($filename) use ($temp)  {
+            File::download(DOCROOT . '/' . $temp, $filename);
+        };
     }
 
     // run download csv of user ToDo
-    public function export_all_user_todo_as_csv()
+    public function forge_export_all_user_todo_as_csv()
     {
         $todos = [];
         foreach (static::fetch_todo() as $todo) {
@@ -164,6 +167,6 @@ class Model_Todo_Logic
                 'Status' => static::$status_bimap[$todo->status_id],
             ];
         }
-        static::export_csv($todos, 'all_todo.csv');
+        return static::export_csv($todos);
     }
 }
