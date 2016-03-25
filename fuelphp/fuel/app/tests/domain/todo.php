@@ -29,8 +29,11 @@ class Test_Domain_Todo extends TestCase
         }
     }
 
-    public function test_it($foo = 'bar')
+    public function test_fetch_todo()
     {
-        $this->fail('no test');
+        $todos = Domain_Todo::fetch_todo(0);
+        foreach ($todos as $todo) {
+            $this->assertInstanceOf('Model_Todo', $todo);
+        }
     }
 }
