@@ -36,4 +36,19 @@ class Test_Domain_Todo extends TestCase
             $this->assertInstanceOf('Model_Todo', $todo);
         }
     }
+
+    public function test_forge_download_all_todo()
+    {
+        $closure = Domain_Todo::forge_download_all_todo(0, 'xml');
+        $this->assertInstanceOf('\Closure', $closure);
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function test_forge_download_all_todo_invalid_format()
+    {
+        $closure = Domain_Todo::forge_download_all_todo(0, 'foobar');
+        $this->assertInstanceOf('\Closure', $closure);
+    }
 }
