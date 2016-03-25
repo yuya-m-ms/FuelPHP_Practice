@@ -158,9 +158,21 @@
                 <a href="/todo/">Reset</a>
             </section>
             <section class="download mt1e">
-                <?= Form::open(['action' => 'todo/csv', 'method' => 'get']) ?>
-                <?= Form::button('download_csv', "Download all ToDos") ?>
-                <?= Form::close() ?>
+                <span class="csv">
+                    <?= Form::open(['action' => 'todo/download/csv', 'method' => 'get']) ?>
+                    <?= Form::button('download_csv', "Download all ToDos as CSV") ?>
+                    <?= Form::close() ?>
+                </span>
+                <span class="xml">
+                    <?= Form::open(['action' => 'todo/download/xml', 'method' => 'get']) ?>
+                    <?= Form::button('download_xml', "Download all ToDos as XML") ?>
+                    <?= Form::close() ?>
+                </span>
+                <span class="json">
+                    <?= Form::open(['action' => 'todo/download/json', 'method' => 'get']) ?>
+                    <?= Form::button('download_json', "Download all ToDos as json") ?>
+                    <?= Form::close() ?>
+                </span>
             </section>
         </footer>
     </section>
