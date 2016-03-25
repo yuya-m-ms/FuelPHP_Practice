@@ -21,6 +21,7 @@ class Controller_Todo extends Controller
             $data['todos'] = Domain_Todo::fetch_todo(Session::get('user_id'));
         }
         $data['status_list'] = Domain_Todo::$status_list;
+        $data['user_id'] = Session::get('user_id') ?: 0;
         return View::forge('todo', $data);
     }
 
