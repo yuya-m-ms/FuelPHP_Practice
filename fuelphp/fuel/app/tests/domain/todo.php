@@ -37,6 +37,16 @@ class Test_Domain_Todo extends TestCase
         }
     }
 
+    public function test_alter()
+    {
+        $id_to_be_tested = 12;
+        $attr  = 'name';
+        $value = 'tested';
+        Domain_Todo::alter($id_to_be_tested, [$attr => $value]);
+        $value_changed = Model_Todo::find($id_to_be_tested)->$attr;
+        $this->assertEquals($value, $value_changed);
+    }
+
     public function test_forge_download_all_todo()
     {
         $closure = Domain_Todo::forge_download_all_todo(0, 'xml');
