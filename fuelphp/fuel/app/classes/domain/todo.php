@@ -131,21 +131,26 @@ class Domain_Todo
      * @param  array $table    array of [attr => value]
      * @return closure      run download with given filename
      */
-    public static function export_csv($table)
+    public static function downloadable($table, $format)
     {
-        $csv = Format::forge($table)->to_csv();
+        $allowed_format = ['csv', 'xml', 'json'];
+        if ( ! in_array(strtolower($format), $allowed_format)) {
+            throw new Exception('Invalid format');
+        }
+        $convert = 'to_'.$format;
+        $data    = Format::forge($table)->$convert();
 
-        $temp = 'csvtemp~'; // to be overwritten
+        $temp = 'download_temp~'; // to be overwritten
         $make = File::exists(DOCROOT.'/'.$temp) ? 'update' : 'create';
-        File::$make(DOCROOT, $temp, $csv);
+        File::$make(DOCROOT, $temp, $data);
 
-        return $download_runnable = function ($filename) use ($temp)  {
+        return $download_runnable = function ($filename) use ($temp) {
             File::download(DOCROOT.'/'.$temp, $filename);
         };
     }
 
     // run download csv of user ToDo
-    public static function forge_export_all_user_todo_as_csv($user_id)
+    public static function forge_download_all_todo($user_id, $format)
     {
         $todos = [];
         foreach (static::fetch_todo($user_id) as $todo) {
@@ -156,6 +161,6 @@ class Domain_Todo
                 'Status' => $todo->status->name,
             ];
         }
-        return static::export_csv($todos);
+        return static::downloadable($todos, $format);
     }
 }
