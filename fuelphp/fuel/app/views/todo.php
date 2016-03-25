@@ -67,12 +67,12 @@
                                 <!-- toggle open/finished -->
                                 <?php if ($todo->status_id == 1): ?>
                                     <!-- task is done -->
-                                    <?= Form::open('todo/undone/' . $todo->id) ?>
+                                    <?= Form::open('todo/undone/'.$todo->id) ?>
                                     <?= Form::button('undone', "Undone") ?>
                                     <?= Form::close() ?>
                                 <?php else: ?>
                                     <!-- task is open -->
-                                    <?= Form::open('todo/done/' . $todo->id) ?>
+                                    <?= Form::open('todo/done/'.$todo->id) ?>
                                     <?= Form::button('done', "Done") ?>
                                     <?= Form::close() ?>
                                 <?php endif ?>
@@ -88,12 +88,12 @@
                                 <?= ucwords($todo->status->name) ?>
                             </td>
                             <td class="button">
-                                <?= Form::open('todo/delete/' . $todo->id) ?>
+                                <?= Form::open('todo/delete/'.$todo->id) ?>
                                 <?= Form::button('delete', "Delete") ?>
                                 <?= Form::close() ?>
                             </td>
                             <td class="button">
-                                <?= Form::open('todo/to_change/' . $todo->id) ?>
+                                <?= Form::open('todo/to_change/'.$todo->id) ?>
                                 <?= Form::button('to_change', "To change") ?>
                                 <?= Form::close() ?>
                             </td>
@@ -107,7 +107,7 @@
         <?php endif ?>
         <section class="alter mt1e">
             <?php if (isset($task_to_be_changed)): ?>
-                <?= Form::open('todo/change/' . $task_to_be_changed['id']) ?>
+                <?= Form::open('todo/change/'.$task_to_be_changed['id']) ?>
                 <?= Form::button('change', "Change") ?>
                 <span class="task_edited">
                     <?= $task_to_be_changed['name'] ?>

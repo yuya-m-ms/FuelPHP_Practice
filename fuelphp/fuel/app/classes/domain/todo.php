@@ -66,7 +66,7 @@ class Domain_Todo
 
     public static function add_todo($input)
     {
-        $due_daytime = Util_String::null_if_blank($input['due_day'] . ' ' . $input['due_time']);
+        $due_daytime = Util_String::null_if_blank($input['due_day'].' '.$input['due_time']);
 
         $todo = Model_Todo::forge();
         $todo->name      = $input['name'];
@@ -79,7 +79,7 @@ class Domain_Todo
 
     public static function change_todo($id, $input)
     {
-        $due_daytime = Util_String::null_if_blank($input['due_day'] . ' ' . $input['due_time']);
+        $due_daytime = Util_String::null_if_blank($input['due_day'].' '.$input['due_time']);
 
         static::alter($id, [
             'name'      => $input['name'],
@@ -148,11 +148,11 @@ class Domain_Todo
         $csv = Format::forge($table)->to_csv();
 
         $temp = 'csvtemp~'; // to be overwritten
-        $make = File::exists(DOCROOT . '/' . $temp) ? 'update' : 'create';
+        $make = File::exists(DOCROOT.'/'.$temp) ? 'update' : 'create';
         File::$make(DOCROOT, $temp, $csv);
 
         return $download_runnable = function ($filename) use ($temp)  {
-            File::download(DOCROOT . '/' . $temp, $filename);
+            File::download(DOCROOT.'/'.$temp, $filename);
         };
     }
 

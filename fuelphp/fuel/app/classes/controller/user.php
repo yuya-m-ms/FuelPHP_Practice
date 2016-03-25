@@ -11,6 +11,6 @@ class Controller_User extends Controller
       if(Session::get('user_id') == 1) $name = "田中太郎";
       if(Session::get('user_id') == 2) $name = "鈴木次郎";
       if(Session::get('user_id') == 3) $name = "山田花子";
-      return $name . "に設定しました";
+      return $name."に設定しました";
     }
 }
