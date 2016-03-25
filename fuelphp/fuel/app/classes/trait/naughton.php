@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Naughton Trait
+ * Naughton pattern Trait
  * cf. Singleton, Multiton
  */
 trait Trait_Naughton
@@ -10,7 +10,7 @@ trait Trait_Naughton
 
     public static function get($property)
     {
-        return static::$properties[$property];
+        return isset(static::$properties[$property]) ? static::$properties[$property] : null;
     }
 
     public static function set($property, $value)

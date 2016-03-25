@@ -22,11 +22,10 @@ class Domain_Todo
             }, Model_Todo_Status::query()->select('name')->get()
         );
         $status_list = ['all' => "All"] + Util_Array::to_map('ucwords', $status_cache);
-        $validator   = static::forge_validation();
-
         static::set('status_cache', $status_cache);
         static::set('status_list',  $status_list);
-        static::set('validator',    $validator);
+
+        static::get('validator') or static::set('validator', static::forge_validation());
     }
 
     /**
