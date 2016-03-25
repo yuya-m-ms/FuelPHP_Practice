@@ -6,15 +6,12 @@
     <style type="text/css">
         section.app { margin: 2em; width: 80%; max-width: 800px; }
         div.task { margin: 2px; border: 1px solid #000; }
-        input[type="submit"] { font: 1.2em Arial,sans-serif; }
         table.todo_table, thead, th, tr, td { border: 1px solid #000; }
-        td.checkbox { text-align: center; }
-        td.button { text-align: center; }
-        td.status { text-align: center; }
+        td.checkbox, td.button, td.status { text-align: center; }
         .no_click { pointer-events: none; }
         span.task_edited { font-weight: bold; }
         /*lazy Emmet shorthands*/
-        .w3e { width: 3em; }
+        .w4e { width: 4em; }
         .pl3e { padding-left: 3em; }
         .mt1e { margin-top: 1em; }
         section.no_entry {
@@ -32,11 +29,11 @@
             <h1>TODO app</h1>
             <section class="user">
                 <span>Current User ID:</span>
-                <span class="user_id"><?= Session::get('user_id') ?></span>
+                <span class="user_id"><?= $user_id ?></span>
             </section>
             <section class="new_task mt1e">
                 <?= Form::open('todo/add') ?>
-                <?= Form::submit('submit', "Add") ?> a New Task:
+                <?= Form::button('add', "Add") ?> a New Task:
                 <?= Form::input('name',     Input::post('name')) ?>&nbsp;
                 <?= Form::label("Due on: ", 'due_day') ?>
                 <?= Form::input('due_day',  Input::post('due_day'), ['type' => 'date', 'max' => "9999-12-31"]) ?>
@@ -71,33 +68,33 @@
                                 <?php if ($todo->status_id == 1): ?>
                                     <!-- task is done -->
                                     <?= Form::open('todo/undone/' . $todo->id) ?>
-                                    <?= Form::submit('undone', "Undone") ?>
+                                    <?= Form::button('undone', "Undone") ?>
                                     <?= Form::close() ?>
                                 <?php else: ?>
                                     <!-- task is open -->
                                     <?= Form::open('todo/done/' . $todo->id) ?>
-                                    <?= Form::submit('done', "Done") ?>
+                                    <?= Form::button('done', "Done") ?>
                                     <?= Form::close() ?>
                                 <?php endif ?>
                             </td>
                             <td><?= $todo->name; ?></td>
                             <td>
-                                <?php if (!is_null($todo->due)) {
+                                <?php if ( ! is_null($todo->due)) {
                                     $date = new DateTime($todo->due);
                                     echo $date->format('Y-m-d H:i');
                                 } ?>
                             </td>
                             <td class="status">
-                                <?= ucwords(Model_Todo_Logic::$status_bimap[$todo->status_id]) ?>
+                                <?= ucwords($todo->status->name) ?>
                             </td>
                             <td class="button">
                                 <?= Form::open('todo/delete/' . $todo->id) ?>
-                                <?= Form::submit('delete', "Delete") ?>
+                                <?= Form::button('delete', "Delete") ?>
                                 <?= Form::close() ?>
                             </td>
                             <td class="button">
                                 <?= Form::open('todo/to_change/' . $todo->id) ?>
-                                <?= Form::submit('to_change', "To change") ?>
+                                <?= Form::button('to_change', "To change") ?>
                                 <?= Form::close() ?>
                             </td>
                         </tr>
@@ -105,19 +102,19 @@
                 <?php endif ?>
             </tbody>
         </table>
-        <?php if (!isset($todos) or empty($todos)): ?>
+        <?php if ( ! isset($todos) or empty($todos)): ?>
             <section class="no_entry">NO ENTRY!</section>
         <?php endif ?>
         <section class="alter mt1e">
             <?php if (isset($task_to_be_changed)): ?>
                 <?= Form::open('todo/change/' . $task_to_be_changed['id']) ?>
-                <?= Form::submit('change', "Change") ?>
+                <?= Form::button('change', "Change") ?>
                 <span class="task_edited">
                     <?= $task_to_be_changed['name'] ?>
                 </span>
                 <span>Due by:</span>
                 <span class="task_edited">
-                    <?= !empty($task_to_be_changed['due']) ? $task_to_be_changed['due'] : "Indefinite" ?>
+                    <?= ! empty($task_to_be_changed['due']) ? $task_to_be_changed['due'] : "Indefinite" ?>
                 </span>
                 <br>
                 <span class="pl3e">
@@ -130,9 +127,7 @@
                     <?= Form::label("at: ", 'due_time') ?>
                     <?= Form::input('due_time', $task_to_be_changed['due_time'], ['type' => 'time']) ?>
                     as status:
-                    <?= Form::select('status_id', $task_to_be_changed['status_id']
-                        , array_map('ucwords', Model_Todo_Logic::$status_cache)
-                    ) ?>
+                    <?= Form::select('status_id', $task_to_be_changed['status_id'], $statuses) ?>
                 </span>
                 <?= Form::close() ?>
             <?php endif ?>
@@ -140,13 +135,11 @@
         <footer class="mt1e">
             <section class="search">
                 <?= Form::open('todo/to_search') ?>
-                <?= Form::submit('filter', "Filter", ['class' => 'w3e']) ?>
+                <?= Form::button('filter', "Filter", ['class' => 'w4e']) ?>
                 <span>by</span>
-                <?= Form::select('status', isset($status) ? $status : 'all'
-                    , Model_Todo_Logic::$status_list
-                ) ?>
+                <?= Form::select('status', isset($status) ? $status : 'all', $status_list) ?>
                 <br>
-                <?= Form::submit('sort', "Sort", ['class' => 'w3e']) ?>
+                <?= Form::button('sort', "Sort", ['class' => 'w4e']) ?>
                 <span>by</span>
                 <?= Form::select('attr', isset($attr) ? $attr : 'name', [
                     'name'      => 'Name',
@@ -162,12 +155,10 @@
                 <?= Form::close() ?>
             </section>
             <section class="reset mt1e">
-                <?= Form::open('todo') ?>
-                <?= Form::button('reset', "Reset the View") ?>
-                <?= Form::close() ?>
+                <a href="/todo/">Reset</a>
             </section>
             <section class="download mt1e">
-                <?= Form::open('todo/csv') ?>
+                <?= Form::open(['action' => 'todo/csv', 'method' => 'get']) ?>
                 <?= Form::button('download_csv', "Download all ToDos") ?>
                 <?= Form::close() ?>
             </section>
