@@ -4,7 +4,7 @@ class Controller_User extends Controller
 {
     public function action_select($id)
     {
-      if($id <= 0 || $id > 3){
+      if($id <= 0 or $id > 3){
           return "ユーザーは存在しません";
       }
       Session::set('user_id', $id);
