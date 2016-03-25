@@ -37,6 +37,19 @@ class Test_Domain_Todo extends TestCase
         }
     }
 
+    public function test_search()
+    {
+        $todos = Domain_Todo::search();
+        array_reduce($todos, $lteq = function ($prev, $item) {
+            if ( ! (strcasecmp($prev->name, $item->name) <= 0)) {
+                var_dump($prev->name, $item->name);
+                throw new Exception('unordered');
+            }
+            return $item;
+        }, array_shift($todos));
+        $this->assertTrue(true);
+    }
+
     public function test_alter()
     {
         $id_to_be_tested = 12;
