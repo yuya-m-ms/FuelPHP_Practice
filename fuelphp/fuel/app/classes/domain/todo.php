@@ -25,7 +25,7 @@ class Domain_Todo
         static::set('status_cache', $status_cache);
         static::set('status_list',  $status_list);
 
-        static::get('validator') or static::set('validator', static::forge_validation());
+        static::get('validator') ?: static::set('validator', static::forge_validation());
     }
 
     /**

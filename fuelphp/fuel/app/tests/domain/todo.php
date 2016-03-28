@@ -18,15 +18,11 @@ class Test_Domain_Todo extends TestCase
         }
     }
 
-    /**
-     * @expectedException Error
-     */
     public function test_set_disabled()
     {
-        $properties = ['status_cache', 'status_list', 'validator'];
-        foreach ($properties as $prop) {
-            Domain_Todo::set($prop, null);
-        }
+        $ref = new ReflectionClass('Domain_Todo');
+        $set = $ref->getMethod('set');
+        $this->assertTrue($set->isProtected());
     }
 
     public function test_fetch_todo()
