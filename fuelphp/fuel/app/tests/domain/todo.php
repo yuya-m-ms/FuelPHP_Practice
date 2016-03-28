@@ -33,6 +33,19 @@ class Test_Domain_Todo extends TestCase
         }
     }
 
+    public function test_add_todo()
+    {
+        $count_before = Model_Todo::query()->count();
+        Domain_Todo::add_todo([
+            'name'      => 'testing',
+            'due_day'   => date('Y-m-d'),
+            'due_time'  => date('H:i'),
+            'user_id'   => 0,
+        ]);
+        $count_after = Model_Todo::query()->from_cache(false)->count();
+        $this->assertTrue($count_after == $count_before + 1);
+    }
+
     public function test_search()
     {
         $todos = Domain_Todo::search();
