@@ -132,19 +132,25 @@ class Domain_Todo
      */
     public static function downloadable($table, $format)
     {
-        $allowed_format = ['csv', 'xml', 'json'];
-        if ( ! in_array(strtolower($format), $allowed_format)) {
-            throw new Exception('Invalid format');
+        switch (strtolower($format)) {
+            case 'csv':
+                $data = Format::forge($table)->to_csv();
+                break;
+            case 'xml':
+                $data = Format::forge($table)->to_xml();
+                break;
+            case 'json':
+                $data = Format::forge($table)->to_json();
+                break;
+            default:
+                throw new Exception('Invalid format');
         }
-        $convert = 'to_'.$format;
-        $data    = Format::forge($table)->$convert();
-
-        $temp = 'download_temp~'; // to be overwritten
-        $make = File::exists(DOCROOT.'/'.$temp) ? 'update' : 'create';
-        File::$make(DOCROOT, $temp, $data);
+        fwrite($temp = tmpfile(), $data);
 
         return $download_runnable = function ($filename) use ($temp) {
-            File::download(DOCROOT.'/'.$temp, $filename);
+            $uri = stream_get_meta_data($temp)['uri'];
+            File::download($uri, $filename);
+            fclose($temp);
         };
     }
 
