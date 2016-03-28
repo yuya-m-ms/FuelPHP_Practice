@@ -30,4 +30,25 @@ class Util_Array
         }
         return $map;
     }
+
+    // faster and more random than array_rand()
+    public static function random_key($array)
+    {
+        $keys = array_keys($array);
+        return $keys[mt_rand(0, count($keys) - 1)];
+    }
+
+    public static function random_value($array)
+    {
+        return $array[static::random_key($array)];
+    }
+
+    // use array_value() to re-index if needed
+    public static function random_pop($array)
+    {
+        $key = static::random_key($array);
+        $value = $array[$key];
+        unset($array[$key]);
+        return $value;
+    }
 }
