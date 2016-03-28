@@ -84,4 +84,20 @@ class Test_Domain_Todo extends TestCase
         $closure = Domain_Todo::forge_download_all_todo(0, 'foobar');
         $this->assertInstanceOf('\Closure', $closure);
     }
+
+    public function test_format()
+    {
+        $data = [
+            ['foo' => '0', 'bar' => '1', 'baz' => '1', ],
+            ['foo' => '2', 'bar' => '3', 'baz' => '5', ],
+            ['foo' => '8', 'bar' => '13', 'baz' => '21', ],
+        ];
+        $format = ['csv', 'xml', 'json'];
+        foreach ($format as $f) {
+            $encoded = Format::forge($data)->{'to_'.$f}();
+            $decoded = Format::forge($encoded, $f)->to_array();
+            $result  = isset($decoded['item']) ? $decoded['item'] : $decoded;
+            $this->assertEquals($data, $result);
+        }
+    }
 }
