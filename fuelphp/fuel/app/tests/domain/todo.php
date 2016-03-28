@@ -49,13 +49,14 @@ class Test_Domain_Todo extends TestCase
     public function test_search()
     {
         $todos = Domain_Todo::search();
-        array_reduce($todos, $lteq = function ($prev, $item) {
+        $lteq = function ($prev, $item) {
             if ( ! (strcasecmp($prev->name, $item->name) <= 0)) {
                 var_dump($prev->name, $item->name);
                 throw new Exception('unordered');
             }
             return $item;
-        }, array_shift($todos));
+        };
+        array_reduce($todos, $lteq, array_shift($todos));
         $this->assertTrue(true);
     }
 
