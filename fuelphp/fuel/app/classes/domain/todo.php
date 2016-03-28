@@ -81,7 +81,9 @@ class Domain_Todo
         if (strcasecmp($status, 'all') == 0) {
             return static::fetch_user_todo($user_id)->order_by($attr, $dir)->get();
         }
-        return static::fetch_user_todo($user_id)->where('status.name', '=', $status)->order_by($attr, $dir)->get();
+        return static::fetch_user_todo($user_id)->related('status')
+            ->where('status.name', '=', $status)->order_by($attr, $dir)
+            ->get();
     }
 
     /**
