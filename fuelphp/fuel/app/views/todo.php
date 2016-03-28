@@ -170,7 +170,7 @@
                 </span>
                 <span class="json">
                     <?= Form::open(['action' => 'todo/download/json', 'method' => 'get']) ?>
-                    <?= Form::button('download_json', "Download all ToDos as json") ?>
+                    <?= Form::button('download_json', "Download all ToDos as JSON") ?>
                     <?= Form::close() ?>
                 </span>
             </section>
