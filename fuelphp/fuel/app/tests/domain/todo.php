@@ -46,9 +46,9 @@ class Test_Domain_Todo extends TestCase
         $this->assertTrue($count_after == $count_before + 1);
     }
 
-    public function test_search()
+    public function test_search_all_name_asc()
     {
-        $todos = Domain_Todo::search();
+        $todos = Domain_Todo::search('all', 'name', 'asc');
         $lteq = function ($prev, $item) {
             if ( ! (strcasecmp($prev->name, $item->name) <= 0)) {
                 var_dump($prev->name, $item->name);
@@ -57,6 +57,54 @@ class Test_Domain_Todo extends TestCase
             return $item;
         };
         array_reduce($todos, $lteq, array_shift($todos));
+        $this->assertTrue(true);
+    }
+
+    public function test_search_all_name_desc()
+    {
+        $todos = Domain_Todo::search('all', 'name', 'desc');
+        $gteq = function ($prev, $item) {
+            if ( ! (strcasecmp($prev->name, $item->name) >= 0)) {
+                var_dump($prev->name, $item->name);
+                throw new Exception('unordered');
+            }
+            return $item;
+        };
+        array_reduce($todos, $gteq, array_shift($todos));
+        $this->assertTrue(true);
+    }
+
+    public function test_search_all_due_asc()
+    {
+        $todos = Domain_Todo::search('all', 'due', 'asc');
+        $lteq = function ($prev, $item) {
+            if (is_null($prev->due) or is_null($item->due)) {
+                return $item;
+            }
+            if ( ! (new DateTime($prev->due) <= new DateTime($item->due))) {
+                var_dump($prev->due, $item->due);
+                throw new Exception('unordered');
+            }
+            return $item;
+        };
+        array_reduce($todos, $lteq, array_shift($todos));
+        $this->assertTrue(true);
+    }
+
+    public function test_search_all_due_desc()
+    {
+        $todos = Domain_Todo::search('all', 'due', 'desc');
+        $gteq = function ($prev, $item) {
+            if (is_null($prev->due) or is_null($item->due)) {
+                return $item;
+            }
+            if ( ! (new DateTime($prev->due) >= new DateTime($item->due))) {
+                var_dump($prev->due, $item->due);
+                throw new Exception('unordered');
+            }
+            return $item;
+        };
+        array_reduce($todos, $gteq, array_shift($todos));
         $this->assertTrue(true);
     }
 
