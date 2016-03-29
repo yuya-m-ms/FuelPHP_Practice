@@ -51,4 +51,11 @@ class Util_Array
         unset($array[$key]);
         return $value;
     }
+
+    public static final function head_tail($array)
+    {
+        $head = reset($array);
+        $tail = array_slice($array, 1);
+        return [$head, $tail];
+    }
 }
