@@ -22,11 +22,10 @@ class Domain_Todo
             }, Model_Todo_Status::query()->select('name')->get()
         );
         $status_list = ['all' => "All"] + Util_Array::to_map('ucwords', $status_cache);
-        $validator   = static::forge_validation();
-
         static::set('status_cache', $status_cache);
         static::set('status_list',  $status_list);
-        static::set('validator',    $validator);
+
+        static::get('validator') ?: static::set('validator', static::forge_validation());
     }
 
     /**
@@ -82,7 +81,9 @@ class Domain_Todo
         if (strcasecmp($status, 'all') == 0) {
             return static::fetch_user_todo($user_id)->order_by($attr, $dir)->get();
         }
-        return static::fetch_user_todo($user_id)->where('status.name', '=', $status)->order_by($attr, $dir)->get();
+        return static::fetch_user_todo($user_id)->related('status')
+            ->where('status.name', '=', $status)->order_by($attr, $dir)
+            ->get();
     }
 
     /**
@@ -131,21 +132,32 @@ class Domain_Todo
      * @param  array $table    array of [attr => value]
      * @return closure      run download with given filename
      */
-    public static function export_csv($table)
+    public static function downloadable($table, $format)
     {
-        $csv = Format::forge($table)->to_csv();
+        switch (strtolower($format)) {
+            case 'csv':
+                $data = Format::forge($table)->to_csv();
+                break;
+            case 'xml':
+                $data = Format::forge($table)->to_xml();
+                break;
+            case 'json':
+                $data = Format::forge($table)->to_json();
+                break;
+            default:
+                throw new Exception('Invalid format');
+        }
+        fwrite($temp = tmpfile(), $data);
 
-        $temp = 'csvtemp~'; // to be overwritten
-        $make = File::exists(DOCROOT.'/'.$temp) ? 'update' : 'create';
-        File::$make(DOCROOT, $temp, $csv);
-
-        return $download_runnable = function ($filename) use ($temp)  {
-            File::download(DOCROOT.'/'.$temp, $filename);
+        return $download_runnable = function ($filename) use ($temp) {
+            $uri = stream_get_meta_data($temp)['uri'];
+            File::download($uri, $filename);
+            fclose($temp);
         };
     }
 
     // run download csv of user ToDo
-    public static function forge_export_all_user_todo_as_csv($user_id)
+    public static function forge_download_all_todo($user_id, $format)
     {
         $todos = [];
         foreach (static::fetch_todo($user_id) as $todo) {
@@ -156,6 +168,6 @@ class Domain_Todo
                 'Status' => $todo->status->name,
             ];
         }
-        return static::export_csv($todos);
+        return static::downloadable($todos, $format);
     }
 }
