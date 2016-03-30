@@ -54,6 +54,9 @@ class Util_Array
 
     public static final function head_tail($array)
     {
+        if ( ! is_array($array) or empty($array)) {
+            return null;
+        }
         $head = reset($array);
         $tail = array_slice($array, 1);
         return [$head, $tail];
