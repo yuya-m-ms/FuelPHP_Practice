@@ -113,14 +113,14 @@ class Test_Domain_Todo extends TestCase
         $statuses = Domain_Todo::get('status_cache');
         foreach ($statuses as $status) {
             $todos = Domain_Todo::search($status);
-            $is_open = function ($prev, $item) use ($status) {
+            $is_status = function ($prev, $item) use ($status) {
                 if (strcasecmp($item->status->name, $status) !== 0) {
                     var_dump($prev->status->name, $item->status->name);
-                    throw new Exception('status not mutch');
+                    throw new Exception('status not match');
                 }
                 return $item;
             };
-            array_reduce($todos, $is_open);
+            array_reduce($todos, $is_status);
             $this->assertTrue(true);
         }
     }
