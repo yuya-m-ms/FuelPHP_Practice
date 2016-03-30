@@ -48,87 +48,89 @@ class Test_Domain_Todo extends TestCase
 
     public function test_search_status_name_asc()
     {
-        array_map(function ($status) {
-            $todos = Util_Array::sampling(Domain_Todo::search($status, 'name', 'asc'));
-            $lteq = function ($prev, $item) {
-                if ( ! (strcasecmp($prev->name, $item->name) <= 0)) {
-                    var_dump($prev->name, $item->name);
-                    $this->fail('unordered');
-                }
-                return $item;
-            };
-            array_reduce($todos, $lteq, reset($todos));
-            $this->assertTrue(true);
-        }, array_keys(Domain_Todo::get('status_list')));
+        $sorted_names_of = function ($status) {
+            $todos = Domain_Todo::search($status, 'name', 'asc');
+            return $names = array_map($name_of = function ($todo) {
+                return $todo->name;
+            }, $todos);
+        };
+        $lteq = static::is_asc($as_str = function ($prev, $item) {
+            return strcasecmp($prev, $item);
+        });
+        $this->is_filter_sorted($lteq, $sorted_names_of);
     }
 
     public function test_search_status_name_desc()
     {
-        array_map(function ($status) {
-            $todos = Util_Array::sampling(Domain_Todo::search($status, 'name', 'desc'));
-            $gteq = function ($prev, $item) {
-                if ( ! (strcasecmp($prev->name, $item->name) >= 0)) {
-                    var_dump($prev->name, $item->name);
-                    $this->fail('unordered');
-                }
-                return $item;
-            };
-            array_reduce($todos, $gteq, reset($todos));
-            $this->assertTrue(true);
-        }, array_keys(Domain_Todo::get('status_list')));
+        $sorted_names_of = function ($status) {
+            $todos = Domain_Todo::search($status, 'name', 'desc');
+            return $names = array_map($name_of = function ($todo) {
+                return $todo->name;
+            }, $todos);
+        };
+        $gteq = static::is_desc($as_str = function ($prev, $item) {
+            return strcasecmp($prev, $item);
+        });
+        $this->is_filter_sorted($gteq, $sorted_names_of);
     }
 
     public function test_search_status_due_asc()
     {
-        array_map(function ($status) {
-            $todos = Util_Array::sampling(Domain_Todo::search($status, 'due', 'asc'));
-            $lteq = function ($prev, $item) {
-                if (is_null($prev->due) or is_null($item->due)) {
-                    return $item;
-                }
-                if ( ! (new DateTime($prev->due) <= new DateTime($item->due))) {
-                    var_dump($prev->due, $item->due);
-                    $this->fail('unordered');
-                }
+        $sorted_dues_of = function ($status) {
+            $todos = Domain_Todo::search($status, 'due', 'asc');
+            return $dues = array_map($due_of = function ($todo) {
+                return $todo->due;
+            }, $todos);
+        };
+        $lteq = static::is_asc($as_datetime = function ($prev, $item) {
+            $p = new DateTime($prev);
+            $i = new DateTime($item);
+            return $p->getTimestamp() - $i->getTimestamp();
+        });
+        $check = function ($prev, $item) use ($lteq)  {
+            if (is_null($prev) or is_null($item)) {
                 return $item;
-            };
-            array_reduce($todos, $lteq, reset($todos));
-            $this->assertTrue(true);
-        }, array_keys(Domain_Todo::get('status_list')));
+            }
+            return $lteq($prev, $item);
+        };
+        $this->is_filter_sorted($check, $sorted_dues_of);
     }
 
     public function test_search_status_due_desc()
     {
-        array_map(function ($status) {
-            $todos = Util_Array::sampling(Domain_Todo::search($status, 'due', 'desc'));
-            $gteq = function ($prev, $item) {
-                if (is_null($prev->due) or is_null($item->due)) {
-                    return $item;
-                }
-                if ( ! (new DateTime($prev->due) >= new DateTime($item->due))) {
-                    var_dump($prev->due, $item->due);
-                    $this->fail('unordered');
-                }
+        $sorted_dues_of = function ($status) {
+            $todos = Domain_Todo::search($status, 'due', 'desc');
+            return $dues = array_map($due_of = function ($todo) {
+                return $todo->due;
+            }, $todos);
+        };
+        $gteq = static::is_desc($as_datetime = function ($prev, $item) {
+            $p = new DateTime($prev);
+            $i = new DateTime($item);
+            return $p->getTimestamp() - $i->getTimestamp();
+        });
+        $check = function ($prev, $item) use ($gteq)  {
+            if (is_null($prev) or is_null($item)) {
                 return $item;
-            };
-            array_reduce($todos, $gteq, reset($todos));
-            $this->assertTrue(true);
-        }, array_keys(Domain_Todo::get('status_list')));
+            }
+            return $gteq($prev, $item);
+        };
+        $this->is_filter_sorted($check, $sorted_dues_of);
     }
 
-    private static function is_status_sorted(callable $check, callable $sorted_todo_of)
+    private function is_filter_sorted(callable $check, callable $sorted_attr_of)
     {
         $filter = array_keys(Domain_Todo::get('status_list'));
-        array_map(function ($status) use ($check, $array) {
-            $todo = $sorted_todo_of($status);
-            $this->assertTrue(static::is_sorted($check, $todo));
+        array_map(function ($status) use ($check, $sorted_attr_of) {
+            $attr = $sorted_attr_of($status);
+            $this->assertTrue(static::is_sorted($check, $attr));
         }, $filter);
     }
 
-    private static function is_sorted(callable $check, callable $array)
+    private static function is_sorted(callable $check, array $array)
     {
         try {
-            array_reduce($array, $check, reset($array));
+            array_reduce($array, $check, reset($array)); // shift for < or >
         } catch (Exception_Unordered $e) {
             return false;
         }
@@ -138,7 +140,7 @@ class Test_Domain_Todo extends TestCase
     private static function is_asc(callable $comparing)
     {
         return $lteq = function ($prev, $item) use ($comparing) {
-            if ( ! $comparing($prev, $item) <= 0) {
+            if ( ! ($comparing($prev, $item) <= 0)) {
                 var_dump('Unordered', $prev, $item);
                 throw new Exception_Unordered();
             }
@@ -148,8 +150,8 @@ class Test_Domain_Todo extends TestCase
 
     private static function is_desc(callable $comparing)
     {
-        return $lteq = function ($prev, $item) use ($comparing) {
-            if ( ! $comparing($prev, $item) >= 0) {
+        return $gteq = function ($prev, $item) use ($comparing) {
+            if ( ! ($comparing($prev, $item) >= 0)) {
                 var_dump('Unordered', $prev, $item);
                 throw new Exception_Unordered();
             }
