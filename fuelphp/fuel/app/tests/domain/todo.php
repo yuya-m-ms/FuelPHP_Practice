@@ -116,6 +116,47 @@ class Test_Domain_Todo extends TestCase
         }, array_keys(Domain_Todo::get('status_list')));
     }
 
+    private static function is_status_sorted(callable $check, callable $sorted_todo_of)
+    {
+        $filter = array_keys(Domain_Todo::get('status_list'));
+        array_map(function ($status) use ($check, $array) {
+            $todo = $sorted_todo_of($status);
+            $this->assertTrue(static::is_sorted($check, $todo));
+        }, $filter);
+    }
+
+    private static function is_sorted(callable $check, callable $array)
+    {
+        try {
+            array_reduce($array, $check, reset($array));
+        } catch (Exception_Unordered $e) {
+            return false;
+        }
+        return true;
+    }
+
+    private static function is_asc(callable $comparing)
+    {
+        return $lteq = function ($prev, $item) use ($comparing) {
+            if ( ! $comparing($prev, $item) <= 0) {
+                var_dump('Unordered', $prev, $item);
+                throw new Exception_Unordered();
+            }
+            return $item;
+        };
+    }
+
+    private static function is_desc(callable $comparing)
+    {
+        return $lteq = function ($prev, $item) use ($comparing) {
+            if ( ! $comparing($prev, $item) >= 0) {
+                var_dump('Unordered', $prev, $item);
+                throw new Exception_Unordered();
+            }
+            return $item;
+        };
+    }
+
     public function test_filter()
     {
         $statuses = Domain_Todo::get('status_cache');
