@@ -122,10 +122,30 @@ class Test_Domain_Todo extends TestCase
         $this->assertEquals($value, $value_changed);
     }
 
-    public function test_forge_download_all_todo()
+    public function test_forge_download_all_todo_format()
     {
-        $closure = Domain_Todo::forge_download_all_todo(0, 'xml');
-        $this->assertInstanceOf('\Closure', $closure);
+        $format = ['csv', 'xml', 'json'];
+        foreach ($format as $f) {
+            $closure = Domain_Todo::forge_download_all_todo(0, $f);
+            // hack to get temp file
+            $ref  = new ReflectionFunction($closure);
+            $temp = $ref->getStaticVariables()['temp'];
+            $path = stream_get_meta_data($temp)['uri'];
+            $file = new SplFileObject($path);
+            switch ($f) {
+                case 'csv':
+                    $this->assertTrue($file->fgetcsv() !== false);
+                    break;
+                case 'xml':
+                    $this->assertTrue(strpos($file->fgets(), 'xml') !== false);
+                    break;
+                case 'json':
+                    $this->assertTrue(Util_String::is_json($file->fgets()));
+                    break;
+                default:
+                    $this->fail('bad format: '.$type);
+            }
+        }
     }
 
     /**
@@ -135,21 +155,5 @@ class Test_Domain_Todo extends TestCase
     {
         $closure = Domain_Todo::forge_download_all_todo(0, 'foobar');
         $this->assertInstanceOf('\Closure', $closure);
-    }
-
-    public function test_format()
-    {
-        $data = [
-            ['foo' => '0', 'bar' => '1', 'baz' => '1', ],
-            ['foo' => '2', 'bar' => '3', 'baz' => '5', ],
-            ['foo' => '8', 'bar' => '13', 'baz' => '21', ],
-        ];
-        $format = ['csv', 'xml', 'json'];
-        foreach ($format as $f) {
-            $encoded = Format::forge($data)->{'to_'.$f}();
-            $decoded = Format::forge($encoded, $f)->to_array();
-            $result  = isset($decoded['item']) ? $decoded['item'] : $decoded;
-            $this->assertEquals($data, $result);
-        }
     }
 }
