@@ -124,15 +124,14 @@ class Test_Domain_Todo extends TestCase
 
     public function test_forge_download_all_todo_format()
     {
-        $format = ['csv', 'xml', 'json'];
-        foreach ($format as $f) {
-            $closure = Domain_Todo::forge_download_all_todo(0, $f);
+        array_map(function ($format) {
+            $closure = Domain_Todo::forge_download_all_todo(0, $format);
             // hack to get temp file
             $ref  = new ReflectionFunction($closure);
             $temp = $ref->getStaticVariables()['temp'];
             $path = stream_get_meta_data($temp)['uri'];
             $file = new SplFileObject($path);
-            switch ($f) {
+            switch ($format) {
                 case 'csv':
                     $this->assertTrue($file->fgetcsv() !== false);
                     break;
@@ -145,7 +144,7 @@ class Test_Domain_Todo extends TestCase
                 default:
                     $this->fail('bad format: '.$type);
             }
-        }
+        }, ['csv', 'xml', 'json']);
     }
 
     /**
