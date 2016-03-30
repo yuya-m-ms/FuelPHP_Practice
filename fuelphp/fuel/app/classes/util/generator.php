@@ -18,8 +18,8 @@ class Util_Generator
             yield [];
         } else {
             list($head, $tail) = Util_Array::head_tail($vectors);
-            foreach ($head as $h) {
-                $subs = forward_static_call_array('static::cartesian_product', $tail);
+            foreach ((array) $head as $h) {
+                $subs = forward_static_call_array('static::cartesian_product', (array) $tail);
                 foreach ($subs as $vec) {
                     yield array_merge([$h], $vec);
                 }

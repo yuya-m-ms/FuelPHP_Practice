@@ -22,12 +22,12 @@ class Test_Domain_Todo extends TestCase
     {
         $ref = new ReflectionClass('Domain_Todo');
         $set = $ref->getMethod('set');
-        $this->assertTrue($set->isProtected());
+        $this->assertFalse($set->isPublic());
     }
 
     public function test_fetch_todo()
     {
-        $todos = Domain_Todo::fetch_todo(0);
+        $todos = Util_Array::sampling(Domain_Todo::fetch_todo(0));
         foreach ($todos as $todo) {
             $this->assertInstanceOf('Model_Todo', $todo);
         }
@@ -46,68 +46,89 @@ class Test_Domain_Todo extends TestCase
         $this->assertTrue($count_after == $count_before + 1);
     }
 
-    public function test_filter_sort()
+    public function test_search_status_name_asc()
     {
-        $statuses = ['all'] + Domain_Todo::get('status_cache');
+        array_map(function ($status) {
+            $todos = Util_Array::sampling(Domain_Todo::search($status, 'name', 'asc'));
+            $lteq = function ($prev, $item) {
+                if ( ! (strcasecmp($prev->name, $item->name) <= 0)) {
+                    var_dump($prev->name, $item->name);
+                    $this->fail('unordered');
+                }
+                return $item;
+            };
+            array_reduce($todos, $lteq, reset($todos));
+            $this->assertTrue(true);
+        }, array_keys(Domain_Todo::get('status_list')));
+    }
+
+    public function test_search_status_name_desc()
+    {
+        array_map(function ($status) {
+            $todos = Util_Array::sampling(Domain_Todo::search($status, 'name', 'desc'));
+            $gteq = function ($prev, $item) {
+                if ( ! (strcasecmp($prev->name, $item->name) >= 0)) {
+                    var_dump($prev->name, $item->name);
+                    $this->fail('unordered');
+                }
+                return $item;
+            };
+            array_reduce($todos, $gteq, reset($todos));
+            $this->assertTrue(true);
+        }, array_keys(Domain_Todo::get('status_list')));
+    }
+
+    public function test_search_status_due_asc()
+    {
+        array_map(function ($status) {
+            $todos = Util_Array::sampling(Domain_Todo::search($status, 'due', 'asc'));
+            $lteq = function ($prev, $item) {
+                if (is_null($prev->due) or is_null($item->due)) {
+                    return $item;
+                }
+                if ( ! (new DateTime($prev->due) <= new DateTime($item->due))) {
+                    var_dump($prev->due, $item->due);
+                    $this->fail('unordered');
+                }
+                return $item;
+            };
+            array_reduce($todos, $lteq, reset($todos));
+            $this->assertTrue(true);
+        }, array_keys(Domain_Todo::get('status_list')));
+    }
+
+    public function test_search_status_due_desc()
+    {
+        array_map(function ($status) {
+            $todos = Util_Array::sampling(Domain_Todo::search($status, 'due', 'desc'));
+            $gteq = function ($prev, $item) {
+                if (is_null($prev->due) or is_null($item->due)) {
+                    return $item;
+                }
+                if ( ! (new DateTime($prev->due) >= new DateTime($item->due))) {
+                    var_dump($prev->due, $item->due);
+                    $this->fail('unordered');
+                }
+                return $item;
+            };
+            array_reduce($todos, $gteq, reset($todos));
+            $this->assertTrue(true);
+        }, array_keys(Domain_Todo::get('status_list')));
+    }
+
+    public function test_filter()
+    {
+        $statuses = Domain_Todo::get('status_cache');
         foreach ($statuses as $status) {
-            $todos = Domain_Todo::search($status, 'name', 'asc');
-            $check = function ($prev, $item) use ($status) {
-                if ($status != 'all' and strcasecmp($item->status->name, $status) !== 0) {
+            $todos = Util_Array::sampling(Domain_Todo::search($status));
+            $is_status = function ($prev, $item) use ($status) {
+                if (strcasecmp($item->status->name, $status) !== 0) {
                     var_dump($prev->status->name, $item->status->name);
-                    throw new Exception('status not mutch');
-                } elseif ( ! (strcasecmp($prev->name, $item->name) <= 0)) {
-                    var_dump($prev->name, $item->name);
-                    throw new Exception('name not in asc order');
+                    $this->fail('status not match');
                 }
                 return $item;
             };
-            array_reduce($todos, $check, array_shift($todos));
-            $this->assertTrue(true);
-
-            $todos = Domain_Todo::search($status, 'name', 'desc');
-            $check = function ($prev, $item) use ($status) {
-                if ($status != 'all' and strcasecmp($item->status->name, $status) !== 0) {
-                    var_dump($prev->status->name, $item->status->name);
-                    throw new Exception('status not mutch');
-                } elseif ( ! (strcasecmp($prev->name, $item->name) >= 0)) {
-                    var_dump($prev->name, $item->name);
-                    throw new Exception('name not in desc order');
-                }
-                return $item;
-            };
-            array_reduce($todos, $check, array_shift($todos));
-            $this->assertTrue(true);
-
-            $todos = Domain_Todo::search($status, 'due', 'asc');
-            $check = function ($prev, $item) use ($status) {
-                if (is_null($prev->due) or is_null($item->due)) {
-                    return $item;
-                } elseif ($status != 'all' and strcasecmp($item->status->name, $status) !== 0) {
-                    var_dump($prev->status->name, $item->status->name);
-                    throw new Exception('status not mutch');
-                } elseif ( ! (new DateTime($prev->due) <= new DateTime($item->due))) {
-                    var_dump($prev->due, $item->due);
-                    throw new Exception('due not in asc order');
-                }
-                return $item;
-            };
-            array_reduce($todos, $check, array_shift($todos));
-            $this->assertTrue(true);
-
-            $todos = Domain_Todo::search($status, 'due', 'desc');
-            $check = function ($prev, $item) use ($status) {
-                if (is_null($prev->due) or is_null($item->due)) {
-                    return $item;
-                } elseif ($status != 'all' and strcasecmp($item->status->name, $status) !== 0) {
-                    var_dump($prev->status->name, $item->status->name);
-                    throw new Exception('status not mutch');
-                } elseif ( ! (new DateTime($prev->due) >= new DateTime($item->due))) {
-                    var_dump($prev->due, $item->due);
-                    throw new Exception('due not in desc order');
-                }
-                return $item;
-            };
-            array_reduce($todos, $check, array_shift($todos));
+            array_reduce($todos, $is_status);
             $this->assertTrue(true);
         }
     }
@@ -122,10 +143,29 @@ class Test_Domain_Todo extends TestCase
         $this->assertEquals($value, $value_changed);
     }
 
-    public function test_forge_download_all_todo()
+    public function test_forge_download_all_todo_format()
     {
-        $closure = Domain_Todo::forge_download_all_todo(0, 'xml');
-        $this->assertInstanceOf('\Closure', $closure);
+        array_map(function ($format) {
+            $closure = Domain_Todo::forge_download_all_todo(0, $format);
+            // hack to get temp file
+            $ref  = new ReflectionFunction($closure);
+            $temp = $ref->getStaticVariables()['temp'];
+            $path = stream_get_meta_data($temp)['uri'];
+            $file = new SplFileObject($path);
+            switch ($format) {
+                case 'csv':
+                    $this->assertTrue($file->fgetcsv() !== false);
+                    break;
+                case 'xml':
+                    $this->assertTrue(strpos($file->fgets(), 'xml') !== false);
+                    break;
+                case 'json':
+                    $this->assertTrue(Util_String::is_json($file->fgets()));
+                    break;
+                default:
+                    $this->fail('bad format: '.$type);
+            }
+        }, ['csv', 'xml', 'json']);
     }
 
     /**
@@ -135,21 +175,5 @@ class Test_Domain_Todo extends TestCase
     {
         $closure = Domain_Todo::forge_download_all_todo(0, 'foobar');
         $this->assertInstanceOf('\Closure', $closure);
-    }
-
-    public function test_format()
-    {
-        $data = [
-            ['foo' => '0', 'bar' => '1', 'baz' => '1', ],
-            ['foo' => '2', 'bar' => '3', 'baz' => '5', ],
-            ['foo' => '8', 'bar' => '13', 'baz' => '21', ],
-        ];
-        $format = ['csv', 'xml', 'json'];
-        foreach ($format as $f) {
-            $encoded = Format::forge($data)->{'to_'.$f}();
-            $decoded = Format::forge($encoded, $f)->to_array();
-            $result  = isset($decoded['item']) ? $decoded['item'] : $decoded;
-            $this->assertEquals($data, $result);
-        }
     }
 }
