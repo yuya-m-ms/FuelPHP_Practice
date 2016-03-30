@@ -22,7 +22,7 @@ class Test_Domain_Todo extends TestCase
     {
         $ref = new ReflectionClass('Domain_Todo');
         $set = $ref->getMethod('set');
-        $this->assertTrue($set->isProtected());
+        $this->assertFalse($set->isPublic());
     }
 
     public function test_fetch_todo()
