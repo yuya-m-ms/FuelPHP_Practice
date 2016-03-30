@@ -46,68 +46,81 @@ class Test_Domain_Todo extends TestCase
         $this->assertTrue($count_after == $count_before + 1);
     }
 
-    public function test_filter_sort()
+    public function test_search_all_name_asc()
     {
-        $statuses = ['all'] + Domain_Todo::get('status_cache');
+        $todos = Domain_Todo::search('all', 'name', 'asc');
+        $lteq = function ($prev, $item) {
+            if ( ! (strcasecmp($prev->name, $item->name) <= 0)) {
+                var_dump($prev->name, $item->name);
+                throw new Exception('unordered');
+            }
+            return $item;
+        };
+        array_reduce($todos, $lteq, array_shift($todos));
+        $this->assertTrue(true);
+    }
+
+    public function test_search_all_name_desc()
+    {
+        $todos = Domain_Todo::search('all', 'name', 'desc');
+        $gteq = function ($prev, $item) {
+            if ( ! (strcasecmp($prev->name, $item->name) >= 0)) {
+                var_dump($prev->name, $item->name);
+                throw new Exception('unordered');
+            }
+            return $item;
+        };
+        array_reduce($todos, $gteq, array_shift($todos));
+        $this->assertTrue(true);
+    }
+
+    public function test_search_all_due_asc()
+    {
+        $todos = Domain_Todo::search('all', 'due', 'asc');
+        $lteq = function ($prev, $item) {
+            if (is_null($prev->due) or is_null($item->due)) {
+                return $item;
+            }
+            if ( ! (new DateTime($prev->due) <= new DateTime($item->due))) {
+                var_dump($prev->due, $item->due);
+                throw new Exception('unordered');
+            }
+            return $item;
+        };
+        array_reduce($todos, $lteq, array_shift($todos));
+        $this->assertTrue(true);
+    }
+
+    public function test_search_all_due_desc()
+    {
+        $todos = Domain_Todo::search('all', 'due', 'desc');
+        $gteq = function ($prev, $item) {
+            if (is_null($prev->due) or is_null($item->due)) {
+                return $item;
+            }
+            if ( ! (new DateTime($prev->due) >= new DateTime($item->due))) {
+                var_dump($prev->due, $item->due);
+                throw new Exception('unordered');
+            }
+            return $item;
+        };
+        array_reduce($todos, $gteq, array_shift($todos));
+        $this->assertTrue(true);
+    }
+
+    public function test_filter()
+    {
+        $statuses = Domain_Todo::get('status_cache');
         foreach ($statuses as $status) {
-            $todos = Domain_Todo::search($status, 'name', 'asc');
-            $check = function ($prev, $item) use ($status) {
-                if ($status != 'all' and strcasecmp($item->status->name, $status) !== 0) {
+            $todos = Domain_Todo::search($status);
+            $is_open = function ($prev, $item) use ($status) {
+                if (strcasecmp($item->status->name, $status) !== 0) {
                     var_dump($prev->status->name, $item->status->name);
                     throw new Exception('status not mutch');
-                } elseif ( ! (strcasecmp($prev->name, $item->name) <= 0)) {
-                    var_dump($prev->name, $item->name);
-                    throw new Exception('name not in asc order');
                 }
                 return $item;
             };
-            array_reduce($todos, $check, array_shift($todos));
-            $this->assertTrue(true);
-
-            $todos = Domain_Todo::search($status, 'name', 'desc');
-            $check = function ($prev, $item) use ($status) {
-                if ($status != 'all' and strcasecmp($item->status->name, $status) !== 0) {
-                    var_dump($prev->status->name, $item->status->name);
-                    throw new Exception('status not mutch');
-                } elseif ( ! (strcasecmp($prev->name, $item->name) >= 0)) {
-                    var_dump($prev->name, $item->name);
-                    throw new Exception('name not in desc order');
-                }
-                return $item;
-            };
-            array_reduce($todos, $check, array_shift($todos));
-            $this->assertTrue(true);
-
-            $todos = Domain_Todo::search($status, 'due', 'asc');
-            $check = function ($prev, $item) use ($status) {
-                if (is_null($prev->due) or is_null($item->due)) {
-                    return $item;
-                } elseif ($status != 'all' and strcasecmp($item->status->name, $status) !== 0) {
-                    var_dump($prev->status->name, $item->status->name);
-                    throw new Exception('status not mutch');
-                } elseif ( ! (new DateTime($prev->due) <= new DateTime($item->due))) {
-                    var_dump($prev->due, $item->due);
-                    throw new Exception('due not in asc order');
-                }
-                return $item;
-            };
-            array_reduce($todos, $check, array_shift($todos));
-            $this->assertTrue(true);
-
-            $todos = Domain_Todo::search($status, 'due', 'desc');
-            $check = function ($prev, $item) use ($status) {
-                if (is_null($prev->due) or is_null($item->due)) {
-                    return $item;
-                } elseif ($status != 'all' and strcasecmp($item->status->name, $status) !== 0) {
-                    var_dump($prev->status->name, $item->status->name);
-                    throw new Exception('status not mutch');
-                } elseif ( ! (new DateTime($prev->due) >= new DateTime($item->due))) {
-                    var_dump($prev->due, $item->due);
-                    throw new Exception('due not in desc order');
-                }
-                return $item;
-            };
-            array_reduce($todos, $check, array_shift($todos));
+            array_reduce($todos, $is_open);
             $this->assertTrue(true);
         }
     }
