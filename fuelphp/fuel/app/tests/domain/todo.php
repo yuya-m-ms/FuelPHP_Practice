@@ -27,7 +27,7 @@ class Test_Domain_Todo extends TestCase
 
     public function test_fetch_todo()
     {
-        $todos = Domain_Todo::fetch_todo(0);
+        $todos = Util_Array::sampling(Domain_Todo::fetch_todo(0));
         foreach ($todos as $todo) {
             $this->assertInstanceOf('Model_Todo', $todo);
         }
@@ -48,7 +48,7 @@ class Test_Domain_Todo extends TestCase
 
     public function test_search_all_name_asc()
     {
-        $todos = Domain_Todo::search('all', 'name', 'asc');
+        $todos = Util_Array::sampling(Domain_Todo::search('all', 'name', 'asc'));
         $lteq = function ($prev, $item) {
             if ( ! (strcasecmp($prev->name, $item->name) <= 0)) {
                 var_dump($prev->name, $item->name);
@@ -62,7 +62,7 @@ class Test_Domain_Todo extends TestCase
 
     public function test_search_all_name_desc()
     {
-        $todos = Domain_Todo::search('all', 'name', 'desc');
+        $todos = Util_Array::sampling(Domain_Todo::search('all', 'name', 'desc'));
         $gteq = function ($prev, $item) {
             if ( ! (strcasecmp($prev->name, $item->name) >= 0)) {
                 var_dump($prev->name, $item->name);
@@ -76,7 +76,7 @@ class Test_Domain_Todo extends TestCase
 
     public function test_search_all_due_asc()
     {
-        $todos = Domain_Todo::search('all', 'due', 'asc');
+        $todos = Util_Array::sampling(Domain_Todo::search('all', 'due', 'asc'));
         $lteq = function ($prev, $item) {
             if (is_null($prev->due) or is_null($item->due)) {
                 return $item;
@@ -93,7 +93,7 @@ class Test_Domain_Todo extends TestCase
 
     public function test_search_all_due_desc()
     {
-        $todos = Domain_Todo::search('all', 'due', 'desc');
+        $todos = Util_Array::sampling(Domain_Todo::search('all', 'due', 'desc'));
         $gteq = function ($prev, $item) {
             if (is_null($prev->due) or is_null($item->due)) {
                 return $item;
@@ -112,7 +112,7 @@ class Test_Domain_Todo extends TestCase
     {
         $statuses = Domain_Todo::get('status_cache');
         foreach ($statuses as $status) {
-            $todos = Domain_Todo::search($status);
+            $todos = Util_Array::sampling(Domain_Todo::search($status));
             $is_status = function ($prev, $item) use ($status) {
                 if (strcasecmp($item->status->name, $status) !== 0) {
                     var_dump($prev->status->name, $item->status->name);

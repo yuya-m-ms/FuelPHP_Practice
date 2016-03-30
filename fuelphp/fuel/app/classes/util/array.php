@@ -61,4 +61,34 @@ class Util_Array
         $tail = array_slice($array, 1);
         return [$head, $tail];
     }
+
+    public static function middle($array)
+    {
+        $len  = count($array);
+        $keys = array_keys($array);
+        return $array[$keys[floor($len / 2)]];
+    }
+
+    /**
+     * Sample the given array as first & last 2 + the middle
+     * @param  [mixed]  $array  to be sampled
+     * @param  integer  $number of sample
+     * @return [mixed]          sample
+     */
+    public static function sampling($array, $number = 5)
+    {
+        $edge = 2;
+        if ( ! is_array($array)) {
+            return null;
+        }
+        $len = count($array);
+        if ($len <= $number) {
+            return $array;
+        }
+        return array_merge(
+            array_slice($array, 0, $edge)
+            , [static::middle($array)]
+            , array_slice($array, -$edge)
+        );
+    }
 }
