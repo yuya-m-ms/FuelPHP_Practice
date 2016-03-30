@@ -52,7 +52,7 @@ class Test_Domain_Todo extends TestCase
         $lteq = function ($prev, $item) {
             if ( ! (strcasecmp($prev->name, $item->name) <= 0)) {
                 var_dump($prev->name, $item->name);
-                throw new Exception('unordered');
+                $this->fail('unordered');
             }
             return $item;
         };
@@ -66,7 +66,7 @@ class Test_Domain_Todo extends TestCase
         $gteq = function ($prev, $item) {
             if ( ! (strcasecmp($prev->name, $item->name) >= 0)) {
                 var_dump($prev->name, $item->name);
-                throw new Exception('unordered');
+                $this->fail('unordered');
             }
             return $item;
         };
@@ -83,7 +83,7 @@ class Test_Domain_Todo extends TestCase
             }
             if ( ! (new DateTime($prev->due) <= new DateTime($item->due))) {
                 var_dump($prev->due, $item->due);
-                throw new Exception('unordered');
+                $this->fail('unordered');
             }
             return $item;
         };
@@ -100,7 +100,7 @@ class Test_Domain_Todo extends TestCase
             }
             if ( ! (new DateTime($prev->due) >= new DateTime($item->due))) {
                 var_dump($prev->due, $item->due);
-                throw new Exception('unordered');
+                $this->fail('unordered');
             }
             return $item;
         };
@@ -116,7 +116,7 @@ class Test_Domain_Todo extends TestCase
             $is_status = function ($prev, $item) use ($status) {
                 if (strcasecmp($item->status->name, $status) !== 0) {
                     var_dump($prev->status->name, $item->status->name);
-                    throw new Exception('status not match');
+                    $this->fail('status not match');
                 }
                 return $item;
             };
