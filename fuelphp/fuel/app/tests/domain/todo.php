@@ -46,66 +46,74 @@ class Test_Domain_Todo extends TestCase
         $this->assertTrue($count_after == $count_before + 1);
     }
 
-    public function test_search_all_name_asc()
+    public function test_search_status_name_asc()
     {
-        $todos = Util_Array::sampling(Domain_Todo::search('all', 'name', 'asc'));
-        $lteq = function ($prev, $item) {
-            if ( ! (strcasecmp($prev->name, $item->name) <= 0)) {
-                var_dump($prev->name, $item->name);
-                $this->fail('unordered');
-            }
-            return $item;
-        };
-        array_reduce($todos, $lteq, array_shift($todos));
-        $this->assertTrue(true);
-    }
-
-    public function test_search_all_name_desc()
-    {
-        $todos = Util_Array::sampling(Domain_Todo::search('all', 'name', 'desc'));
-        $gteq = function ($prev, $item) {
-            if ( ! (strcasecmp($prev->name, $item->name) >= 0)) {
-                var_dump($prev->name, $item->name);
-                $this->fail('unordered');
-            }
-            return $item;
-        };
-        array_reduce($todos, $gteq, array_shift($todos));
-        $this->assertTrue(true);
-    }
-
-    public function test_search_all_due_asc()
-    {
-        $todos = Util_Array::sampling(Domain_Todo::search('all', 'due', 'asc'));
-        $lteq = function ($prev, $item) {
-            if (is_null($prev->due) or is_null($item->due)) {
+        array_map(function ($status) {
+            $todos = Util_Array::sampling(Domain_Todo::search($status, 'name', 'asc'));
+            $lteq = function ($prev, $item) {
+                if ( ! (strcasecmp($prev->name, $item->name) <= 0)) {
+                    var_dump($prev->name, $item->name);
+                    $this->fail('unordered');
+                }
                 return $item;
-            }
-            if ( ! (new DateTime($prev->due) <= new DateTime($item->due))) {
-                var_dump($prev->due, $item->due);
-                $this->fail('unordered');
-            }
-            return $item;
-        };
-        array_reduce($todos, $lteq, array_shift($todos));
-        $this->assertTrue(true);
+            };
+            array_reduce($todos, $lteq, reset($todos));
+            $this->assertTrue(true);
+        }, array_keys(Domain_Todo::get('status_list')));
     }
 
-    public function test_search_all_due_desc()
+    public function test_search_status_name_desc()
     {
-        $todos = Util_Array::sampling(Domain_Todo::search('all', 'due', 'desc'));
-        $gteq = function ($prev, $item) {
-            if (is_null($prev->due) or is_null($item->due)) {
+        array_map(function ($status) {
+            $todos = Util_Array::sampling(Domain_Todo::search($status, 'name', 'desc'));
+            $gteq = function ($prev, $item) {
+                if ( ! (strcasecmp($prev->name, $item->name) >= 0)) {
+                    var_dump($prev->name, $item->name);
+                    $this->fail('unordered');
+                }
                 return $item;
-            }
-            if ( ! (new DateTime($prev->due) >= new DateTime($item->due))) {
-                var_dump($prev->due, $item->due);
-                $this->fail('unordered');
-            }
-            return $item;
-        };
-        array_reduce($todos, $gteq, array_shift($todos));
-        $this->assertTrue(true);
+            };
+            array_reduce($todos, $gteq, reset($todos));
+            $this->assertTrue(true);
+        }, array_keys(Domain_Todo::get('status_list')));
+    }
+
+    public function test_search_status_due_asc()
+    {
+        array_map(function ($status) {
+            $todos = Util_Array::sampling(Domain_Todo::search($status, 'due', 'asc'));
+            $lteq = function ($prev, $item) {
+                if (is_null($prev->due) or is_null($item->due)) {
+                    return $item;
+                }
+                if ( ! (new DateTime($prev->due) <= new DateTime($item->due))) {
+                    var_dump($prev->due, $item->due);
+                    $this->fail('unordered');
+                }
+                return $item;
+            };
+            array_reduce($todos, $lteq, reset($todos));
+            $this->assertTrue(true);
+        }, array_keys(Domain_Todo::get('status_list')));
+    }
+
+    public function test_search_status_due_desc()
+    {
+        array_map(function ($status) {
+            $todos = Util_Array::sampling(Domain_Todo::search($status, 'due', 'desc'));
+            $gteq = function ($prev, $item) {
+                if (is_null($prev->due) or is_null($item->due)) {
+                    return $item;
+                }
+                if ( ! (new DateTime($prev->due) >= new DateTime($item->due))) {
+                    var_dump($prev->due, $item->due);
+                    $this->fail('unordered');
+                }
+                return $item;
+            };
+            array_reduce($todos, $gteq, reset($todos));
+            $this->assertTrue(true);
+        }, array_keys(Domain_Todo::get('status_list')));
     }
 
     public function test_filter()
