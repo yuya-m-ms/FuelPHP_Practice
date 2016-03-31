@@ -181,6 +181,13 @@ class Test_Domain_Todo extends TestCase
         }
     }
 
+    public function test_filter_all()
+    {
+        $todos     = Domain_Todo::fetch_todo();
+        $all_todos = Domain_Todo::search('all');
+        $this->assertEquals(count($todos), count($all_todos));
+    }
+
     public function test_alter()
     {
         $id_to_be_tested = 12;
