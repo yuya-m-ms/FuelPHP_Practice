@@ -49,7 +49,7 @@ class Test_Domain_Todo extends TestCase
     public function test_search_status_name_asc()
     {
         $sorted_names_of = function ($status) {
-            $todos = Domain_Todo::search($status, 'name', 'asc');
+            $todos = Util_Array::sampling(Domain_Todo::search($status, 'name', 'asc'));
             return $names = array_map($name_of = function ($todo) {
                 return $todo->name;
             }, $todos);
@@ -63,7 +63,7 @@ class Test_Domain_Todo extends TestCase
     public function test_search_status_name_desc()
     {
         $sorted_names_of = function ($status) {
-            $todos = Domain_Todo::search($status, 'name', 'desc');
+            $todos = Util_Array::sampling(Domain_Todo::search($status, 'name', 'desc'));
             return $names = array_map($name_of = function ($todo) {
                 return $todo->name;
             }, $todos);
@@ -77,7 +77,7 @@ class Test_Domain_Todo extends TestCase
     public function test_search_status_due_asc()
     {
         $sorted_dues_of = function ($status) {
-            $todos = Domain_Todo::search($status, 'due', 'asc');
+            $todos = Util_Array::sampling(Domain_Todo::search($status, 'due', 'asc'));
             return $dues = array_map($due_of = function ($todo) {
                 return $todo->due;
             }, $todos);
@@ -99,7 +99,7 @@ class Test_Domain_Todo extends TestCase
     public function test_search_status_due_desc()
     {
         $sorted_dues_of = function ($status) {
-            $todos = Domain_Todo::search($status, 'due', 'desc');
+            $todos = Util_Array::sampling(Domain_Todo::search($status, 'due', 'desc'));
             return $dues = array_map($due_of = function ($todo) {
                 return $todo->due;
             }, $todos);
