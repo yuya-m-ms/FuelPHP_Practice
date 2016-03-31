@@ -5,6 +5,12 @@
 */
 class Controller_Api_V0_Todo extends Controller_Rest
 {
+    public function before()
+    {
+        parent::before();
+        Domain_Todo::before();
+    }
+
     public function get_todo($id)
     {
         return;
