@@ -125,10 +125,10 @@ class Controller_Todo extends Controller
         return $this->forge_todo_view($data);
     }
 
-    public function action_csv()
+    public function action_download($type)
     {
         $user_id = Session::get('user_id');
-        $run_download_as = Domain_Todo::forge_export_all_user_todo_as_csv($user_id);
-        $run_download_as('all_todo.csv');
+        $run_download_as = Domain_Todo::forge_download_all_todo($user_id, $type);
+        $run_download_as('all_todo.'.strtolower($type));
     }
 }

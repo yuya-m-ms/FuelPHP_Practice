@@ -30,4 +30,65 @@ class Util_Array
         }
         return $map;
     }
+
+    // faster and more random than array_rand()
+    public static function random_key($array)
+    {
+        $keys = array_keys($array);
+        return $keys[mt_rand(0, count($keys) - 1)];
+    }
+
+    public static function random_value($array)
+    {
+        return $array[static::random_key($array)];
+    }
+
+    // use array_value() to re-index if needed
+    public static function random_pop($array)
+    {
+        $key = static::random_key($array);
+        $value = $array[$key];
+        unset($array[$key]);
+        return $value;
+    }
+
+    public static final function head_tail($array)
+    {
+        if ( ! is_array($array) or empty($array)) {
+            return null;
+        }
+        $head = reset($array);
+        $tail = array_slice($array, 1);
+        return [$head, $tail];
+    }
+
+    public static function middle($array)
+    {
+        $len  = count($array);
+        $keys = array_keys($array);
+        return $array[$keys[floor($len / 2)]];
+    }
+
+    /**
+     * Sample the given array as first & last 2 + the middle
+     * @param  [mixed]  $array  to be sampled
+     * @param  integer  $number of sample
+     * @return [mixed]          sample
+     */
+    public static function sampling($array, $number = 5)
+    {
+        $edge = 2;
+        if ( ! is_array($array)) {
+            return null;
+        }
+        $len = count($array);
+        if ($len <= $number) {
+            return $array;
+        }
+        return array_merge(
+            array_slice($array, 0, $edge)
+            , [static::middle($array)]
+            , array_slice($array, -$edge)
+        );
+    }
 }
