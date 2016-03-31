@@ -139,19 +139,24 @@ class Test_Domain_Todo extends TestCase
 
     private static function is_asc(callable $comparing)
     {
-        return $lteq = function ($prev, $item) use ($comparing) {
-            if ( ! ($comparing($prev, $item) <= 0)) {
-                var_dump('Unordered', $prev, $item);
-                throw new Exception_Unordered();
-            }
-            return $item;
+        $not_lteq = function ($sign) {
+            return ! ($sign <= 0);
         };
+        return static::is_ordered($not_lteq, $comparing);
     }
 
     private static function is_desc(callable $comparing)
     {
-        return $gteq = function ($prev, $item) use ($comparing) {
-            if ( ! ($comparing($prev, $item) >= 0)) {
+        $not_gteq = function ($sign) {
+            return ! ($sign >= 0);
+        };
+        return static::is_ordered($not_gteq, $comparing);
+    }
+
+    private static function is_ordered(callable $check_order, callable $comparing)
+    {
+        return $check = function ($prev, $item) use ($check_order, $comparing) {
+            if ($check_order($comparing($prev, $item))) {
                 var_dump('Unordered', $prev, $item);
                 throw new Exception_Unordered();
             }
