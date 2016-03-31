@@ -54,7 +54,7 @@ class Test_Domain_Todo extends TestCase
                 return $todo->name;
             }, $todos);
         };
-        $lteq = static::is_asc($as_str = function ($prev, $item) {
+        $lteq = static::is_asc($in_str = function ($prev, $item) {
             return strcasecmp($prev, $item);
         });
         $this->is_filter_sorted($lteq, $sorted_names_of);
@@ -68,7 +68,7 @@ class Test_Domain_Todo extends TestCase
                 return $todo->name;
             }, $todos);
         };
-        $gteq = static::is_desc($as_str = function ($prev, $item) {
+        $gteq = static::is_desc($in_str = function ($prev, $item) {
             return strcasecmp($prev, $item);
         });
         $this->is_filter_sorted($gteq, $sorted_names_of);
@@ -82,7 +82,7 @@ class Test_Domain_Todo extends TestCase
                 return $todo->due;
             }, $todos);
         };
-        $lteq = static::is_asc($as_datetime = function ($prev, $item) {
+        $lteq = static::is_asc($in_datetime = function ($prev, $item) {
             $p = new DateTime($prev);
             $i = new DateTime($item);
             return $p->getTimestamp() - $i->getTimestamp();
@@ -104,7 +104,7 @@ class Test_Domain_Todo extends TestCase
                 return $todo->due;
             }, $todos);
         };
-        $gteq = static::is_desc($as_datetime = function ($prev, $item) {
+        $gteq = static::is_desc($in_datetime = function ($prev, $item) {
             $p = new DateTime($prev);
             $i = new DateTime($item);
             return $p->getTimestamp() - $i->getTimestamp();
