@@ -17,7 +17,7 @@ class Controller_Api_V0_Todo extends Controller_Rest
 
     public function get_item($id)
     {
-        return $this->response(Model_Todo::find($id));
+        return $this->response(Domain_Todo::fetch_item($id));
     }
 
     public function get_list($user = 'user', $id = 0)
@@ -91,6 +91,6 @@ class Controller_Api_V0_Todo extends Controller_Rest
         array_filter($item, $non_null);
         $id  = Domain_Todo::alter($id, $item);
 
-        return $this->response(Model_Todo::find($id));
+        return $this->response(Domain_Todo::fetch_item($id));
     }
 }

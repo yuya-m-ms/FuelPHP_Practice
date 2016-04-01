@@ -51,6 +51,11 @@ class Domain_Todo
         return static::fetch_user_todo($user_id)->get();
     }
 
+    public static function fetch_item($id)
+    {
+        return Model_Todo::find($id);
+    }
+
     public static function add_todo($input)
     {
         $due_daytime = Util_String::null_if_blank($input['due_day'].' '.$input['due_time']);
@@ -96,7 +101,7 @@ class Domain_Todo
     public static function alter($id, $updates)
     {
         // suppose no missing id
-        $todo = Model_Todo::find($id);
+        $todo = static::fetch_item($id);
         $todo->set($updates);
         $todo->save();
 

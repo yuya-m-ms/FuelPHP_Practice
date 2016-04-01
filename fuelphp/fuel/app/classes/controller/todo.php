@@ -88,7 +88,7 @@ class Controller_Todo extends Controller
 
     public function action_to_change($id)
     {
-        $todo = Model_Todo::find($id);
+        $todo = Domain_Todo::fetch_item($id);
         list($due_day, $due_time) = Domain_Todo::chop_datetime($todo->due);
         $data['task_to_be_changed'] = [
             'id'        => $todo->id,
