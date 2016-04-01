@@ -12,12 +12,12 @@ class Controller_Api_V0_Todo extends Controller_Rest
         date_default_timezone_set('UTC');
         parent::before();
         Domain_Todo::before();
-        $host = $host ?: 'http://'.Input::server('HTTP_HOST');
+        static::$host = static::$host ?: 'http://'.Input::server('HTTP_HOST');
     }
 
     public function get_item($id)
     {
-        return $this->response(Domain_Todo::fetch_item($id));
+        return $this->response(['item' => Domain_Todo::fetch_item($id)]);
     }
 
     public function get_list($user = 'user', $id = 0)
@@ -35,7 +35,7 @@ class Controller_Api_V0_Todo extends Controller_Rest
         }
         $todos = Domain_Todo::fetch_todo($user_id);
 
-        return $this->response($todos);
+        return $this->response(['list' => $todos]);
     }
 
     public function delete_item($id)
@@ -54,7 +54,7 @@ class Controller_Api_V0_Todo extends Controller_Rest
             'user_id'   => Session::post('user_id'),
         ];
         $id  = Domain_Todo::add_todo($item);
-        $uri = $host.'/api/v0/todo/item'.$id;
+        $uri = static::$host.'/api/v0/todo/item'.$id;
 
         $res = new Response();
         $res->set_status(201);
@@ -91,6 +91,6 @@ class Controller_Api_V0_Todo extends Controller_Rest
         array_filter($item, $non_null);
         $id  = Domain_Todo::alter($id, $item);
 
-        return $this->response(Domain_Todo::fetch_item($id));
+        return $this->response(['item' => Domain_Todo::fetch_item($id)]);
     }
 }
