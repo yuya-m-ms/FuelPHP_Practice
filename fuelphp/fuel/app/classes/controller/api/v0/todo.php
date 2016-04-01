@@ -11,32 +11,32 @@ class Controller_Api_V0_Todo extends Controller_Rest
         Domain_Todo::before();
     }
 
-    public function get_todo($id)
+    public function get_item($id)
     {
         return;
     }
 
-    public function get_todo_list()
+    public function get_list()
     {
         return;
     }
 
-    public function delete_todo($id)
+    public function delete_item($id)
     {
         return;
     }
 
-    public function post_todo()
+    public function post_item()
     {
         return;
     }
 
-    public function put_todo($id)
+    public function put_item($id)
     {
         return;
     }
 
-    public function patch_todo($id)
+    public function patch_item($id)
     {
         return;
     }
