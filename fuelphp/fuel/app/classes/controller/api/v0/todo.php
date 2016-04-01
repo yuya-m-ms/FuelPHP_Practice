@@ -47,11 +47,11 @@ class Controller_Api_V0_Todo extends Controller_Rest
     public function post_item()
     {
         $item = [
-            'name'      => Input::get('name'),
-            'due'       => Input::get('due'),
+            'name'      => Input::post('name'),
+            'due'       => Input::post('due'),
             'status_id' => 0,
             'deleted'   => false,
-            'user_id'   => Session::get('user_id'),
+            'user_id'   => Session::post('user_id'),
         ];
         $id  = Domain_Todo::add_todo($item);
         $uri = $host.'/api/v0/todo/item'.$id;
@@ -65,11 +65,11 @@ class Controller_Api_V0_Todo extends Controller_Rest
     public function put_item($id)
     {
         $item = [
-            'name'      => Input::get('name'),
-            'due'       => Input::get('due'),
-            'status_id' => Input::get('status_id'),
-            'deleted'   => Input::get('deleted'),
-            'user_id'   => Input::get('user_id'),
+            'name'      => Input::put('name'),
+            'due'       => Input::put('due'),
+            'status_id' => Input::put('status_id'),
+            'deleted'   => Input::put('deleted'),
+            'user_id'   => Input::put('user_id'),
         ];
         Domain_Todo::alter($id, $item);
 
@@ -79,11 +79,11 @@ class Controller_Api_V0_Todo extends Controller_Rest
     public function patch_item($id)
     {
         $item = [
-            'name'      => Input::get('name'),
-            'due'       => Input::get('due'),
-            'status_id' => Input::get('status_id'),
-            'deleted'   => Input::get('deleted'),
-            'user_id'   => Input::get('user_id'),
+            'name'      => Input::patch('name'),
+            'due'       => Input::patch('due'),
+            'status_id' => Input::patch('status_id'),
+            'deleted'   => Input::patch('deleted'),
+            'user_id'   => Input::patch('user_id'),
         ];
         $non_null = function ($value) {
             return ! is_null($value);
