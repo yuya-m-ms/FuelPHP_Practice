@@ -6,6 +6,7 @@
 class Controller_Api_V0_Todo extends Controller_Rest
 {
     protected static $host;
+    protected static $uri_item;
 
     public function before()
     {
@@ -13,11 +14,25 @@ class Controller_Api_V0_Todo extends Controller_Rest
         parent::before();
         Domain_Todo::before();
         static::$host = static::$host ?: 'http://'.Input::server('HTTP_HOST');
+        static::$uri_item = static::$uri_item ?: static::$host.'api/v0/todo/item/';
+    }
+
+    protected function response_with_uri($body = null, $status = 200, $item_id)
+    {
+        $res = $this->response($body, $status);
+        $res->set_header('Location', static::$uri_item.$item_id);
+        return $res;
     }
 
     public function get_item($id)
     {
-        return $this->response(['item' => Domain_Todo::fetch_item($id)]);
+        $item = Domain_Todo::fetch_item($id);
+        if ($item->deleted) {
+            return $this->response(null, 410); // Gone = deleted
+        }
+        $body = ['item' => $item];
+
+        return $this->response($body);
     }
 
     public function get_list($user = 'user', $id = 0)
@@ -34,8 +49,9 @@ class Controller_Api_V0_Todo extends Controller_Rest
                 break;
         }
         $todos = Domain_Todo::fetch_todo($user_id);
+        $body  = ['list' => $todos];
 
-        return $this->response(['list' => $todos]);
+        return $this->response($body);
     }
 
     public function delete_item($id)
@@ -53,13 +69,10 @@ class Controller_Api_V0_Todo extends Controller_Rest
             'deleted'   => false,
             'user_id'   => Session::post('user_id'),
         ];
-        $id  = Domain_Todo::add_todo($item);
-        $uri = static::$host.'/api/v0/todo/item'.$id;
+        $id   = Domain_Todo::add_todo($item);
+        $body = ['item' => Domain_Todo::fetch_item($id)];
 
-        $res = new Response();
-        $res->set_status(201);
-        $res->set_header('Location', $uri);
-        return $res;
+        return $this->response_with_uri($body, 201, $id);
     }
 
     public function put_item($id)
@@ -71,9 +84,10 @@ class Controller_Api_V0_Todo extends Controller_Rest
             'deleted'   => Input::put('deleted'),
             'user_id'   => Input::put('user_id'),
         ];
-        Domain_Todo::alter($id, $item);
+        $id   = Domain_Todo::alter($id, $item);
+        $body = ['item' => Domain_Todo::fetch_item($id)];
 
-        return $this->response(null, 204); // no create
+        return $this->response_with_uri($body, 200, $id);
     }
 
     public function patch_item($id)
@@ -89,8 +103,9 @@ class Controller_Api_V0_Todo extends Controller_Rest
             return ! is_null($value);
         };
         array_filter($item, $non_null);
-        $id  = Domain_Todo::alter($id, $item);
+        $id   = Domain_Todo::alter($id, $item);
+        $body = ['item' => Domain_Todo::fetch_item($id)];
 
-        return $this->response(['item' => Domain_Todo::fetch_item($id)]);
+        return $this->response_with_uri($body, 200, $id);
     }
 }
