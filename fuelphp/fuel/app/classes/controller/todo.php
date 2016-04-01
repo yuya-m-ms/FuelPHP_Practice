@@ -17,11 +17,12 @@ class Controller_Todo extends Controller
 
     protected function forge_todo_view($data = [])
     {
+        $user_id = Session::get('user_id') ?: 0;
         if ( ! array_key_exists('todos', $data)) {
-            $data['todos'] = Domain_Todo::fetch_todo(Session::get('user_id'));
+            $data['todos'] = Domain_Todo::fetch_todo($user_id);
         }
         $data['status_list'] = Domain_Todo::get('status_list');
-        $data['user_id'] = Session::get('user_id') ?: 0;
+        $data['user_id'] = $user_id;
         return View::forge('todo', $data);
     }
 
