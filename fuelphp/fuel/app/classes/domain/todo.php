@@ -62,13 +62,15 @@ class Domain_Todo
         $todo->deleted   = false;
         $todo->user_id   = $input['user_id'];
         $todo->save();
+
+        return $todo->id;
     }
 
     public static function change_todo($id, $input)
     {
         $due_daytime = Util_String::null_if_blank($input['due_day'].' '.$input['due_time']);
 
-        static::alter($id, [
+        return static::alter($id, [
             'name'      => $input['name'],
             'due'       => $due_daytime,
             'status_id' => $input['status_id'],
@@ -97,6 +99,8 @@ class Domain_Todo
         $todo = Model_Todo::find($id);
         $todo->set($updates);
         $todo->save();
+
+        return $todo->id;
     }
 
     /**
