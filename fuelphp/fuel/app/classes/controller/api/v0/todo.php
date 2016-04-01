@@ -17,22 +17,20 @@ class Controller_Api_V0_Todo extends Controller_Rest
         return $this->response(Model_Todo::find($id));
     }
 
-    public function get_list()
+    public function get_list($user = 'user', $id = 0)
     {
-        $user_id = Session::get('user_id') ?: 0;
-        $todos   = Domain_Todo::fetch_todo($user_id);
-        return $this->response($todos);
-    }
-
-    public function get_list_me()
-    {
-        // on session
-        return $this->get_list();
-    }
-
-    public function get_list_user($id)
-    {
-        $todos   = Domain_Todo::fetch_todo($id);
+        switch ($user) {
+            case 'user':
+                $user_id = $id;
+                break;
+            case 'me':
+                $user_id = Session::get('user_id');
+                break;
+            default:
+                $user_id = Session::get('user_id') ?: 0;
+                break;
+        }
+        $todos = Domain_Todo::fetch_todo($user_id);
         return $this->response($todos);
     }
 
