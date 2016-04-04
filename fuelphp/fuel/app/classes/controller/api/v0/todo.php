@@ -46,7 +46,7 @@ class Controller_Api_V0_Todo extends Controller_Rest
 
     protected static function body_list($user_id)
     {
-        return ['list' => Domain_Todo::fetch_todo($id)];
+        return ['list' => Domain_Todo::fetch_todo($user_id)];
     }
 
     public function get_item($id)
