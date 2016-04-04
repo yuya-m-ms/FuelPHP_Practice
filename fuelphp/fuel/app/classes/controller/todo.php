@@ -17,11 +17,12 @@ class Controller_Todo extends Controller
 
     protected function forge_todo_view($data = [])
     {
+        $user_id = Session::get('user_id') ?: 0;
         if ( ! array_key_exists('todos', $data)) {
-            $data['todos'] = Domain_Todo::fetch_todo(Session::get('user_id'));
+            $data['todos'] = Domain_Todo::fetch_todo($user_id);
         }
         $data['status_list'] = Domain_Todo::get('status_list');
-        $data['user_id'] = Session::get('user_id') ?: 0;
+        $data['user_id'] = $user_id;
         return View::forge('todo', $data);
     }
 
@@ -88,7 +89,7 @@ class Controller_Todo extends Controller
 
     public function action_to_change($id)
     {
-        $todo = Model_Todo::find($id);
+        $todo = Domain_Todo::fetch_item($id);
         list($due_day, $due_time) = Domain_Todo::chop_datetime($todo->due);
         $data['task_to_be_changed'] = [
             'id'        => $todo->id,

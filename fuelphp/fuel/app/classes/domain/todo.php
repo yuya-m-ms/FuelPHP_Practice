@@ -1,5 +1,8 @@
 <?php
 
+class InvalidIdException extends Exception {}
+class InvalidFormatException extends Exception {}
+
 /**
 * Model dealing with business logics
 */
@@ -51,6 +54,15 @@ class Domain_Todo
         return static::fetch_user_todo($user_id)->get();
     }
 
+    public static function fetch_item($id)
+    {
+        $item = Model_Todo::find($id);
+        if (is_null($item)) {
+            throw new InvalidIdException();
+        }
+        return $item;
+    }
+
     public static function add_todo($input)
     {
         $due_daytime = Util_String::null_if_blank($input['due_day'].' '.$input['due_time']);
@@ -62,13 +74,15 @@ class Domain_Todo
         $todo->deleted   = false;
         $todo->user_id   = $input['user_id'];
         $todo->save();
+
+        return $todo->id;
     }
 
     public static function change_todo($id, $input)
     {
         $due_daytime = Util_String::null_if_blank($input['due_day'].' '.$input['due_time']);
 
-        static::alter($id, [
+        return static::alter($id, [
             'name'      => $input['name'],
             'due'       => $due_daytime,
             'status_id' => $input['status_id'],
@@ -94,9 +108,11 @@ class Domain_Todo
     public static function alter($id, $updates)
     {
         // suppose no missing id
-        $todo = Model_Todo::find($id);
+        $todo = static::fetch_item($id);
         $todo->set($updates);
         $todo->save();
+
+        return $todo->id;
     }
 
     /**
@@ -145,7 +161,7 @@ class Domain_Todo
                 $data = Format::forge($table)->to_json();
                 break;
             default:
-                throw new Exception('Invalid format');
+                throw new InvalidFormatException('Invalid format');
         }
         fwrite($temp = tmpfile(), $data);
 
