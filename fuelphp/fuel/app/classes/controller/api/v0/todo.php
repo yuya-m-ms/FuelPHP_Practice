@@ -16,8 +16,11 @@ class Controller_Api_V0_Todo extends Controller_Rest
             $error = error_get_last()['type'];
             $fatal = $error === E_ERROR or $error === E_USER_ERROR;
             if ( ! $fatal) { return; }
-            $ob  = ob_get_clean(); // stash Fatal Error Message; discarded
-            $res = $this->response(['errors' => ['FATAL_ERROR']], 500);
+            $ob  = ob_get_clean(); // stash Fatal Error Message
+            $res = $this->response(['errors' => [
+                'FATAL_ERROR',
+                'traces' => array_filter(explode("\n", $ob)),
+            ]], 500);
             $res->send(true);
             exit();
         });
