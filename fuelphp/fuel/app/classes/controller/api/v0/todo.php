@@ -25,6 +25,16 @@ class Controller_Api_V0_Todo extends Controller_Rest
         return $res;
     }
 
+    protected static function body_item($id)
+    {
+        return ['item' => Domain_Todo::fetch_item($id)];
+    }
+
+    protected static function body_list($user_id)
+    {
+        return ['list' => Domain_Todo::fetch_todo($id)];
+    }
+
     public function get_item($id)
     {
         try {
@@ -57,8 +67,7 @@ class Controller_Api_V0_Todo extends Controller_Rest
                 $error_list = ['errors' => ['Invalid User']];
                 return $this->response($error_list, 405);
         }
-        $todos = Domain_Todo::fetch_todo($user_id);
-        $body  = ['list' => $todos];
+        $body = static::body_list($user_id);
 
         return $this->response($body);
     }
@@ -84,7 +93,7 @@ class Controller_Api_V0_Todo extends Controller_Rest
             'user_id'   => Session::post('user_id'),
         ];
         $id   = Domain_Todo::add_todo($item);
-        $body = ['item' => Domain_Todo::fetch_item($id)];
+        $body = static::body_item($id);
 
         return $this->response_with_uri($body, 201, $id);
     }
@@ -105,7 +114,7 @@ class Controller_Api_V0_Todo extends Controller_Rest
         };
         array_filter($item, $keep);
         $id   = Domain_Todo::alter($id, $item);
-        $body = ['item' => Domain_Todo::fetch_item($id)];
+        $body = static::body_item($id);
 
         return $this->response_with_uri($body, 200, $id);
     }
