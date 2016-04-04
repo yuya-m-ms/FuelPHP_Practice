@@ -1,5 +1,8 @@
 <?php
 
+class InvalidIdException extends Exception {}
+class InvalidFormatException extends Exception {}
+
 /**
 * Model dealing with business logics
 */
@@ -53,7 +56,11 @@ class Domain_Todo
 
     public static function fetch_item($id)
     {
-        return Model_Todo::find($id);
+        $item = Model_Todo::find($id);
+        if (is_null($item)) {
+            throw new InvalidIdException();
+        }
+        return $item;
     }
 
     public static function add_todo($input)
@@ -154,7 +161,7 @@ class Domain_Todo
                 $data = Format::forge($table)->to_json();
                 break;
             default:
-                throw new Exception('Invalid format');
+                throw new InvalidFormatException('Invalid format');
         }
         fwrite($temp = tmpfile(), $data);
 

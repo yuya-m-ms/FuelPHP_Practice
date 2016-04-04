@@ -27,7 +27,12 @@ class Controller_Api_V0_Todo extends Controller_Rest
 
     public function get_item($id)
     {
-        $item = Domain_Todo::fetch_item($id);
+        try {
+            $item = Domain_Todo::fetch_item($id);
+        } catch (InvalidIdException $e) {
+            $error_list = ['errors' => ['Invalid Item ID']];
+            return $this->response($error_list, 404);
+        }
         if ($item->deleted) {
             return $this->response(null, 410); // Gone = deleted
         }
@@ -45,9 +50,12 @@ class Controller_Api_V0_Todo extends Controller_Rest
             case 'me':
                 $user_id = Session::get('user_id');
                 break;
-            default:
+            case '':
                 $user_id = Session::get('user_id') ?: 0;
                 break;
+            default:
+                $error_list = ['errors' => ['Invalid User']];
+                return $this->response($error_list, 405);
         }
         $todos = Domain_Todo::fetch_todo($user_id);
         $body  = ['list' => $todos];
@@ -57,8 +65,13 @@ class Controller_Api_V0_Todo extends Controller_Rest
 
     public function delete_item($id)
     {
-        Domain_Todo::alter($id, ['deleted' => true]);
-        return $this->response(null, 204);
+        try {
+            Domain_Todo::alter($id, ['deleted' => true]);
+            return $this->response(null, 204);
+        } catch (InvalidIdException $e) {
+            $error_list = ['errors' => ['Invalid Item ID']];
+            return $this->response($error_list, 404);
+        }
     }
 
     public function post_item()
