@@ -91,23 +91,8 @@ class Controller_Api_V0_Todo extends Controller_Rest
 
     public function put_item($id)
     {
-        $item = [
-            'name'      => Input::put('name'),
-            'due'       => Input::put('due'),
-            'status_id' => Input::put('status_id'),
-            'deleted'   => Input::put('deleted'),
-            'user_id'   => Input::put('user_id'),
-        ];
-        $id   = Domain_Todo::alter($id, $item);
-        $body = ['item' => Domain_Todo::fetch_item($id)];
-
-        return $this->response_with_uri($body, 200, $id);
-    }
-
-    public function patch_item($id)
-    {
-        $no_change = 'NO_CHANGE';
-        // no key = no change
+        $no_change = ' NO_CHANGE ';
+        // no key = no change; input has no trailing space
         $item = [
             'name'      => Input::patch('name',      $no_change),
             'due'       => Input::patch('due',       $no_change),
