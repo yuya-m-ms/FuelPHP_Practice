@@ -1,7 +1,8 @@
 <?php
 
 /**
-* REST API
+* REST API.
+* Create系の操作はTodo ItemのURIを返す
 */
 class Controller_Api_V0_Todo extends Controller_Rest
 {
@@ -92,17 +93,19 @@ class Controller_Api_V0_Todo extends Controller_Rest
 
     public function patch_item($id)
     {
+        $no_change = 'NO_CHANGE';
+        // no key = no change
         $item = [
-            'name'      => Input::patch('name'),
-            'due'       => Input::patch('due'),
-            'status_id' => Input::patch('status_id'),
-            'deleted'   => Input::patch('deleted'),
-            'user_id'   => Input::patch('user_id'),
+            'name'      => Input::patch('name',      $no_change),
+            'due'       => Input::patch('due',       $no_change),
+            'status_id' => Input::patch('status_id', $no_change),
+            'deleted'   => Input::patch('deleted',   $no_change),
+            'user_id'   => Input::patch('user_id',   $no_change),
         ];
-        $non_null = function ($value) {
-            return ! is_null($value);
+        $keep = function ($value) use ($no_change) {
+            return ($value !== $no_change);
         };
-        array_filter($item, $non_null);
+        array_filter($item, $keep);
         $id   = Domain_Todo::alter($id, $item);
         $body = ['item' => Domain_Todo::fetch_item($id)];
 
