@@ -21,7 +21,7 @@ or in DELETE, POST, PUT
 # Group ToDos
 Resources related to ToDos in the API.
 
-## ToDo List [GET /todo/list/user/{id}]
+## ToDo List [GET /api/v0/todo/list/user/{id}]
 List all the ToDos of the user.
 
 See below
@@ -30,13 +30,13 @@ See below
     + id: 1 (number) - An unique identifier of the user.
 
 
-## ToDo List [GET /todo/list/me]
+## ToDo List [GET /api/v0/todo/list/me]
 List all the ToDos of the current user.
 
 See below
 
 
-## ToDo List [/todo/list]
+## ToDo List [/api/v0/todo/list]
 List all the ToDos of the current user.
 
 ### List All ToDos [GET]
@@ -68,7 +68,7 @@ List all the ToDos of the current user.
         </xml>
 
 
-## ToDo Item [/todo/item/{id}]
+## ToDo Item [/api/v0/todo/item/{id}]
 
 + Parameters
     + id: 1 (number) - An unique identifier of the ToDo.
