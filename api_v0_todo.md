@@ -21,22 +21,23 @@ or in DELETE, POST, PUT
 # Group ToDos
 Resources related to ToDos in the API.
 
-## ToDo List [/todo/list/user/{id}]
+## ToDo List [GET /todo/list/user/{id}]
 List all the ToDos of the user.
+
+See below
 
 + Parameters
     + id: 1 (number) - An unique identifier of the user.
 
-### GET
-See below
 
-## ToDo List [/todo/list/me]
+## ToDo List [GET /todo/list/me]
 List all the ToDos of the current user.
 
-### GET
 See below
 
+
 ## ToDo List [/todo/list]
+List all the ToDos of the current user.
 
 ### List All ToDos [GET]
 
