@@ -1,7 +1,9 @@
 FORMAT: 0
 
-# REST-like [/api/v0]
+# REST-like API Root [/]
 This is a REST-like API powered by FuelPHP. Returns JSON in default.
+
+## Common Path of version 0 [/api/v0]
 
 # Group ToDos
 Resources related to ToDos in the API.
