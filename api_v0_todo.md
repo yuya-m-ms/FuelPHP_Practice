@@ -5,9 +5,9 @@ This is a REST-like API powered by FuelPHP. Returns JSON in default.
 
 ## Common Path of version 0 [/api/v0]
 
+
 # Group ToDos
 Resources related to ToDos in the API.
-
 
 ## ToDo List [/todo/list/user/{id}]
 List all the ToDos of the user.
@@ -55,7 +55,6 @@ See below
         </xml>
 
 
-
 ## ToDo Item [/todo/item/{id}]
 
 + Parameters
@@ -71,6 +70,7 @@ Return Gone if the ToDo is deleted.
         }
 
 + Response 406
+
 
 ### Delete ToDo Item [DELETE]
 
