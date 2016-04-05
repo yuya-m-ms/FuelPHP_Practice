@@ -5,6 +5,18 @@ This is a REST-like API powered by FuelPHP. Returns JSON in default.
 
 ## Common Path of version 0 [/api/v0]
 
+### On Fatal Error [GET]
+or in DELETE, POST, PUT
+
++ Response 500 (application/json)
+        {"errors":
+            {"0": "Fatal Error"
+            , "traces": {
+                      "1": "string"
+                    , "2": "…"
+                }
+            }
+        }
 
 # Group ToDos
 Resources related to ToDos in the API.
