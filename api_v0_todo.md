@@ -60,6 +60,7 @@ See below
     + id: 1 (number) - An unique identifier of the ToDo.
 
 ### Get ToDo Item [GET]
+Return Gone if the ToDo is deleted.
 
 + Response 200 (application/json)
     + Body
@@ -69,9 +70,11 @@ See below
             }
         }
 
++ Response 406
+
 ### Delete ToDo Item [DELETE]
 
-+ Response 204 (application/json)
++ Response 204
 
 
 ### Add ToDo Item [POST]
