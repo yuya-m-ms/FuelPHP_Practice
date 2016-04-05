@@ -90,7 +90,7 @@ Return Gone if the ToDo is deleted.
 + Response 204
 
 
-### Add ToDo Item [POST]
+### Add ToDo Item [POST /api/v0/todo/item]
 
 + Response 200 (application/json)
     + Headers
