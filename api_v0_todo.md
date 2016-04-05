@@ -31,9 +31,8 @@ See below
 + Response 200 (application/json)
 
         {"list":
-            { n:
-                {"name":name, "due":due, "status_id":status_id, "user_id":user_id}
-            , n: {"…":"…", …}
+            { 1: {"id":1, "name":"ToDo", "due":null, "status_id":0, "deleted":false "user_id":1}
+            , 2: {"…":"…", …}
             , …
             }
         }
@@ -43,11 +42,12 @@ See below
         <xml>
             <list>
                 <item>
-                    <id>n</id>
-                    <name>name</name>
+                    <id>1</id>
+                    <name>ToDo</name>
                     <due></due>
-                    <status_id>n</status_id>
-                    <user_id>n</user_id>
+                    <status_id>0</status_id>
+                    <deleted>false</deleted>
+                    <user_id>1</user_id>
                 </item>
                 <item>…</item>
                 …
@@ -67,9 +67,7 @@ Return Gone if the ToDo is deleted.
 + Response 200 (application/json)
     + Body
         {"item":
-            {id:
-                {"id":id, "name":name, "due":due, "status_id":status_id, "user_id":user_id}
-            }
+            {"id":1, "name":"ToDo", "due":null, "status_id":0, "deleted":false, "user_id":1}
         }
 
 + Response 406
@@ -86,9 +84,7 @@ Return Gone if the ToDo is deleted.
         Location: URI
     + Body
         {"item":
-            {id:
-                {"id":id, "name":name, "due":due, "status_id":status_id, "user_id":user_id}
-            }
+            {"id":1, "name":"ToDo", "due":null, "status_id":0, "deleted":false, "user_id":1}
         }
 
 ### Update ToDo Item [PUT]
@@ -98,7 +94,5 @@ Return Gone if the ToDo is deleted.
         Location: URI
     + Body
         {"item":
-            {id:
-                {"id":id, "name":name, "due":due, "status_id":status_id, "user_id":user_id}
-            }
+            {"id":1, "name":"ToDo", "due":null, "status_id":0, "deleted":false, "user_id":1}
         }
