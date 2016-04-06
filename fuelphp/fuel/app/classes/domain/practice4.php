@@ -31,4 +31,16 @@ class Domain_Practice4
             'state'         => $token,
         ]);
     }
+
+    public static function forge_token_url($code)
+    {
+        $cs = static::get('client_secret');
+        return Uri::create(Arr::get($cs, 'web.token_uri'), [], [
+            'code'          => $code,
+            'client_id'     => Arr::get($cs, 'web.client_id'),
+            'client_secret' => Arr::get($cs, 'web.client_secret'),
+            'redirect_uri'  => Arr::get($cs, 'web.redirect_uris.0'),
+            'grant_type'    => 'authorization_code',
+        ]);
+    }
 }
