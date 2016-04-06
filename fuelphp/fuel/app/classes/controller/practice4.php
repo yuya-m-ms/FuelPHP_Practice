@@ -16,7 +16,11 @@ class Controller_Practice4 extends Controller
     {
         $view = View::forge('practice4');
         $view->set('title', "演習4");
-        $view->set('content', Domain_Practice4::get('foo'));
+        $view->set('google_oauth', Domain_Practice4::forge_login_url());
+        $is_logged_in = false;
+        $view->set('is_logged_in', $is_logged_in);
+        Profiler::console('Logged_in? = '.($is_logged_in ? 'true' : 'false'));
+        $view->set('login_status', []);
         return $view;
     }
 }

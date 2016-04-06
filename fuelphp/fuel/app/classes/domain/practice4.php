@@ -11,6 +11,11 @@ class Domain_Practice4
 
     public static function before()
     {
-        static::set('foo', 'bar');
+        ;
+    }
+
+    public static function forge_login_url()
+    {
+        return 'https://i.wanna.log.in';
     }
 }

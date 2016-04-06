@@ -6,7 +6,17 @@
 <body>
     <section>
         <h1>OAuth2 Login Practice</h1>
-        <h2><?= $content ?></h2>
+        <p class="login">
+            <?= html_tag('a', ['href' => $google_oauth], 'Log in via Google OAuth'); ?>
+        </p>
+        <section class="login_status">
+            <?php if ($is_logged_in): ?>
+                <span>Logged in as $username</span>
+                <section>
+                    <?= Html::ul($login_status) ?>
+                </section>
+            <?php endif ?>
+        </section>
     </section>
 </body>
 </html>
