@@ -17,6 +17,7 @@
                 </section>
             <?php endif ?>
         </section>
+        <pre><?= print_r($client_secret) ?></pre>
     </section>
 </body>
 </html>
