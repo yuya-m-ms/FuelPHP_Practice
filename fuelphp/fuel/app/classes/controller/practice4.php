@@ -16,33 +16,54 @@ class Controller_Practice4 extends Controller
     {
         $view = View::forge('practice4');
         $view->set('title', "演習4");
-
+        // DEBUG
+        $view->set('session', json_encode(Session::get(), JSON_PRETTY_PRINT));
+        Profiler::console('Input: '.json_encode(Input::get(), JSON_PRETTY_PRINT));
+        Profiler::console('Session: '.json_encode(Session::get(), JSON_PRETTY_PRINT));
         // login check
-        $input_get = Input::get();
-        $view->set('input_get', $input_get);
-        Profiler::console('Input: '.json_encode($input_get));
-        $logged_in = ! empty($input_get['code']);
+        $logged_in = ! empty(Session::get('user_info.user_id'));
         $view->set('logged_in', $logged_in);
         Profiler::console('Logged_in? = '.var_export($logged_in, true));
-
-        if ( ! $logged_in) {
-            // to log-in
-            $state = Security::generate_token();
-            Session::set('google_oauth.state', $state);
-            $view->set('google_oauth_url', Domain_Practice4::forge_login_url($state));
-        } else {
-            // to load data
-            if (empty($code = Input::get('code'))) { return $view; }
-            $token_req = Domain_Practice4::fetch_token($code);
-            $view->set('data', $token_req);
-            if (empty($token_req) or  ! $token_req['expires_in'] > 0) { return $view; }
-            $user_info = $this->fetch_from_google($token_req['id_token']);
-            $view->set('user_info', $user_info);
-            $view->set('username', $user_info['user_id']);
-            $view->set('email', $user_info['email']);
-        }
+        // load user info
+        $view->set('user_info', json_encode(Session::get('user_info'), JSON_PRETTY_PRINT));
+        $view->set('user_id', Session::get('user_info.user_id'));
+        $view->set('email', Session::get('user_info.email'));
 
         return $view;
+    }
+
+    public function action_login()
+    {
+        Profiler::console('Login');
+        $state = Security::generate_token();
+        $login = Domain_Practice4::forge_login_url($state);
+        Response::redirect($login);
+    }
+
+    public function action_login_redirect()
+    {
+        // DEBUG
+        Profiler::console('Login_Redirect');
+        Profiler::console('Input: '.json_encode(Input::get(), JSON_PRETTY_PRINT));
+        Profiler::console('Session: '.json_encode(Session::get(), JSON_PRETTY_PRINT));
+        // get request token
+        Session::set('access', Input::get());
+        $code = Session::get('access.code');
+        // get access token
+        Session::set('token', Domain_Practice4::fetch_token($code));
+        $token = Session::get('token.id_token');
+        // get user info
+        Profiler::console('Token: '.$token);
+        Session::set('user_info', Domain_Practice4::fetch_user_info($token));
+
+        Response::redirect('practice4');
+    }
+
+    public function action_logout()
+    {
+        Profiler::console('Logout');
+        Session::destroy();
+        Response::redirect('practice4');
     }
 
     protected function fetch_from_google($token)

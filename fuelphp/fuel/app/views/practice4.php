@@ -8,28 +8,28 @@
         <h1>OAuth2 Login Practice</h1>
         <p class="login">
             <?php if ( ! $logged_in): ?>
-                <?= html_tag('a', ['href' => $google_oauth_url], 'Log in via Google OAuth'); ?>
+                <?= html_tag('a', ['href' => 'practice4/login'], 'Log in via Google OAuth'); ?>
+            <?php else: ?>
+                <?= html_tag('a', ['href' => 'practice4/logout'], 'Log out') ?>
             <?php endif ?>
         </p>
         <section class="login_status">
             <h2>Login Status</h2>
             <?php if ($logged_in): ?>
-                <span> Logged in as: <span><?= $username ?></span> </span>
+                <span> Logged in as: <span><?= $user_id ?></span> </span>
                 <br>
                 <span> Email: <span><?= $email ?></span> </span>
                 <section>
                     <h3>User Data:</h3>
-                    <pre><?= json_encode($user_info, JSON_PRETTY_PRINT) ?></pre>
-                    <h4>Token:</h4>
-                    <pre><?= json_encode($data, JSON_PRETTY_PRINT) ?></pre>
+                    <pre><?= nl2br($user_info) ?></pre>
                 </section>
             <?php else: ?>
                 <span>Not Logged in</span>
             <?php endif ?>
         </section>
         <section>
-            <h3>Input GET</h3>
-            <pre><?= json_encode($input_get, JSON_PRETTY_PRINT) ?></pre>
+            <h3>Session</h3>
+            <pre><?= nl2br($session) ?></pre>
         </section>
     </section>
 </body>
