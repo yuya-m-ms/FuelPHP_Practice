@@ -14,15 +14,12 @@
         <section class="login_status">
             <h2>Login Status</h2>
             <?php if ($logged_in): ?>
-                <span>
-                    Logged in as
-                    <span><?= $username ?></span>
-                </span>
+                <span> Logged in as: <span><?= $username ?></span> </span>
+                <br>
+                <span> Email: <span><?= $email ?></span> </span>
                 <section>
-                    <p>
-                        Login Status:
-                        <span><?= $login_status ?></span>
-                    </p>
+                    <h3>User Data:</h3>
+                    <pre><?= json_encode($user_info, JSON_PRETTY_PRINT) ?></pre>
                     <h4>Token:</h4>
                     <pre><?= json_encode($data, JSON_PRETTY_PRINT) ?></pre>
                 </section>

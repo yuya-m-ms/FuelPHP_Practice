@@ -32,22 +32,21 @@ class Controller_Practice4 extends Controller
             $view->set('google_oauth_url', Domain_Practice4::forge_login_url($state));
         } else {
             // to load data
-            if ($code = Input::get('code')) {
-                $token_req = Domain_Practice4::fetch_token($code);
-                $view->set('data', $token_req);
-            } else {
-                $view->set('data', null);
-            }
-            $view->set('username', $input_get['hd']);
+            if (empty($code = Input::get('code'))) { return $view; }
+            $token_req = Domain_Practice4::fetch_token($code);
+            $view->set('data', $token_req);
+            if (empty($token_req) or  ! $token_req['expires_in'] > 0) { return $view; }
+            $user_info = $this->fetch_from_google($token_req['id_token']);
+            $view->set('user_info', $user_info);
+            $view->set('username', $user_info['user_id']);
+            $view->set('email', $user_info['email']);
         }
-
-        $view->set('login_status');
 
         return $view;
     }
 
     protected function fetch_from_google($token)
     {
-        return Domain_Practice4::fetch_google_data($token);
+        return Domain_Practice4::fetch_user_info($token);
     }
 }
