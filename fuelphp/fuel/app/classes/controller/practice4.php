@@ -37,6 +37,10 @@ class Controller_Practice4 extends Controller
     public function action_login_redirect()
     {
         Session::set('access', Input::get());
+        // check CSRF token; true if invalid
+        if (Security::check_token(Session::get('access.state'))) {
+            Response::redirect('practice4/logout');
+        }
         $code = Session::get('access.code');
         // get access token
         Session::set('token', Domain_Practice4::fetch_token($code));
