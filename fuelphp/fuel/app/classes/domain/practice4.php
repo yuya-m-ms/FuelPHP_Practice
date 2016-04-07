@@ -47,9 +47,8 @@ class Domain_Practice4
             'redirect_uri'  => Arr::get($cs, 'web.redirect_uris.0'),
             'grant_type'    => 'authorization_code',
         ]);
-        $res  = $curl->execute()->response();
-        $data = ($res->status == 200) ? Format::forge($res->body, 'json')->to_array() : [];
-        return $data;
+        $res = $curl->execute()->response();
+        return ($res->status == 200) ? Format::forge($res->body, 'json')->to_array() : [];
     }
 
     public static function fetch_user_info($token = '')
@@ -57,8 +56,7 @@ class Domain_Practice4
         $curl = Request::forge('https://www.googleapis.com/oauth2/v1/tokeninfo', 'curl');
         $curl->set_method('get');
         $curl->set_params(['id_token' => $token, ]);
-        $res  = $curl->execute()->response();
-        $data = ($res->status == 200) ? Format::forge($res->body, 'json')->to_array() : [];
-        return $data;
+        $res = $curl->execute()->response();
+        return ($res->status == 200) ? Format::forge($res->body, 'json')->to_array() : [];
     }
 }
