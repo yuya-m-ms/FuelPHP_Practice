@@ -16,34 +16,38 @@ class Controller_Practice4 extends Controller
     {
         $view = View::forge('practice4');
         $view->set('title', "演習4");
-        $view->set('google_oauth_url', Domain_Practice4::forge_login_url());
 
         // login check
-        $state = Session::get('google_oauth.state');
-        Profiler::console('Input: '.json_encode(Input::get()));
-        $is_logged_in = boolval($state);
-        $view->set('is_logged_in', $is_logged_in);
-        Profiler::console('Logged_in? = '.($is_logged_in ? 'true' : 'false'));
-        $view->set('login_status');
-        $view->set('state', $state);
-        $view->set('input_get', Input::get());
-        if ($code = Input::get('code')) {
-            $view->set('data', $this->fetch_from_google($code));
+        $input_get = Input::get();
+        $view->set('input_get', $input_get);
+        Profiler::console('Input: '.json_encode($input_get));
+        $logged_in = ! empty($input_get['code']);
+        $view->set('logged_in', $logged_in);
+        Profiler::console('Logged_in? = '.var_export($logged_in, true));
+
+        if ( ! $logged_in) {
+            // to log-in
+            $state = Security::generate_token();
+            Session::set('google_oauth.state', $state);
+            $view->set('google_oauth_url', Domain_Practice4::forge_login_url($state));
         } else {
-            $view->set('data', null);
+            // to load data
+            if ($code = Input::get('code')) {
+                $token_req = Domain_Practice4::fetch_token($code);
+                $view->set('data', $token_req);
+            } else {
+                $view->set('data', null);
+            }
+            $view->set('username', $input_get['hd']);
         }
-        // $view->set('data', null);
-        $view->set('username');
+
+        $view->set('login_status');
 
         return $view;
     }
 
-    protected function fetch_from_google($code)
+    protected function fetch_from_google($token)
     {
-        $url  = Domain_Practice4::forge_token_url($code);
-        $curl = Request::forge($url, 'curl');
-        $curl->set_method('post');
-        $res = $curl->execute()->response();
-        return ($res->status == 200) ? $res->body : '';
+        return Domain_Practice4::fetch_google_data($token);
     }
 }

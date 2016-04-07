@@ -18,29 +18,37 @@ class Domain_Practice4
         static::set('client_secret', $data);
     }
 
-    public static function forge_login_url()
+    public static function forge_login_url($state = '')
     {
-        $token = Security::generate_token();
-        Session::set('google_oauth.state', $token);
         $cs = static::get('client_secret');
         return Uri::create(Arr::get($cs, 'web.auth_uri'), [], [
             'client_id'     => Arr::get($cs, 'web.client_id'),
             'response_type' => 'code',
             'scope'         => 'openid email',
             'redirect_uri'  => Arr::get($cs, 'web.redirect_uris.0'),
-            'state'         => $token,
+            'state'         => $state,
         ]);
     }
 
-    public static function forge_token_url($code)
+    /**
+     * Fetch token from Google by a given code
+     * @param  string $code given
+     * @return array       returned data of token request
+     */
+    public static function fetch_token($code = '')
     {
-        $cs = static::get('client_secret');
-        return Uri::create(Arr::get($cs, 'web.token_uri'), [], [
+        $cs   = static::get('client_secret');
+        $curl = Request::forge(Arr::get($cs, 'web.token_uri'), 'curl');
+        $curl->set_method('post');
+        $curl->set_params([
             'code'          => $code,
             'client_id'     => Arr::get($cs, 'web.client_id'),
             'client_secret' => Arr::get($cs, 'web.client_secret'),
             'redirect_uri'  => Arr::get($cs, 'web.redirect_uris.0'),
             'grant_type'    => 'authorization_code',
         ]);
+        $res  = $curl->execute()->response();
+        $data = ($res->status == 200) ? Format::forge($res->body, 'json')->to_array() : [];
+        return $data;
     }
 }
