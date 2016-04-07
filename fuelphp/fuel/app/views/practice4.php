@@ -27,10 +27,6 @@
                 <span>Not Logged in</span>
             <?php endif ?>
         </section>
-        <section>
-            <h3>Session</h3>
-            <pre><?= nl2br($session) ?></pre>
-        </section>
     </section>
 </body>
 </html>
