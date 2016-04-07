@@ -16,18 +16,15 @@ class Controller_Practice4 extends Controller
     {
         $view = View::forge('practice4');
         $view->set('title', "演習4");
-        // DEBUG
-        $view->set('session', json_encode(Session::get(), JSON_PRETTY_PRINT));
-        Profiler::console('Input: '.json_encode(Input::get(), JSON_PRETTY_PRINT));
-        Profiler::console('Session: '.json_encode(Session::get(), JSON_PRETTY_PRINT));
         // login check
         $logged_in = ! empty(Session::get('user_info.user_id'));
         $view->set('logged_in', $logged_in);
-        Profiler::console('Logged_in? = '.var_export($logged_in, true));
         // load user info
-        $view->set('user_info', json_encode(Session::get('user_info'), JSON_PRETTY_PRINT));
+        $view->set('user_info', self::pretty_json(Session::get('user_info')));
         $view->set('user_id', Session::get('user_info.user_id'));
         $view->set('email', Session::get('user_info.email'));
+        // DEBUG
+        $view->set('session', self::pretty_json(Session::get()));
 
         return $view;
     }
@@ -44,8 +41,11 @@ class Controller_Practice4 extends Controller
     {
         // DEBUG
         Profiler::console('Login_Redirect');
-        Profiler::console('Input: '.json_encode(Input::get(), JSON_PRETTY_PRINT));
-        Profiler::console('Session: '.json_encode(Session::get(), JSON_PRETTY_PRINT));
+        $input = self::pretty_json(Input::get());
+        $session = self::pretty_json(Session::get());
+        Profiler::console('Input: '.$input);
+        Profiler::console('Session: '.$session);
+        Session::set('login_redirect', [$input, $session, ]);
         // get request token
         Session::set('access', Input::get());
         $code = Session::get('access.code');
@@ -66,8 +66,8 @@ class Controller_Practice4 extends Controller
         Response::redirect('practice4');
     }
 
-    protected function fetch_from_google($token)
+    private static function pretty_json($json = '')
     {
-        return Domain_Practice4::fetch_user_info($token);
+        return json_encode($json, JSON_PRETTY_PRINT);
     }
 }
