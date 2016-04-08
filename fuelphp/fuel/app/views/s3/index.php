@@ -9,12 +9,6 @@
     </p>
 </section>
 <section>
-    <h2>Buckets</h2>
-    <pre><?= $buckets ?></pre>
-    <br>
-    <h2>Objects</h2>
-    <pre><?= $objects ?></pre>
-    <br>
     <h2>Object — test.json</h2>
     <pre><?= $test_json ?></pre>
 </section>

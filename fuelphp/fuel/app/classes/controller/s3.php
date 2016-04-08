@@ -16,12 +16,6 @@ class Controller_S3 extends Controller_Template
             'version' => 'latest',
         ]);
 
-        $data['buckets'] = $s3->listBuckets();
-
-        $data['objects'] = $s3->listObjects([
-            'Bucket' => $bucket,
-        ]);
-
         $key = 'practice-4/test.json';
         $data['test_json'] = $s3->getObject([
             'Bucket' => $bucket,
