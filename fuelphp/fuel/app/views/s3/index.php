@@ -10,5 +10,8 @@
 </section>
 <section>
     <h2>Object — test.json</h2>
+    <span>Body:</span>
     <pre><?= $test_json ?></pre>
+    <h2>Object — test_put.json</h2>
+    <span><?= Html::anchor($ObjectURL, 'ObjectURL') ?></span>
 </section>
