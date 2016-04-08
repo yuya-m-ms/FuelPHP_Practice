@@ -21,7 +21,7 @@
                 <span> Email: <span><?= $email ?></span> </span>
                 <section>
                     <h3>User Data:</h3>
-                    <pre><?= nl2br($user_info) ?></pre>
+                    <pre><?= nl2br($user_info_json) ?></pre>
                 </section>
             <?php else: ?>
                 <span>Not Logged in</span>

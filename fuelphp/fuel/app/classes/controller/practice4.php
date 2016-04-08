@@ -20,7 +20,8 @@ class Controller_Practice4 extends Controller
         $logged_in = ! empty(Session::get('user_info.user_id'));
         $view->set('logged_in', $logged_in);
         // load user info
-        $view->set('user_info', self::pretty_json(Session::get('user_info')));
+        $this->load_user_info(Session::get('user_info.user_id'));
+        $view->set('user_info_json', Session::get('user_info.json'));
         $view->set('user_id', Session::get('user_info.user_id'));
         $view->set('email', Session::get('user_info.email'));
 
@@ -60,5 +61,31 @@ class Controller_Practice4 extends Controller
     private static function pretty_json($json = '')
     {
         return json_encode($json, JSON_PRETTY_PRINT);
+    }
+
+    /**
+     * Load user info on Sesson from AWS S3
+     * @param  string $user_id of Google
+     */
+    protected function load_user_info($user_id)
+    {
+        if (empty(Session::get('user_info.user_id'))) {
+            return;
+        }
+        $user_id = Session::get('user_info.user_id');
+        $key     = 'practice-4/user_'.$user_id.'.json';
+        $stored  = Domain_Practice4::fetch_from_AWS_S3($key);
+        if (empty($stored)) {
+            $json = self::pretty_json([
+                'user_id' => $user_id,
+                'email'   => Session::get('user_info.email'),
+            ]);
+            Domain_Practice4::store_to_AWS_S3($key, $json);
+            $stored = $json;
+        }
+        Session::set('user_info.json', $stored);
+        $user_info = json_decode($stored, boolval('as_assoc'));
+        Session::set('user_info.user_id', $user_info['user_id']);
+        Session::set('user_info.email', $user_info['email']);
     }
 }
