@@ -59,4 +59,14 @@ class Domain_Practice4
         $res = $curl->execute()->response();
         return ($res->status == 200) ? Format::forge($res->body, 'json')->to_array() : [];
     }
+
+    /**
+     * Store data to AWS S3
+     * @param  [mixed] $data to be stored
+     * @return boolean       success?
+     */
+    public static function store_to_AWS_S3($data)
+    {
+        return false;
+    }
 }
