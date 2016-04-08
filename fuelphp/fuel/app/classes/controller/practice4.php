@@ -58,9 +58,9 @@ class Controller_Practice4 extends Controller
         Response::redirect('practice4');
     }
 
-    private static function pretty_json($json = '')
+    private static function pretty_json($mixed = '')
     {
-        return json_encode($json, JSON_PRETTY_PRINT);
+        return json_encode($mixed, JSON_PRETTY_PRINT);
     }
 
     /**
