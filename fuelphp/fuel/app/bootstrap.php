@@ -7,6 +7,8 @@ require COREPATH.'bootstrap.php';
 	// Example: 'View' => APPPATH.'classes/view.php',
 ));
 
+\Autoloader::add_namespace('Aws', APPPATH.'vendor/aws/aws-sdk-php/src/Aws', true);
+
 // Register the autoloader
 \Autoloader::register();
 
