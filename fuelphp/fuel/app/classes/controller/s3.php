@@ -1,6 +1,5 @@
 <?php
 
-use Aws\Credentials\CredentialProvider;
 use Aws\S3\S3Client;
 
 class Controller_S3 extends Controller_Template
