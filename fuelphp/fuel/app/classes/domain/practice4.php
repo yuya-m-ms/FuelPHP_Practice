@@ -1,5 +1,7 @@
 <?php
 
+use Aws\S3\S3Client;
+
 /**
 * Of Login
 */
@@ -16,6 +18,13 @@ class Domain_Practice4
         $json = File::read($path, true);
         $data = Format::forge($json, 'json')->to_array();
         static::set('client_secret', $data);
+
+        static::set('bucket', 'google-oauth-practice');
+        static::get('s3') ?: static::set('s3', S3Client::factory([
+            'profile' => 'default',
+            'region'  => 'ap-northeast-1',
+            'version' => 'latest',
+        ]));
     }
 
     public static function forge_login_url($state = '')
@@ -61,12 +70,41 @@ class Domain_Practice4
     }
 
     /**
-     * Store data to AWS S3
-     * @param  [mixed] $data to be stored
-     * @return boolean       success?
+     * [Model] Fetch data from AWS S3
+     *
+     * @param  string $key ID of data
+     * @return json        string
      */
-    public static function store_to_AWS_S3($data)
+    public static function fetch_from_AWS_S3($key)
     {
-        return false;
+        try {
+            return static::get('s3')->getObject([
+                'Bucket' => static::get('bucket'),
+                'Key'    => $key,
+            ])['Body'];
+        } catch (Aws\S3\Exception\S3Exception $e) {
+            return '';
+        }
+    }
+
+    /**
+     * [Model] Store data to AWS S3
+     *
+     * @param  string $key  ID of data
+     * @param  json   $json to be stored
+     * @return string       ObjectURL
+     */
+    public static function store_to_AWS_S3($key, $json)
+    {
+        try {
+            return static::get('s3')->putObject([
+                'Bucket' => static::get('bucket'),
+                'Key'    => $key,
+                'Body'   => $json,
+                'ACL'    => 'public-read',
+            ])['ObjectURL'];
+        } catch (Aws\S3\Exception\S3Exception $e) {
+            return '';
+        }
     }
 }
